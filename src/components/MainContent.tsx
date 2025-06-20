@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, TrendingUp, FileText, Clock, Award, Users, Star, Code } from 'lucide-react';
+import { Shield, TrendingUp, FileText, Clock, Award, Users, Star, Code, HelpCircle } from 'lucide-react';
 
 const MainContent = () => {
   const testimonials = [
@@ -17,6 +17,49 @@ const MainContent = () => {
     {
       quote: "The API integration saved us weeks of development time.",
       author: "Tech Lead"
+    }
+  ];
+
+  const faqItems = [
+    {
+      question: "What is Amnova?",
+      answer: "Amnova is an AI-integrated media and civic tech platform by AMN News Agency, offering tools like misinformation checking, real-time disaster alerts, and API services for developers and organizations."
+    },
+    {
+      question: "How can I check if a piece of information is false?",
+      answer: "Use our False Info Checker available on the homepage or under the Verify Claims section. Paste the link or statement, and our engine will scan it for authenticity."
+    },
+    {
+      question: "How do I access the Amnova API?",
+      answer: "You can subscribe to our API Access via the dashboard. After registration and payment, you'll be granted access to documentation and integration tools."
+    },
+    {
+      question: "Can I listen to AMN Radio live?",
+      answer: "Yes! AMN Radio is embedded on our homepage. Click the play button to listen to live broadcasts, including news and entertainment."
+    },
+    {
+      question: "How do I report false or harmful information?",
+      answer: "Visit the Report Center from the main menu. Fill the form and submit. Our moderators will review and take action."
+    },
+    {
+      question: "Who owns Amnova?",
+      answer: "Amnova is developed and managed by AMN News Agency, an innovation-focused media organization."
+    },
+    {
+      question: "Do I need an account to use Amnova services?",
+      answer: "Some services are free and open. However, API access, content publishing, and admin functions require registration and approval."
+    },
+    {
+      question: "Is there a mobile app for Amnova?",
+      answer: "Currently, Amnova is web-based, but we are working on a mobile app experience in the near future."
+    },
+    {
+      question: "Can I contribute or become a partner?",
+      answer: "Yes. Reach out to us through the Contact section in the footer. We're open to partnerships and innovation support."
+    },
+    {
+      question: "How often is the platform updated?",
+      answer: "Content is updated in real-time via the dashboard and API feeds. System improvements are rolled out weekly."
     }
   ];
 
@@ -81,7 +124,7 @@ const MainContent = () => {
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Why Use Amnova */}
+        {/* Left Column - Why Use Amnova + FAQ */}
         <div className="lg:col-span-2 space-y-8">
           <section>
             <h2 className="text-3xl font-bold text-[#1D4ED8] mb-8 text-center lg:text-left">Why Use Amnova?</h2>
@@ -110,6 +153,31 @@ const MainContent = () => {
                 <p className="text-sm text-[#374151]">Tailored solutions for every type of organization</p>
               </div>
             </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section>
+            <Card className="p-6 bg-gradient-to-br from-[#1D4ED8]/5 to-[#3B82F6]/5 border-[#1D4ED8]/20">
+              <h3 className="text-2xl font-bold text-[#1D4ED8] mb-6 flex items-center gap-2">
+                <HelpCircle className="h-6 w-6 text-[#F59E0B]" />
+                Frequently Asked Questions (FAQ)
+              </h3>
+              <div className="space-y-4 max-h-80 overflow-y-auto">
+                {faqItems.map((faq, index) => (
+                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-blue-100">
+                    <div className="flex items-start gap-2 mb-2">
+                      <span className="text-[#F59E0B] font-bold text-sm">🔸</span>
+                      <h4 className="text-sm font-semibold text-[#1D4ED8]">
+                        Q{index + 1}: {faq.question}
+                      </h4>
+                    </div>
+                    <p className="text-xs text-[#374151] ml-4 leading-relaxed">
+                      A: {faq.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </section>
         </div>
 
