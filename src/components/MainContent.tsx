@@ -211,9 +211,32 @@ const MainContent = () => {
               <p className="text-sm text-[#374151] mb-4">
                 Want to integrate verification tools into your platform?
               </p>
-              <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white w-full">
+              <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white w-full mb-4">
                 Apply for API Access
               </Button>
+              
+              {/* API Integration Benefits */}
+              <div className="mt-4 space-y-3">
+                <h4 className="text-sm font-semibold text-[#1D4ED8] mb-2">API Integration Benefits</h4>
+                <div className="space-y-2 text-xs text-[#374151]">
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#F59E0B] mt-0.5">•</span>
+                    <p><strong>Seamless Data Access:</strong> Integrate Amnova's verified data directly into your platform.</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#F59E0B] mt-0.5">•</span>
+                    <p><strong>Customizable Widgets:</strong> Embed our widgets to enhance your user experience.</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#F59E0B] mt-0.5">•</span>
+                    <p><strong>Real-time Updates:</strong> Access live trending topics, misinformation checks, and prediction alerts.</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#F59E0B] mt-0.5">•</span>
+                    <p><strong>Scalable Solutions:</strong> Designed to handle the needs of organizations of all sizes.</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
         </div>

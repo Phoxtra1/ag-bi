@@ -21,10 +21,19 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-[#1D4ED8]">
-              Amnova<span className="text-[#F59E0B]">™</span>
-            </h1>
-            <p className="text-xs text-[#374151] -mt-1">by AMN News Agency</p>
+            <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <img 
+                src="/lovable-uploads/9741a386-df5a-4ff1-b5f8-e7e30900ca86.png" 
+                alt="Amnova Logo" 
+                className="h-10 w-10"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-[#1D4ED8]">
+                  Amnova<span className="text-[#F59E0B]">™</span>
+                </h1>
+                <p className="text-xs text-[#374151] -mt-1">by AMN News Agency</p>
+              </div>
+            </a>
           </div>
 
           {/* Desktop Navigation */}
