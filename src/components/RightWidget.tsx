@@ -6,10 +6,10 @@ import { TrendingUp, Shield, AlertTriangle, ChevronLeft, ChevronRight } from 'lu
 
 interface NewsItem {
   id: number;
-  headline: string;
-  timestamp: string;
+  title: string;
+  url: string;
   image: string;
-  link: string;
+  timestamp: string;
 }
 
 const RightWidget = () => {
@@ -23,130 +23,79 @@ const RightWidget = () => {
     { title: "Economic Prediction Models Updated", severity: "medium", time: "4h ago" }
   ];
 
-  // Fetch breaking news from AMN News World
+  // Function to format timestamp to human readable format
+  const formatTimestamp = (timestamp: string) => {
+    const now = new Date();
+    const newsDate = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - newsDate.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
+
+  // Fetch breaking news from the new JSON endpoint
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
         setLoading(true);
-        // Using a CORS proxy to fetch the data
-        const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const targetUrl = encodeURIComponent('https://www.amnewsworld.com/category/breaking-news/');
+        const response = await fetch('https://www.amnewsworld.com/wp-json/amnova/v1/breaking-news');
         
-        const response = await fetch(proxyUrl + targetUrl);
+        if (!response.ok) {
+          throw new Error('Failed to fetch breaking news');
+        }
+        
         const data = await response.json();
         
-        if (data.contents) {
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(data.contents, 'text/html');
-          
-          // Extract articles from the page
-          const articles = doc.querySelectorAll('article, .post, .entry');
-          const newsItems: NewsItem[] = [];
-          
-          articles.forEach((article, index) => {
-            if (index < 5) { // Limit to 5 items
-              const titleElement = article.querySelector('h1, h2, h3, .title, .post-title, .entry-title');
-              const imageElement = article.querySelector('img');
-              const linkElement = article.querySelector('a');
-              const timeElement = article.querySelector('time, .date, .post-date');
-              
-              const headline = titleElement?.textContent?.trim() || `Breaking News Story ${index + 1}`;
-              const image = imageElement?.src || imageElement?.getAttribute('data-src') || 
-                          `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop`;
-              const link = linkElement?.href || '#';
-              const timestamp = timeElement?.textContent?.trim() || `${index + 1}h ago`;
-              
-              newsItems.push({
-                id: index + 1,
-                headline: headline.length > 80 ? headline.substring(0, 80) + '...' : headline,
-                timestamp,
-                image,
-                link
-              });
-            }
-          });
-          
-          // Fallback to default news if extraction fails
-          if (newsItems.length === 0) {
-            setBreakingNews([
-              {
-                id: 1,
-                headline: "Global Climate Summit Reaches Historic Agreement",
-                timestamp: "2h ago",
-                image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=200&fit=crop",
-                link: "#"
-              },
-              {
-                id: 2,
-                headline: "AI-Powered Weather Prediction Shows 95% Accuracy",
-                timestamp: "4h ago", 
-                image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=200&fit=crop",
-                link: "#"
-              },
-              {
-                id: 3,
-                headline: "New Earthquake Early Warning System Deployed",
-                timestamp: "6h ago",
-                image: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=200&fit=crop",
-                link: "#"
-              },
-              {
-                id: 4,
-                headline: "Economic Markets Show Unprecedented Growth",
-                timestamp: "8h ago",
-                image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=200&fit=crop",
-                link: "#"
-              },
-              {
-                id: 5,
-                headline: "Technology Breakthrough in Renewable Energy",
-                timestamp: "10h ago",
-                image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=200&fit=crop",
-                link: "#"
-              }
-            ]);
-          } else {
-            setBreakingNews(newsItems);
-          }
-        }
+        // Take only the 5 most recent items
+        const recentNews = data.slice(0, 5).map((item: any, index: number) => ({
+          id: item.id || index + 1,
+          title: item.title || 'Breaking News Story',
+          url: item.url || '#',
+          image: item.image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop',
+          timestamp: item.timestamp || new Date().toISOString()
+        }));
+        
+        setBreakingNews(recentNews);
       } catch (error) {
         console.error('Error fetching breaking news:', error);
         // Fallback news data
         setBreakingNews([
           {
             id: 1,
-            headline: "Global Climate Summit Reaches Historic Agreement",
-            timestamp: "2h ago",
+            title: "Global Climate Summit Reaches Historic Agreement",
+            url: "#",
             image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=200&fit=crop",
-            link: "#"
+            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 2,
-            headline: "AI-Powered Weather Prediction Shows 95% Accuracy",
-            timestamp: "4h ago", 
+            title: "AI-Powered Weather Prediction Shows 95% Accuracy",
+            url: "#",
             image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=200&fit=crop",
-            link: "#"
+            timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 3,
-            headline: "New Earthquake Early Warning System Deployed",
-            timestamp: "6h ago",
+            title: "New Earthquake Early Warning System Deployed",
+            url: "#",
             image: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=200&fit=crop",
-            link: "#"
+            timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 4,
-            headline: "Economic Markets Show Unprecedented Growth",
-            timestamp: "8h ago",
+            title: "Economic Markets Show Unprecedented Growth",
+            url: "#",
             image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=200&fit=crop",
-            link: "#"
+            timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 5,
-            headline: "Technology Breakthrough in Renewable Energy",
-            timestamp: "10h ago",
+            title: "Technology Breakthrough in Renewable Energy",
+            url: "#",
             image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=200&fit=crop",
-            link: "#"
+            timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString()
           }
         ]);
       } finally {
@@ -155,6 +104,11 @@ const RightWidget = () => {
     };
 
     fetchBreakingNews();
+    
+    // Set up automatic refresh every 5 minutes
+    const refreshInterval = setInterval(fetchBreakingNews, 5 * 60 * 1000);
+    
+    return () => clearInterval(refreshInterval);
   }, []);
 
   // Auto-rotate carousel
@@ -246,7 +200,7 @@ const RightWidget = () => {
       </Card>
 
       {/* Breaking News Carousel */}
-      <Card className="p-4 bg-white border-gray-200">
+      <Card className="p-4 bg-white border-gray-200 rounded-2xl shadow-md">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-[#374151]">Breaking News</h3>
           <div className="flex gap-1">
@@ -267,7 +221,7 @@ const RightWidget = () => {
           </div>
         </div>
         
-        <div className="relative overflow-hidden rounded-xl shadow-md bg-gray-100 min-h-[200px]">
+        <div className="relative overflow-hidden rounded-xl shadow-lg bg-gray-100 min-h-[200px]" style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
           {loading ? (
             <div className="flex items-center justify-center h-48">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
@@ -279,12 +233,12 @@ const RightWidget = () => {
             >
               {breakingNews.map((news) => (
                 <div key={news.id} className="w-full flex-shrink-0 relative cursor-pointer group">
-                  <a href={news.link} target="_blank" rel="noopener noreferrer" className="block h-full">
+                  <a href={news.url} target="_blank" rel="noopener noreferrer" className="block h-full">
                     <div className="relative h-full">
                       <img 
                         src={news.image} 
-                        alt={news.headline}
-                        className="w-full h-full object-cover"
+                        alt={news.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
                           e.currentTarget.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop';
                         }}
@@ -292,10 +246,10 @@ const RightWidget = () => {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                       <div className="absolute bottom-0 left-0 right-0 p-4">
                         <h4 className="text-white font-bold text-sm mb-2 line-clamp-3 group-hover:text-[#F59E0B] transition-colors leading-tight">
-                          {news.headline}
+                          {news.title}
                         </h4>
-                        <span className="text-white/80 text-xs bg-black/30 px-2 py-1 rounded-full">
-                          {news.timestamp}
+                        <span className="text-white/90 text-xs bg-black/40 px-2 py-1 rounded-full backdrop-blur-sm">
+                          {formatTimestamp(news.timestamp)}
                         </span>
                       </div>
                     </div>
@@ -313,8 +267,8 @@ const RightWidget = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentSlide ? 'bg-[#1D4ED8]' : 'bg-gray-300'
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  index === currentSlide ? 'bg-[#1D4ED8] scale-125' : 'bg-gray-300 hover:bg-gray-400'
                 }`}
               />
             ))}
