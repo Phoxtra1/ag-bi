@@ -31,7 +31,6 @@ const Header = () => {
                 <h1 className="text-2xl font-bold text-[#1D4ED8]">
                   Amnova<span className="text-[#F59E0B]">™</span>
                 </h1>
-                <p className="text-xs text-[#374151] -mt-1">by AMN News Agency</p>
               </div>
             </a>
           </div>
