@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, CheckCircle, AlertTriangle, XCircle, ExternalLink, Clock } from 'lucide-react';
+import { TrendingUp, CheckCircle, AlertTriangle, XCircle, ExternalLink, Clock, Shield, Search, Eye, Globe } from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 interface TrendingStory {
   id: string;
@@ -138,165 +140,206 @@ const Trending = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <TrendingUp className="h-8 w-8 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">Today's Trends</h1>
-          </div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Stay updated with the most talked-about headlines and verified trending stories from around the world.
-          </p>
-        </div>
-
-        {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Left Column - 3/4 width */}
-          <div className="lg:col-span-3">
-            <Card className="p-6">
-              <div className="prose prose-lg max-w-none">
-                <h2 className="flex items-center gap-2 text-2xl font-bold text-gray-900 mb-4">
-                  🌍 Today's Trend
-                </h2>
-                
-                <p className="text-gray-700 mb-4">
-                  Welcome to the <strong>Trending</strong> page — a space dedicated to the <strong>most talked-about headlines</strong>, 
-                  viral topics, and rapidly evolving conversations across the globe.
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      
+      <div className="py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Two Column Layout */}
+          <div className="grid lg:grid-cols-4 gap-8 min-h-[600px]">
+            {/* Left Column - 3/4 width - Redesigned */}
+            <div className="lg:col-span-3 flex flex-col">
+              {/* Header Section */}
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUp className="h-8 w-8 text-blue-600" />
+                  <h1 className="text-4xl font-bold text-gray-900">🗞 Today's Trending Insights</h1>
+                </div>
+                <p className="text-lg text-gray-600 max-w-3xl">
+                  Curated updates from verified media channels to help you stay informed — not misled.
                 </p>
+              </div>
 
-                <p className="text-gray-700 mb-4">
-                  We track stories from verified sources across <strong>Entertainment, Tech, Science, Lifestyle, Business, and World Affairs</strong>, 
-                  offering you a reliable snapshot of what's currently making waves.
-                </p>
+              {/* Why This Matters Section */}
+              <Card className="mb-6 bg-blue-50 border-blue-200">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3">
+                    <Shield className="h-6 w-6 text-blue-600 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Why This Matters</h3>
+                      <p className="text-gray-700">
+                        In a world overwhelmed by misinformation, Amnova ensures you're updated with <strong>accurate, timely, and engaging</strong> headlines. 
+                        This isn't just what's trending, it's what's <strong>trustworthy</strong>.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">✅ Why This Matters</h4>
-                <p className="text-gray-700 mb-4">
-                  In a world overwhelmed by misinformation, Amnova ensures you're updated with <strong>accurate, timely, and engaging</strong> headlines. 
-                  Stories featured here are not only trending — they're also <strong>reviewed</strong> for truthfulness as part of our wider mission to combat fake news.
-                </p>
+              {/* What You'll Find Section */}
+              <Card className="mb-6">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-3 mb-4">
+                    <Search className="h-6 w-6 text-blue-600 mt-1" />
+                    <h3 className="text-lg font-semibold text-gray-900">What You'll Find</h3>
+                  </div>
+                  <div className="space-y-3 ml-9">
+                    <div className="flex items-center gap-3">
+                      <Clock className="h-5 w-5 text-gray-500" />
+                      <span className="text-gray-700">Real-time updates refreshed periodically</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Eye className="h-5 w-5 text-gray-500" />
+                      <span className="text-gray-700">Curated by experts and AI systems</span>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Globe className="h-5 w-5 text-gray-500 mt-1" />
+                      <div>
+                        <span className="text-gray-700">Categorized for truth:</span>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Badge className="bg-green-100 text-green-800 border-green-200">✅ Verified</Badge>
+                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">⚠️ Under Review</Badge>
+                          <Badge className="bg-red-100 text-red-800 border-red-200">❌ Unverified</Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="h-5 w-5 text-gray-500" />
+                      <span className="text-gray-700">Relevance-driven, not sensational hype</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">🌐 What You'll See</h4>
-                <ul className="text-gray-700 mb-4 list-disc list-inside">
-                  <li>Real-time headline rotations</li>
-                  <li>Curated content from trusted sources</li>
-                  <li>Each headline labeled as <strong>Verified ✅</strong>, <strong>Under Review ⚠️</strong>, or <strong>Unverified ❌</strong></li>
-                  <li>A focus on <strong>relevance and accuracy</strong>, not just hype</li>
-                </ul>
+              {/* Verification Status Key */}
+              <Card className="mb-6">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Verification Status Key</h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                      <div>
+                        <div className="font-medium text-green-800">✅ Verified</div>
+                        <div className="text-sm text-green-700">AI + fact-check confirmed</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <div className="font-medium text-yellow-800">⚠️ Under Review</div>
+                        <div className="text-sm text-yellow-700">Still under assessment</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
+                      <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                      <div>
+                        <div className="font-medium text-red-800">❌ Unverified</div>
+                        <div className="text-sm text-red-700">No evidence backing</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">🧠 Verification Status Key:</h4>
-                <ul className="text-gray-700 mb-4 list-none space-y-2">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <strong>Verified</strong> – Confirmed through Amnova Intelligence & fact-check partners.
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                    <strong>Under Review</strong> – Still being assessed by our editorial or AI review team.
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-red-600" />
-                    <strong>Unverified or Fake</strong> – Contains claims not supported by credible evidence.
-                  </li>
-                </ul>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800 mb-0">
-                    <strong>📌 Note:</strong> This section is dynamically updated and reflects <strong>external credible sources</strong>. 
-                    All content is properly credited.
+              {/* Note at Bottom */}
+              <div className="mt-auto">
+                <div className="bg-gray-100 border border-gray-200 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 italic text-center">
+                    This content is dynamically updated. For the latest verified trends, please refresh regularly.
                   </p>
                 </div>
               </div>
-            </Card>
-          </div>
+            </div>
 
-          {/* Right Column - 1/4 width */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  🔥 Live Trending Stories
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {loading ? (
-                  <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-sm text-gray-600 mt-2">Loading trending stories...</p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Current Featured Story */}
-                    {trendingStories.length > 0 && (
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-                        <div className="relative">
-                          <img 
-                            src={trendingStories[currentStoryIndex].urlToImage} 
-                            alt={trendingStories[currentStoryIndex].title}
-                            className="w-full h-32 object-cover rounded-lg mb-3"
-                          />
-                          <div className="absolute top-2 right-2">
-                            {getVerificationBadge(trendingStories[currentStoryIndex].verificationStatus)}
+            {/* Right Column - 1/4 width - UNTOUCHED */}
+            <div className="lg:col-span-1">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    🔥 Live Trending Stories
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                      <p className="text-sm text-gray-600 mt-2">Loading trending stories...</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Current Featured Story */}
+                      {trendingStories.length > 0 && (
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                          <div className="relative">
+                            <img 
+                              src={trendingStories[currentStoryIndex].urlToImage} 
+                              alt={trendingStories[currentStoryIndex].title}
+                              className="w-full h-32 object-cover rounded-lg mb-3"
+                            />
+                            <div className="absolute top-2 right-2">
+                              {getVerificationBadge(trendingStories[currentStoryIndex].verificationStatus)}
+                            </div>
+                          </div>
+                          <h4 className="font-semibold text-sm mb-2 line-clamp-2">
+                            {trendingStories[currentStoryIndex].title}
+                          </h4>
+                          <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                            {trendingStories[currentStoryIndex].description}
+                          </p>
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {formatTimeAgo(trendingStories[currentStoryIndex].publishedAt)}
+                            </span>
+                            <span>{trendingStories[currentStoryIndex].source.name}</span>
                           </div>
                         </div>
-                        <h4 className="font-semibold text-sm mb-2 line-clamp-2">
-                          {trendingStories[currentStoryIndex].title}
-                        </h4>
-                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-                          {trendingStories[currentStoryIndex].description}
-                        </p>
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatTimeAgo(trendingStories[currentStoryIndex].publishedAt)}
-                          </span>
-                          <span>{trendingStories[currentStoryIndex].source.name}</span>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Story List */}
-                    <div className="space-y-3">
-                      {trendingStories.slice(0, 5).map((story, index) => (
-                        <div 
-                          key={story.id} 
-                          className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
-                            index === currentStoryIndex ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
-                          }`}
-                          onClick={() => setCurrentStoryIndex(index)}
-                        >
-                          <div className="flex items-start gap-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                {getVerificationIcon(story.verificationStatus)}
-                                <h5 className="font-medium text-sm line-clamp-2">{story.title}</h5>
-                              </div>
-                              <div className="flex items-center justify-between text-xs text-gray-500">
-                                <span>{formatTimeAgo(story.publishedAt)}</span>
-                                <ExternalLink className="h-3 w-3" />
+                      {/* Story List */}
+                      <div className="space-y-3">
+                        {trendingStories.slice(0, 5).map((story, index) => (
+                          <div 
+                            key={story.id} 
+                            className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
+                              index === currentStoryIndex ? 'bg-blue-50 border-blue-200' : 'bg-white border-gray-200'
+                            }`}
+                            onClick={() => setCurrentStoryIndex(index)}
+                          >
+                            <div className="flex items-start gap-2">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  {getVerificationIcon(story.verificationStatus)}
+                                  <h5 className="font-medium text-sm line-clamp-2">{story.title}</h5>
+                                </div>
+                                <div className="flex items-center justify-between text-xs text-gray-500">
+                                  <span>{formatTimeAgo(story.publishedAt)}</span>
+                                  <ExternalLink className="h-3 w-3" />
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
 
-                    <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
-                      <p className="mb-1">
-                        <strong>Example sources:</strong> GNews.io, BBC Trending, Reuters, etc.
-                      </p>
-                      <p>
-                        <strong>Note:</strong> Some stories may still be in the process of verification. Please check back for updates.
-                      </p>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                      <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                        <p className="mb-1">
+                          <strong>Example sources:</strong> GNews.io, BBC Trending, Reuters, etc.
+                        </p>
+                        <p>
+                          <strong>Note:</strong> Some stories may still be in the process of verification. Please check back for updates.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
