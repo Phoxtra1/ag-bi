@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
 import Predictions from "./pages/Predictions";
+import ReportInsights from "./pages/ReportInsights";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/verify" element={<VerifyInfo />} />
           <Route path="/trending" element={<Trending />} />
           <Route path="/predictions" element={<Predictions />} />
+          <Route path="/reports" element={<ReportInsights />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
