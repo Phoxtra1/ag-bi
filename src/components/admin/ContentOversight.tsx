@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,8 +15,7 @@ import {
   Search,
   Filter,
   MessageSquare,
-  FileText,
-  T
+  FileText
 } from 'lucide-react';
 
 const ContentOversight = () => {
