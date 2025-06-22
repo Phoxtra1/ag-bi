@@ -10,6 +10,7 @@ import Trending from "./pages/Trending";
 import Predictions from "./pages/Predictions";
 import ReportInsights from "./pages/ReportInsights";
 import Pricing from "./pages/Pricing";
+import ApiOrganizations from "./pages/ApiOrganizations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
