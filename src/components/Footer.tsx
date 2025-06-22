@@ -13,11 +13,11 @@ const Footer = () => {
     { name: 'FAQ', href: '/faq' },
     { name: 'Help Center', href: '/help' },
     { name: 'Verify Claims', href: '/verify' },
-    { name: 'Developer Docs & API', href: '/api' }
+    { name: 'Developer Docs & API', href: '/api-organizations' }
   ];
 
   const companyLinks = [
-    { name: 'AMN News Agency', href: 'https://amnnews.com' },
+    { name: 'AMN News Agency', href: 'https://www.amnewsworld.com' },
     { name: 'About Amnova', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Contact Us', href: '/contact' }
