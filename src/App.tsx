@@ -11,6 +11,7 @@ import Predictions from "./pages/Predictions";
 import ReportInsights from "./pages/ReportInsights";
 import Pricing from "./pages/Pricing";
 import ApiOrganizations from "./pages/ApiOrganizations";
+import UserDashboard from "./pages/UserDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/reports" element={<ReportInsights />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/api-organizations" element={<ApiOrganizations />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
