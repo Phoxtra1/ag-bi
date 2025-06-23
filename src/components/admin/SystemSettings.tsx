@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,19 +9,16 @@ import {
   Settings, 
   Shield, 
   Database, 
-  Mail, 
-  Bell,
-  Lock,
-  Server,
-  Globe,
+  Brain,
   Zap
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
+import AIEnginePanel from './AIEnginePanel';
 import { useToast } from '@/hooks/use-toast';
 
 const SystemSettings = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('integrations');
+  const [activeTab, setActiveTab] = useState('ai-engines');
 
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'Amnova™',
@@ -63,7 +59,11 @@ const SystemSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="ai-engines" className="flex items-center gap-2">
+            <Brain className="w-4 h-4" />
+            AI Engines
+          </TabsTrigger>
           <TabsTrigger value="integrations" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Integrations
@@ -81,6 +81,10 @@ const SystemSettings = () => {
             Database
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="ai-engines">
+          <AIEnginePanel />
+        </TabsContent>
 
         <TabsContent value="integrations">
           <IntegrationsEngines />
@@ -254,7 +258,7 @@ const SystemSettings = () => {
                   Run Database Backup
                 </Button>
                 <Button variant="outline" className="w-full">
-                  <Server className="w-4 h-4 mr-2" />
+                  <Database className="w-4 h-4 mr-2" />
                   Optimize Database
                 </Button>
               </div>
