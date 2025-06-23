@@ -1,279 +1,267 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { 
   Settings, 
   Shield, 
   Database, 
-  Server, 
   Mail, 
   Bell,
-  Key,
+  Lock,
+  Server,
   Globe,
-  Zap,
-  CheckCircle,
-  AlertTriangle
+  Zap
 } from 'lucide-react';
+import IntegrationsEngines from './IntegrationsEngines';
+import { useToast } from '@/hooks/use-toast';
 
 const SystemSettings = () => {
-  const [emailNotifications, setEmailNotifications] = useState(true);
-  const [smsAlerts, setSmsAlerts] = useState(false);
-  const [autoBackup, setAutoBackup] = useState(true);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState('integrations');
+
+  const [generalSettings, setGeneralSettings] = useState({
+    siteName: 'Amnova™',
+    siteUrl: 'https://amnova.com',
+    maintenanceMode: false,
+    registrationEnabled: true,
+    emailVerificationRequired: true
+  });
+
+  const [securitySettings, setSecuritySettings] = useState({
+    twoFactorRequired: false,
+    sessionTimeout: 60,
+    maxLoginAttempts: 5,
+    passwordMinLength: 8
+  });
+
+  const saveGeneralSettings = () => {
+    // In a real app, this would save to backend
+    toast({
+      title: "Settings Saved",
+      description: "General settings have been updated successfully.",
+    });
+  };
+
+  const saveSecuritySettings = () => {
+    // In a real app, this would save to backend
+    toast({
+      title: "Security Settings Saved",
+      description: "Security settings have been updated successfully.",
+    });
+  };
 
   return (
     <div className="space-y-6">
-      {/* System Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">System Status</p>
-                <p className="text-lg font-semibold text-green-600">Operational</p>
-              </div>
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Server Load</p>
-                <p className="text-lg font-semibold">47%</p>
-              </div>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Server className="h-6 w-6 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Database Health</p>
-                <p className="text-lg font-semibold text-green-600">Excellent</p>
-              </div>
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Database className="h-6 w-6 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">System Settings</h2>
+        <p className="text-gray-600">Configure system-wide settings and integrations</p>
       </div>
 
-      {/* General Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings size={20} />
-            General Settings
-          </CardTitle>
-          <CardDescription>Configure platform-wide settings and preferences</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Platform Name</label>
-                <Input defaultValue="Amnova™ Platform" className="mt-1" />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Support Email</label>
-                <Input defaultValue="support@amnova.com" className="mt-1" />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Max Users Per Organization</label>
-                <Input defaultValue="100" type="number" className="mt-1" />
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Default API Rate Limit</label>
-                <Input defaultValue="1000" type="number" className="mt-1" />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Session Timeout (minutes)</label>
-                <Input defaultValue="60" type="number" className="mt-1" />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Maximum File Upload Size (MB)</label>
-                <Input defaultValue="50" type="number" className="mt-1" />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="integrations" className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Integrations
+          </TabsTrigger>
+          <TabsTrigger value="general" className="flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            General
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="w-4 h-4" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="database" className="flex items-center gap-2">
+            <Database className="w-4 h-4" />
+            Database
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Notification Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell size={20} />
-            Notification Settings
-          </CardTitle>
-          <CardDescription>Configure system alerts and notifications</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Email Notifications</h4>
-                <p className="text-sm text-gray-500">Send email alerts for important events</p>
-              </div>
-              <Switch 
-                checked={emailNotifications} 
-                onCheckedChange={setEmailNotifications}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">SMS Alerts</h4>
-                <p className="text-sm text-gray-500">Send SMS for critical system alerts</p>
-              </div>
-              <Switch 
-                checked={smsAlerts} 
-                onCheckedChange={setSmsAlerts}
-              />
-            </div>
+        <TabsContent value="integrations">
+          <IntegrationsEngines />
+        </TabsContent>
 
-            <div className="space-y-4">
-              <h4 className="font-medium">Alert Thresholds</h4>
+        <TabsContent value="general" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>General Settings</CardTitle>
+              <CardDescription>Basic site configuration</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm">High CPU Usage (%)</label>
-                  <Input defaultValue="80" type="number" className="mt-1" />
+                  <Label htmlFor="site-name">Site Name</Label>
+                  <Input
+                    id="site-name"
+                    value={generalSettings.siteName}
+                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, siteName: e.target.value }))}
+                  />
                 </div>
                 <div>
-                  <label className="text-sm">Low Disk Space (%)</label>
-                  <Input defaultValue="20" type="number" className="mt-1" />
+                  <Label htmlFor="site-url">Site URL</Label>
+                  <Input
+                    id="site-url"
+                    value={generalSettings.siteUrl}
+                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, siteUrl: e.target.value }))}
+                  />
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Security Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield size={20} />
-            Security Settings
-          </CardTitle>
-          <CardDescription>Configure security policies and authentication</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Two-Factor Authentication</h4>
-                <p className="text-sm text-gray-500">Require 2FA for admin accounts</p>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
+                    <p className="text-sm text-gray-600">Enable to prevent user access during updates</p>
+                  </div>
+                  <Switch
+                    id="maintenance-mode"
+                    checked={generalSettings.maintenanceMode}
+                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, maintenanceMode: checked }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="registration-enabled">User Registration</Label>
+                    <p className="text-sm text-gray-600">Allow new users to register</p>
+                  </div>
+                  <Switch
+                    id="registration-enabled"
+                    checked={generalSettings.registrationEnabled}
+                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, registrationEnabled: checked }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="email-verification">Email Verification Required</Label>
+                    <p className="text-sm text-gray-600">Require email verification for new accounts</p>
+                  </div>
+                  <Switch
+                    id="email-verification"
+                    checked={generalSettings.emailVerificationRequired}
+                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, emailVerificationRequired: checked }))}
+                  />
+                </div>
               </div>
-              <Badge className="bg-green-100 text-green-700">Enabled</Badge>
-            </div>
 
-            <div className="space-y-4">
-              <h4 className="font-medium">Password Policy</h4>
+              <Button onClick={saveGeneralSettings}>Save General Settings</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Security Settings</CardTitle>
+              <CardDescription>Configure security policies</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="two-factor">Two-Factor Authentication Required</Label>
+                  <p className="text-sm text-gray-600">Require 2FA for all users</p>
+                </div>
+                <Switch
+                  id="two-factor"
+                  checked={securitySettings.twoFactorRequired}
+                  onCheckedChange={(checked) => setSecuritySettings(prev => ({ ...prev, twoFactorRequired: checked }))}
+                />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm">Minimum Password Length</label>
-                  <Input defaultValue="8" type="number" className="mt-1" />
+                  <Label htmlFor="session-timeout">Session Timeout (minutes)</Label>
+                  <Input
+                    id="session-timeout"
+                    type="number"
+                    value={securitySettings.sessionTimeout}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) }))}
+                  />
                 </div>
                 <div>
-                  <label className="text-sm">Password Expiry (days)</label>
-                  <Input defaultValue="90" type="number" className="mt-1" />
+                  <Label htmlFor="max-login-attempts">Max Login Attempts</Label>
+                  <Input
+                    id="max-login-attempts"
+                    type="number"
+                    value={securitySettings.maxLoginAttempts}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, maxLoginAttempts: parseInt(e.target.value) }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password-length">Minimum Password Length</Label>
+                  <Input
+                    id="password-length"
+                    type="number"
+                    value={securitySettings.passwordMinLength}
+                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, passwordMinLength: parseInt(e.target.value) }))}
+                  />
                 </div>
               </div>
-            </div>
 
-            <div>
-              <h4 className="font-medium mb-2">API Security</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Rate Limiting</span>
-                  <Badge className="bg-green-100 text-green-700">Active</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">IP Whitelisting</span>
-                  <Badge className="bg-yellow-100 text-yellow-700">Optional</Badge>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              <Button onClick={saveSecuritySettings}>Save Security Settings</Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* System Maintenance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap size={20} />
-            System Maintenance
-          </CardTitle>
-          <CardDescription>Manage system backups and maintenance operations</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Maintenance Mode</h4>
-                <p className="text-sm text-gray-500">Put system in maintenance mode</p>
-              </div>
-              <Switch 
-                checked={maintenanceMode} 
-                onCheckedChange={setMaintenanceMode}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium">Automatic Backups</h4>
-                <p className="text-sm text-gray-500">Daily database backups</p>
-              </div>
-              <Switch 
-                checked={autoBackup} 
-                onCheckedChange={setAutoBackup}
-              />
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="font-medium">Manual Operations</h4>
+        <TabsContent value="database" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Database Settings</CardTitle>
+              <CardDescription>Database configuration and maintenance</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Database size={16} />
-                  Backup Database
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Connection Status</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-sm">Connected</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Total Records</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-semibold">0</div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Database Size</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-semibold">0 MB</div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full">
+                  <Database className="w-4 h-4 mr-2" />
+                  Run Database Backup
                 </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Server size={16} />
-                  Clear Cache
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Globe size={16} />
-                  Update System
+                <Button variant="outline" className="w-full">
+                  <Server className="w-4 h-4 mr-2" />
+                  Optimize Database
                 </Button>
               </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Save Settings */}
-      <div className="flex justify-end gap-4">
-        <Button variant="outline">Reset to Defaults</Button>
-        <Button>Save All Settings</Button>
-      </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
