@@ -55,6 +55,7 @@ const AdminDashboard = () => {
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'users', label: 'Users', icon: Users },
+    { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'financials', label: 'Financials', icon: DollarSign },
     { id: 'api', label: 'API Access', icon: Settings },
     { id: 'content', label: 'Content', icon: Shield },
@@ -134,6 +135,7 @@ const AdminDashboard = () => {
           {/* Tab Content */}
           {activeTab === 'overview' && <DashboardOverview stats={realTimeStats} />}
           {activeTab === 'users' && <UserManagement />}
+          {activeTab === 'admins' && <AdminInvitation />}
           {activeTab === 'financials' && <FinancialReports stats={realTimeStats} />}
           {activeTab === 'api' && <ApiManagement />}
           {activeTab === 'content' && <ContentOversight />}
