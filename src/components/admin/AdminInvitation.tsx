@@ -19,7 +19,7 @@ import InviteAdminModal from './InviteAdminModal';
 import UserRoleManagement from './UserRoleManagement';
 import { useToast } from '@/hooks/use-toast';
 
-const AdminInvitation = () => {
+const AdminInvitation: React.FC = () => {
   const { toast } = useToast();
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [invitations, setInvitations] = useState([
