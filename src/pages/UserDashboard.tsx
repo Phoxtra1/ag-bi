@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BarChart3, 
@@ -91,11 +90,11 @@ const UserDashboard = () => {
             <div className="p-6 border-b border-blue-200">
               <div className="flex items-center gap-3">
                 <img 
-                  src="/lovable-uploads/9741a386-df5a-4ff1-b5f8-e7e30900ca86.png" 
-                  alt="Amnova Logo" 
+                  src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
+                  alt="Amniva Logo" 
                   className="h-8 w-8"
                 />
-                <h2 className="text-xl font-bold text-blue-800">Amnova™</h2>
+                <h2 className="text-xl font-bold text-blue-800">Amniva™</h2>
               </div>
             </div>
             
