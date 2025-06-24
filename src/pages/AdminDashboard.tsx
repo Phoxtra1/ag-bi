@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ import FinancialReports from '@/components/admin/FinancialReports';
 import ApiManagement from '@/components/admin/ApiManagement';
 import SystemSettings from '@/components/admin/SystemSettings';
 import ContentOversight from '@/components/admin/ContentOversight';
+import AdminInvitation from '@/components/admin/AdminInvitation';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
