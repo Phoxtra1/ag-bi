@@ -1,100 +1,81 @@
 
-import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const menuItems = [
-    { name: 'Verify Info', href: '/verify' },
-    { name: 'Trending', href: '/trending' },
-    { name: 'Predictions', href: '/predictions' },
-    { name: 'Reports', href: '/reports' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'API for Organizations', href: '/api-organizations' },
-  ];
-
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-blue-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="bg-white shadow-sm sticky top-0 z-50">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <img 
-                src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
-                alt="Amniva Logo" 
-                className="h-10 w-10"
-              />
-              <div>
-                <h1 className="text-2xl font-bold text-[#1D4ED8]">
-                  Amniva<span className="text-[#F59E0B]">™</span>
-                </h1>
-                <p className="text-xs text-gray-500 -mt-1">Know Better. Act Smarter</p>
-              </div>
-            </a>
-          </div>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
+              alt="Amniva Logo" 
+              className="h-8 w-8"
+            />
+            <span className="text-xl font-bold text-[#1D4ED8]">Amniva™</span>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {menuItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-[#374151] hover:text-[#1D4ED8] px-3 py-2 text-sm font-medium transition-colors duration-200 hover:bg-blue-50 rounded-lg"
-              >
-                {item.name}
-              </a>
-            ))}
-          </nav>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" className="text-[#374151] hover:text-[#1D4ED8]">
-              Login
-            </Button>
-            <Button className="bg-[#1D4ED8] hover:bg-[#3B82F6] text-white">
-              Register
-            </Button>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-[#374151] hover:text-[#1D4ED8] p-2"
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link 
+              to="/verify" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              Verify Info
+            </Link>
+            <Link 
+              to="/trending" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+            >
+              Trending
+            </Link>
+            <Link 
+              to="/predictions" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+            >
+              Predictions
+            </Link>
+            <Link 
+              to="/reports" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+            >
+              Reports
+            </Link>
+            <Link 
+              to="/pricing" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+            >
+              Pricing
+            </Link>
+            <Link 
+              to="/api-organizations" 
+              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+            >
+              API
+            </Link>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center space-x-4">
+            <Link to="/dashboard">
+              <Button variant="outline" className="border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white">
+                Dashboard
+              </Button>
+            </Link>
+            <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white">
+              Get Started
+            </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-blue-100">
-              {menuItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-[#374151] hover:text-[#1D4ED8] block px-3 py-2 text-base font-medium hover:bg-blue-50 rounded-lg"
-                >
-                  {item.name}
-                </a>
-              ))}
-              <div className="pt-4 space-y-2">
-                <Button variant="ghost" className="w-full text-[#374151] hover:text-[#1D4ED8]">
-                  Login
-                </Button>
-                <Button className="w-full bg-[#1D4ED8] hover:bg-[#3B82F6] text-white">
-                  Register
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+        {/* Mobile menu button - you can expand this later */}
+        <div className="md:hidden">
+          {/* Mobile navigation can be added here */}
+        </div>
+      </nav>
     </header>
   );
 };

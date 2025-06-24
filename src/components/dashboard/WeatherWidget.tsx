@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer } from 'lucide-react';
+import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const WeatherWidget = () => {
   const [weather, setWeather] = useState({
@@ -10,22 +11,25 @@ const WeatherWidget = () => {
     condition: 'Partly Cloudy',
     humidity: 65,
     windSpeed: 12,
-    lastUpdated: new Date()
+    lastUpdated: new Date(),
+    isConfigured: false // This would come from admin settings
   });
 
   useEffect(() => {
     // Auto-refresh every 15 minutes
     const interval = setInterval(() => {
       // In a real app, this would fetch from a weather API
-      setWeather(prev => ({
-        ...prev,
-        lastUpdated: new Date(),
-        temperature: prev.temperature + Math.floor(Math.random() * 3) - 1 // Small random change
-      }));
+      if (weather.isConfigured) {
+        setWeather(prev => ({
+          ...prev,
+          lastUpdated: new Date(),
+          temperature: prev.temperature + Math.floor(Math.random() * 3) - 1 // Small random change
+        }));
+      }
     }, 15 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [weather.isConfigured]);
 
   const getWeatherIcon = (condition: string) => {
     switch (condition.toLowerCase()) {
@@ -39,6 +43,32 @@ const WeatherWidget = () => {
         return <Cloud className="w-8 h-8 text-gray-500" />;
     }
   };
+
+  // Show placeholder if weather API is not configured
+  if (!weather.isConfigured) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertCircle className="w-6 h-6 text-orange-500" />
+            Live Weather
+          </CardTitle>
+          <CardDescription>
+            Real-time weather data for your location
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+            <p className="text-gray-600 mb-4">Weather data not available. Connect via admin.</p>
+            <Button variant="outline" className="text-sm">
+              Configure Weather API
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

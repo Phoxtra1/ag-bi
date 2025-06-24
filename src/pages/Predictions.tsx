@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,12 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { AlertCircle } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const Predictions = () => {
   const [predictionResult, setPredictionResult] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAdminConfigured, setIsAdminConfigured] = useState(false); // This would come from admin settings
 
   const form = useForm({
     defaultValues: {
@@ -36,7 +37,48 @@ const Predictions = () => {
     'Other'
   ];
 
+  // Mock prediction data for when admin is configured
+  const mockPredictions = [
+    {
+      id: 1,
+      title: "Economic Forecast - Ghana 2024",
+      description: "Predicted 3.2% GDP growth with moderate inflation",
+      confidence: "78%",
+      date: "2024-01-15",
+      status: "High Confidence"
+    },
+    {
+      id: 2,
+      title: "Weather Pattern Analysis - West Africa",
+      description: "Above average rainfall expected for rainy season",
+      confidence: "85%",
+      date: "2024-01-14",
+      status: "Very High"
+    },
+    {
+      id: 3,
+      title: "Election Outcome Prediction - Regional",
+      description: "Incumbent party likely to maintain majority",
+      confidence: "72%",
+      date: "2024-01-13",
+      status: "Moderate"
+    },
+    {
+      id: 4,
+      title: "Infrastructure Development Timeline",
+      description: "Major road projects completion delayed by 6 months",
+      confidence: "81%",
+      date: "2024-01-12",
+      status: "High Confidence"
+    }
+  ];
+
   const onSubmit = async (data: any) => {
+    if (!isAdminConfigured) {
+      toast.error('Prediction engine not configured. Please set up via admin dashboard.');
+      return;
+    }
+
     setIsLoading(true);
     
     // Simulate AI prediction processing
@@ -95,22 +137,95 @@ This prediction is based on AI analysis of historical data, current trends, and 
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="weather-widget">
-                  <a 
-                    className="weatherwidget-io" 
-                    href="https://forecast7.com/en/n0d52n32d56/accra/" 
-                    data-label_1="ACCRA" 
-                    data-label_2="WEATHER" 
-                    data-theme="pure"
-                  >
-                    ACCRA WEATHER
-                  </a>
-                </div>
+                {!isAdminConfigured ? (
+                  <div className="text-center py-4">
+                    <AlertCircle className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                    <p className="text-sm text-gray-600">Weather data not available. Connect via admin.</p>
+                  </div>
+                ) : (
+                  <div className="weather-widget">
+                    <a 
+                      className="weatherwidget-io" 
+                      href="https://forecast7.com/en/n0d52n32d56/accra/" 
+                      data-label_1="ACCRA" 
+                      data-label_2="WEATHER" 
+                      data-theme="pure"
+                    >
+                      ACCRA WEATHER
+                    </a>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
+      {/* Recent Predictions Section - Added populated content */}
+      {!isAdminConfigured && (
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className="w-6 h-6 text-orange-500" />
+                  📊 Recent Predictions
+                </CardTitle>
+                <CardDescription>
+                  No predictions yet. Please configure prediction engine via admin dashboard.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <p className="text-gray-600 mb-4">
+                    The prediction engine requires configuration in the admin dashboard to display live forecasts and analysis.
+                  </p>
+                  <Button variant="outline">
+                    Configure Prediction Engine
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
+
+      {/* Show populated predictions when configured */}
+      {isAdminConfigured && (
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle>📊 Recent Predictions</CardTitle>
+                <CardDescription>Latest AI-powered forecasts and analysis</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {mockPredictions.map((prediction) => (
+                    <div key={prediction.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-semibold text-sm">{prediction.title}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          prediction.confidence > '80%' ? 'bg-green-100 text-green-700' :
+                          prediction.confidence > '70%' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {prediction.confidence}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-2">{prediction.description}</p>
+                      <div className="flex justify-between items-center text-xs text-gray-500">
+                        <span>{prediction.date}</span>
+                        <span>{prediction.status}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      )}
 
       {/* Main Content */}
       <section className="py-12">
@@ -241,7 +356,19 @@ This prediction is based on AI analysis of historical data, current trends, and 
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {!predictionResult && !isLoading && (
+                  {!isAdminConfigured && !predictionResult && !isLoading && (
+                    <div className="text-center py-8">
+                      <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
+                      <p className="text-gray-600 mb-4">
+                        No predictions yet. Please configure via admin.
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Connect your prediction engine in the admin dashboard to start generating AI-powered forecasts.
+                      </p>
+                    </div>
+                  )}
+
+                  {isAdminConfigured && !predictionResult && !isLoading && (
                     <div className="text-gray-600 p-8 text-center">
                       <p className="mb-4">
                         Our system will analyze your input using historical data, AI reasoning, and relevant external sources via API to generate predictions about possible outcomes.
@@ -388,16 +515,18 @@ This prediction is based on AI analysis of historical data, current trends, and 
 
       <Footer />
 
-      {/* Weather Widget Script */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];
-            if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';
-            fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-          `
-        }}
-      />
+      {/* Weather Widget Script - Only load if configured */}
+      {isAdminConfigured && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];
+              if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';
+              fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+            `
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -40,7 +40,7 @@ const RightWidget = () => {
     const fetchBreakingNews = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://www.amnewsworld.com/wp-json/amnova/v1/breaking-news');
+        const response = await fetch('https://www.amnewsworld.com/wp-json/amniva/v1/breaking-news');
         
         if (!response.ok) {
           throw new Error('Failed to fetch breaking news');
@@ -48,19 +48,19 @@ const RightWidget = () => {
         
         const data = await response.json();
         
-        // Take only the 5 most recent items
+        // Take only the 5 most recent items with unique images for each
         const recentNews = data.slice(0, 5).map((item: any, index: number) => ({
           id: item.id || index + 1,
           title: item.title || 'Breaking News Story',
           url: item.url || '#',
-          image: item.image || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop',
-          timestamp: item.timestamp || new Date().toISOString()
+          image: item.image || `https://images.unsplash.com/photo-${1504711434969 + index}?w=400&h=200&fit=crop`,
+          timestamp: item.timestamp || new Date(Date.now() - index * 2 * 60 * 60 * 1000).toISOString()
         }));
         
         setBreakingNews(recentNews);
       } catch (error) {
         console.error('Error fetching breaking news:', error);
-        // Fallback news data
+        // Fallback news data with unique images
         setBreakingNews([
           {
             id: 1,
@@ -199,7 +199,7 @@ const RightWidget = () => {
         </Button>
       </Card>
 
-      {/* Breaking News Carousel */}
+      {/* Breaking News Carousel - Fixed image cycling */}
       <Card className="p-4 bg-white border-gray-200 rounded-2xl shadow-md">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-[#374151]">Breaking News</h3>
@@ -227,20 +227,29 @@ const RightWidget = () => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D4ED8]"></div>
             </div>
           ) : (
-            <div 
-              className="flex transition-transform duration-500 ease-in-out h-48"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-            >
-              {breakingNews.map((news) => (
-                <div key={news.id} className="w-full flex-shrink-0 relative cursor-pointer group">
-                  <a href={news.url} target="_blank" rel="noopener noreferrer" className="block h-full">
+            <div className="relative h-48">
+              {breakingNews.map((news, index) => (
+                <div 
+                  key={news.id} 
+                  className={`absolute inset-0 transition-opacity duration-500 ${
+                    index === currentSlide ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <a href={news.url} target="_blank" rel="noopener noreferrer" className="block h-full group">
                     <div className="relative h-full">
                       <img 
                         src={news.image} 
                         alt={news.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         onError={(e) => {
-                          e.currentTarget.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop';
+                          const fallbackImages = [
+                            'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop',
+                            'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop',
+                            'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=200&fit=crop',
+                            'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=200&fit=crop',
+                            'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&h=200&fit=crop'
+                          ];
+                          e.currentTarget.src = fallbackImages[index % fallbackImages.length];
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -276,14 +285,14 @@ const RightWidget = () => {
         )}
       </Card>
 
-      {/* ANA News Live Radio */}
+      {/* AMN News Live Radio - Updated branding */}
       <Card className="p-4 bg-gradient-to-br from-[#1D4ED8]/5 to-[#3B82F6]/5 border-[#1D4ED8]/20">
         <div className="flex items-center gap-2 mb-3">
           <div className="flex items-center gap-2">
             <div className="relative">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
             </div>
-            <h3 className="text-lg font-semibold text-[#374151]">ANA News Live</h3>
+            <h3 className="text-lg font-semibold text-[#374151]">AMN News Live</h3>
           </div>
         </div>
         <p className="text-sm text-[#374151] mb-3">Now Streaming!</p>
@@ -292,7 +301,7 @@ const RightWidget = () => {
             src="https://stream.zeno.fm/m2wnv2cnyrhvv" 
             className="w-full h-20 border-none"
             allow="autoplay"
-            title="ANA News Live Stream"
+            title="AMN News Live Stream"
           ></iframe>
         </div>
       </Card>
