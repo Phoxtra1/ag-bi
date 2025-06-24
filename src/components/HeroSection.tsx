@@ -20,12 +20,12 @@ const HeroSection = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Track Truth. <br />
-            <span className="text-[#F59E0B]">Predict Impact.</span>
+            Know Better. <br />
+            <span className="text-[#F59E0B]">Act Smarter.</span>
           </h1>
           
           <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-            Amnova helps organizations and individuals verify information, track real-time trends, 
+            Amniva helps organizations and individuals verify information, track real-time trends, 
             and get AI-powered predictions on economic, civic, and environmental developments.
           </p>
           

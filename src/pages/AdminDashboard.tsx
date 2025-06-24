@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -74,7 +75,7 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-[#1D4ED8]">Admin Panel</h1>
-                <p className="text-sm text-gray-500">Amnova™ Control</p>
+                <p className="text-sm text-gray-500">Amniva™ Control</p>
               </div>
             </div>
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Shield, Search, CheckCircle, Upload, AlertCircle } from 'lucide-react';
@@ -82,7 +81,7 @@ const VerifyInfo = () => {
           <div className="flex items-center justify-center mb-6">
             <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              <span className="text-gray-700 font-medium">Verified by Amnova Tool</span>
+              <span className="text-gray-700 font-medium">Verified by Amniva Tool</span>
             </div>
           </div>
           
@@ -100,7 +99,7 @@ const VerifyInfo = () => {
       <div className="bg-blue-600 text-white py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm md:text-base">
-            📢 Amnova's Fact Verification Service helps you check the credibility of any media content or claim.
+            📢 Amniva's Fact Verification Service helps you check the credibility of any media content or claim.
           </p>
         </div>
       </div>
@@ -281,7 +280,7 @@ const VerifyInfo = () => {
                 <CollapsibleContent>
                   <CardContent>
                     <p className="text-gray-700 leading-relaxed">
-                      At Amnova, our verification service is not limited to fact-checking breaking news or viral content. 
+                      At Amniva, our verification service is not limited to fact-checking breaking news or viral content. 
                       We provide a comprehensive and intelligent claim validation system that empowers individuals, 
                       researchers, and organizations to test the truth and accuracy of any information be it a trending 
                       report, a historical claim, a scientific fact, a political statement, or a widely circulated belief.
@@ -326,8 +325,8 @@ const VerifyInfo = () => {
                     <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
                       <h4 className="font-semibold text-yellow-800 mb-2">Disclaimer:</h4>
                       <p className="text-sm text-yellow-700">
-                        The verification results provided by AMNOVA are based on publicly available data, expert analysis, 
-                        and internal fact-checking processes. While we strive for accuracy and integrity, AMNOVA does not 
+                        The verification results provided by AMNIVA are based on publicly available data, expert analysis, 
+                        and internal fact-checking processes. While we strive for accuracy and integrity, AMNIVA does not 
                         guarantee absolute truth in complex or evolving matters. Users are advised to exercise personal 
                         discretion in interpreting results.
                       </p>

@@ -7,7 +7,7 @@ import { Shield, TrendingUp, FileText, Clock, Award, Users, Star, Code, HelpCirc
 const MainContent = () => {
   const testimonials = [
     {
-      quote: "Amnova helped our school identify fake articles before a seminar.",
+      quote: "Amniva helped our school identify fake articles before a seminar.",
       author: "Educator"
     },
     {
@@ -22,15 +22,15 @@ const MainContent = () => {
 
   const faqItems = [
     {
-      question: "What is Amnova?",
-      answer: "Amnova is an AI-integrated media and civic tech platform by AMN News Agency, offering tools like misinformation checking, real-time disaster alerts, and API services for developers and organizations."
+      question: "What is Amniva?",
+      answer: "Amniva is an AI-integrated media and civic tech platform by AMN News Agency, offering tools like misinformation checking, real-time disaster alerts, and API services for developers and organizations."
     },
     {
       question: "How can I check if a piece of information is false?",
       answer: "Use our False Info Checker available on the homepage or under the Verify Claims section. Paste the link or statement, and our engine will scan it for authenticity."
     },
     {
-      question: "How do I access the Amnova API?",
+      question: "How do I access the Amniva API?",
       answer: "You can subscribe to our API Access via the dashboard. After registration and payment, you'll be granted access to documentation and integration tools."
     },
     {
@@ -42,16 +42,16 @@ const MainContent = () => {
       answer: "Visit the Report Center from the main menu. Fill the form and submit. Our moderators will review and take action."
     },
     {
-      question: "Who owns Amnova?",
-      answer: "Amnova is developed and managed by AMN News Agency, an innovation-focused media organization."
+      question: "Who owns Amniva?",
+      answer: "Amniva is developed and managed by AMN News Agency, an innovation-focused media organization."
     },
     {
-      question: "Do I need an account to use Amnova services?",
+      question: "Do I need an account to use Amniva services?",
       answer: "Some services are free and open. However, API access, content publishing, and admin functions require registration and approval."
     },
     {
-      question: "Is there a mobile app for Amnova?",
-      answer: "Currently, Amnova is web-based, but we are working on a mobile app experience in the near future."
+      question: "Is there a mobile app for Amniva?",
+      answer: "Currently, Amniva is web-based, but we are working on a mobile app experience in the near future."
     },
     {
       question: "Can I contribute or become a partner?",
@@ -65,10 +65,10 @@ const MainContent = () => {
 
   return (
     <div className="flex-1 space-y-12">
-      {/* Explore Amnova Tools Section */}
+      {/* Explore Amniva Tools Section */}
       <section>
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#1D4ED8] mb-4">Explore Amnova Tools</h2>
+          <h2 className="text-3xl font-bold text-[#1D4ED8] mb-4">Explore Amniva Tools</h2>
           <p className="text-lg text-[#374151] max-w-2xl mx-auto">
             Powerful intelligence tools designed for media professionals, educators, and organizations
           </p>
@@ -124,10 +124,10 @@ const MainContent = () => {
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column - Why Use Amnova + FAQ */}
+        {/* Left Column - Why Use Amniva + FAQ */}
         <div className="lg:col-span-2 space-y-8">
           <section>
-            <h2 className="text-3xl font-bold text-[#1D4ED8] mb-8 text-center lg:text-left">Why Use Amnova?</h2>
+            <h2 className="text-3xl font-bold text-[#1D4ED8] mb-8 text-center lg:text-left">Why Use Amniva?</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-50 to-white border border-blue-100">
                 <div className="mx-auto w-12 h-12 bg-[#1D4ED8] rounded-full flex items-center justify-center mb-4">
@@ -221,7 +221,7 @@ const MainContent = () => {
                 <div className="space-y-2 text-xs text-[#374151]">
                   <div className="flex items-start gap-2">
                     <span className="text-[#F59E0B] mt-0.5">•</span>
-                    <p><strong>Seamless Data Access:</strong> Integrate Amnova's verified data directly into your platform.</p>
+                    <p><strong>Seamless Data Access:</strong> Integrate Amniva's verified data directly into your platform.</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-[#F59E0B] mt-0.5">•</span>

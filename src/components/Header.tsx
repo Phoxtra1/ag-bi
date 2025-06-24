@@ -23,14 +23,15 @@ const Header = () => {
           <div className="flex-shrink-0">
             <a href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <img 
-                src="/lovable-uploads/9741a386-df5a-4ff1-b5f8-e7e30900ca86.png" 
-                alt="Amnova Logo" 
+                src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
+                alt="Amniva Logo" 
                 className="h-10 w-10"
               />
               <div>
                 <h1 className="text-2xl font-bold text-[#1D4ED8]">
-                  Amnova<span className="text-[#F59E0B]">™</span>
+                  Amniva<span className="text-[#F59E0B]">™</span>
                 </h1>
+                <p className="text-xs text-gray-500 -mt-1">Know Better. Act Smarter</p>
               </div>
             </a>
           </div>
