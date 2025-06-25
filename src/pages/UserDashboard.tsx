@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   BarChart3, 
@@ -10,9 +11,11 @@ import {
   Shield,
   Cloud,
   FileText,
-  Key
+  Key,
+  Lock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Sidebar,
   SidebarContent,
@@ -36,6 +39,52 @@ import HelpSupport from '@/components/dashboard/HelpSupport';
 
 const UserDashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');
+  
+  // Simulate authentication check (will be replaced with real auth later)
+  const isAuthenticated = false; // Set to false to show login requirement
+  
+  // Show login requirement screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <img 
+                src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
+                alt="Amniva Logo" 
+                className="h-8 w-8"
+              />
+              <h2 className="text-2xl font-bold text-blue-800">Amniva™</h2>
+            </div>
+            <CardTitle className="flex items-center gap-2 justify-center">
+              <Lock className="h-5 w-5 text-blue-600" />
+              Access Required
+            </CardTitle>
+            <CardDescription>
+              Please sign in to access your dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="text-center text-gray-600 mb-6">
+              <p>You need to be logged in to access the Amniva dashboard and its features.</p>
+            </div>
+            <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled>
+              Sign In (Coming Soon)
+            </Button>
+            <Button variant="outline" className="w-full" disabled>
+              Create Account (Coming Soon)
+            </Button>
+            <div className="text-center">
+              <Button variant="ghost" onClick={() => window.location.href = '/'}>
+                ← Back to Homepage
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const menuItems = [
     { id: 'overview', title: 'Dashboard', icon: Home },

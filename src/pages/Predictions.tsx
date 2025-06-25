@@ -1,532 +1,295 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { AlertCircle } from 'lucide-react';
+import { AlertTriangle, TrendingUp, MapPin, Clock, Users, Zap, Shield, Activity, Settings } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+interface Prediction {
+  id: string;
+  title: string;
+  type: 'natural-disaster' | 'economic' | 'political' | 'health' | 'security';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  location: string;
+  probability: number;
+  timeframe: string;
+  description: string;
+  lastUpdated: string;
+  sources: string[];
+  impact: string;
+}
+
 const Predictions = () => {
-  const [predictionResult, setPredictionResult] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAdminConfigured, setIsAdminConfigured] = useState(false); // This would come from admin settings
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedType, setSelectedType] = useState<string>('all');
+  const [isConfigured, setIsConfigured] = useState(false); // Admin configuration status
 
-  const form = useForm({
-    defaultValues: {
-      topic: '',
-      region: '',
-      description: '',
-      category: '',
-      file: null
+  // Mock prediction data
+  const mockPredictions: Prediction[] = [
+    {
+      id: '1',
+      title: 'Potential Seismic Activity in Pacific Ring of Fire',
+      type: 'natural-disaster',
+      severity: 'high',
+      location: 'Pacific Ring of Fire',
+      probability: 78,
+      timeframe: '2-4 weeks',
+      description: 'Increased tectonic activity detected along multiple fault lines. Historical patterns suggest elevated earthquake risk.',
+      lastUpdated: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      sources: ['USGS', 'Japan Meteorological Agency', 'Amniva Seismic Network'],
+      impact: 'Potential impact on coastal communities and maritime trade routes'
+    },
+    {
+      id: '2',
+      title: 'Economic Volatility Forecast for Emerging Markets',
+      type: 'economic',
+      severity: 'medium',
+      location: 'Southeast Asia',
+      probability: 65,
+      timeframe: '1-2 months',
+      description: 'Currency fluctuations and trade disruptions may affect regional economic stability.',
+      lastUpdated: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+      sources: ['World Bank', 'IMF', 'Regional Financial Institutions'],
+      impact: 'Potential effects on regional trade and investment flows'
+    },
+    {
+      id: '3',
+      title: 'Extreme Weather Pattern Development',
+      type: 'natural-disaster',
+      severity: 'critical',
+      location: 'North Atlantic',
+      probability: 85,
+      timeframe: '3-7 days',
+      description: 'Atmospheric conditions indicate formation of severe weather systems with potential for significant disruption.',
+      lastUpdated: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+      sources: ['NOAA', 'European Centre for Medium-Range Weather Forecasts', 'Amniva Weather AI'],
+      impact: 'Potential disruption to transportation and infrastructure'
+    },
+    {
+      id: '4',
+      title: 'Cybersecurity Threat Level Elevation',
+      type: 'security',
+      severity: 'high',
+      location: 'Global',
+      probability: 72,
+      timeframe: '1-3 weeks',
+      description: 'Increased cyber threat activity detected across critical infrastructure sectors.',
+      lastUpdated: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      sources: ['CISA', 'ENISA', 'Amniva Cyber Intelligence'],
+      impact: 'Potential disruption to digital services and data security'
     }
-  });
-
-  const categories = [
-    'Politics',
-    'Weather',
-    'Civic Unrest',
-    'Elections',
-    'Health',
-    'Infrastructure',
-    'Education',
-    'Economy',
-    'Other'
   ];
 
-  // Mock prediction data for when admin is configured
-  const mockPredictions = [
-    {
-      id: 1,
-      title: "Economic Forecast - Ghana 2024",
-      description: "Predicted 3.2% GDP growth with moderate inflation",
-      confidence: "78%",
-      date: "2024-01-15",
-      status: "High Confidence"
-    },
-    {
-      id: 2,
-      title: "Weather Pattern Analysis - West Africa",
-      description: "Above average rainfall expected for rainy season",
-      confidence: "85%",
-      date: "2024-01-14",
-      status: "Very High"
-    },
-    {
-      id: 3,
-      title: "Election Outcome Prediction - Regional",
-      description: "Incumbent party likely to maintain majority",
-      confidence: "72%",
-      date: "2024-01-13",
-      status: "Moderate"
-    },
-    {
-      id: 4,
-      title: "Infrastructure Development Timeline",
-      description: "Major road projects completion delayed by 6 months",
-      confidence: "81%",
-      date: "2024-01-12",
-      status: "High Confidence"
+  useEffect(() => {
+    // Simulate API call
+    const fetchPredictions = async () => {
+      setLoading(true);
+      setTimeout(() => {
+        if (isConfigured) {
+          setPredictions(mockPredictions);
+        }
+        setLoading(false);
+      }, 1000);
+    };
+
+    fetchPredictions();
+  }, [isConfigured]);
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'high':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
-  ];
-
-  const onSubmit = async (data: any) => {
-    if (!isAdminConfigured) {
-      toast.error('Prediction engine not configured. Please set up via admin dashboard.');
-      return;
-    }
-
-    setIsLoading(true);
-    
-    // Simulate AI prediction processing
-    setTimeout(() => {
-      const mockPrediction = `Based on the analysis of "${data.topic}" in ${data.region}, our AI system predicts:
-
-📊 **Risk Assessment**: Moderate to High
-⏰ **Timeline**: 3-6 months
-🎯 **Confidence Level**: 75%
-
-**Key Factors Identified:**
-• Historical patterns suggest similar scenarios have led to gradual escalation
-• Current social indicators show increasing tension
-• Economic factors may amplify the situation
-
-**Potential Outcomes:**
-1. **Most Likely (60%)**: Gradual resolution through dialogue and policy adjustments
-2. **Secondary (25%)**: Temporary escalation requiring intervention
-3. **Less Likely (15%)**: Rapid de-escalation without major changes
-
-This prediction is based on AI analysis of historical data, current trends, and pattern recognition.`;
-
-      setPredictionResult(mockPrediction);
-      setIsLoading(false);
-      toast.success('Prediction analysis completed!');
-    }, 3000);
-
-    toast.info('Analyzing your scenario... This may take a few moments.');
   };
 
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'natural-disaster':
+        return <AlertTriangle className="h-5 w-5" />;
+      case 'economic':
+        return <TrendingUp className="h-5 w-5" />;
+      case 'political':
+        return <Users className="h-5 w-5" />;
+      case 'health':
+        return <Activity className="h-5 w-5" />;
+      case 'security':
+        return <Shield className="h-5 w-5" />;
+      default:
+        return <Zap className="h-5 w-5" />;
+    }
+  };
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const updatedDate = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - updatedDate.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
+
+  const filteredPredictions = selectedType === 'all' 
+    ? predictions 
+    : predictions.filter(p => p.type === selectedType);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            🔮 Global Prediction Portal
-          </h1>
-          <p className="text-xl md:text-2xl mb-8 text-blue-100">
-            Analyze current issues, uncover hidden trends, and discover possible outcomes with real-time forecasting powered by AI and live data.
-          </p>
-        </div>
-      </section>
-
-      {/* Weather Widget Section */}
-      <section className="py-8 bg-white/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-end">
-            <Card className="w-full max-w-md">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  🌤 Live Weather Forecast
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!isAdminConfigured ? (
-                  <div className="text-center py-4">
-                    <AlertCircle className="w-8 h-8 text-orange-500 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">Weather data not available. Connect via admin.</p>
-                  </div>
-                ) : (
-                  <div className="weather-widget">
-                    <a 
-                      className="weatherwidget-io" 
-                      href="https://forecast7.com/en/n0d52n32d56/accra/" 
-                      data-label_1="ACCRA" 
-                      data-label_2="WEATHER" 
-                      data-theme="pure"
-                    >
-                      ACCRA WEATHER
-                    </a>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Recent Predictions Section - Added populated content */}
-      {!isAdminConfigured && (
-        <section className="py-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertCircle className="w-6 h-6 text-orange-500" />
-                  📊 Recent Predictions
-                </CardTitle>
-                <CardDescription>
-                  No predictions yet. Please configure prediction engine via admin dashboard.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <p className="text-gray-600 mb-4">
-                    The prediction engine requires configuration in the admin dashboard to display live forecasts and analysis.
-                  </p>
-                  <Button variant="outline">
-                    Configure Prediction Engine
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
-
-      {/* Show populated predictions when configured */}
-      {isAdminConfigured && (
-        <section className="py-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>📊 Recent Predictions</CardTitle>
-                <CardDescription>Latest AI-powered forecasts and analysis</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {mockPredictions.map((prediction) => (
-                    <div key={prediction.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-sm">{prediction.title}</h4>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          prediction.confidence > '80%' ? 'bg-green-100 text-green-700' :
-                          prediction.confidence > '70%' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {prediction.confidence}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-2">{prediction.description}</p>
-                      <div className="flex justify-between items-center text-xs text-gray-500">
-                        <span>{prediction.date}</span>
-                        <span>{prediction.status}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
-
-      {/* Main Content */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            {/* Submit Scenario Column */}
-            <div className="lg:col-span-1">
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    📝 Submit a Scenario
-                  </CardTitle>
-                  <CardDescription>
-                    Describe the issue, location, or concern you'd like to predict. This can include politics, natural disasters, weather patterns, civil unrest, infrastructure challenges, etc.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="topic"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Prediction Topic</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g., Election outcome in Ghana 2024" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="region"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Country/Region</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g., Ghana, West Africa" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Category</FormLabel>
-                            <FormControl>
-                              <select 
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                {...field}
-                              >
-                                <option value="">Select a category</option>
-                                {categories.map((category) => (
-                                  <option key={category} value={category}>
-                                    {category}
-                                  </option>
-                                ))}
-                              </select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Detailed Description</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Provide detailed, factual input. Our system uses AI and external APIs to assess outcomes accurately."
-                                className="min-h-[120px]"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="file"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Attach Supporting Document (optional)</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="file"
-                                accept=".pdf,.docx,.txt"
-                                onChange={(e) => field.onChange(e.target.files)}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button 
-                        type="submit" 
-                        className="w-full bg-blue-600 hover:bg-blue-700"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? 'Analyzing...' : 'Submit for Prediction'}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
+      <div className="py-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+              <h1 className="text-4xl font-bold text-gray-900">Crisis Predictions</h1>
             </div>
-
-            {/* Predicted Outcome Column */}
-            <div className="lg:col-span-1">
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    🧠 Predicted Outcome
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {!isAdminConfigured && !predictionResult && !isLoading && (
-                    <div className="text-center py-8">
-                      <AlertCircle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
-                      <p className="text-gray-600 mb-4">
-                        No predictions yet. Please configure via admin.
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Connect your prediction engine in the admin dashboard to start generating AI-powered forecasts.
-                      </p>
-                    </div>
-                  )}
-
-                  {isAdminConfigured && !predictionResult && !isLoading && (
-                    <div className="text-gray-600 p-8 text-center">
-                      <p className="mb-4">
-                        Our system will analyze your input using historical data, AI reasoning, and relevant external sources via API to generate predictions about possible outcomes.
-                      </p>
-                      <div className="flex justify-center gap-4 text-sm">
-                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                          🟢 Low Risk
-                        </span>
-                        <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                          🟡 Moderate Risk
-                        </span>
-                        <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full">
-                          🔴 High Risk
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {isLoading && (
-                    <div className="text-center p-8">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                      <p className="text-gray-600">Analyzing scenario and generating predictions...</p>
-                    </div>
-                  )}
-                  
-                  {predictionResult && (
-                    <div className="space-y-4">
-                      <div className="prose prose-sm max-w-none">
-                        <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-4 rounded-lg border">
-                          {predictionResult}
-                        </pre>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* What to Do Next Column */}
-            <div className="lg:col-span-1">
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    ✅ What To Do Next
-                  </CardTitle>
-                  <CardDescription>
-                    AI Recommendations and Guidance
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {!predictionResult ? (
-                    <div className="text-gray-600 space-y-4">
-                      <p>After prediction results are processed, you'll receive guidance on:</p>
-                      <ul className="space-y-2">
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-600">📋</span>
-                          <span>Possible preventive actions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-600">⚠️</span>
-                          <span>Risk mitigation strategies</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-600">🏛️</span>
-                          <span>Policy suggestions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-600">🤝</span>
-                          <span>Stakeholder engagement tips</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <span className="text-blue-600">📞</span>
-                          <span>Relevant authorities to contact</span>
-                        </li>
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-lg">🎯 Recommended Actions:</h4>
-                      <div className="space-y-3">
-                        <div className="p-3 bg-green-50 border-l-4 border-green-400">
-                          <h5 className="font-medium text-green-800">Immediate Steps</h5>
-                          <p className="text-green-700 text-sm">Monitor key indicators and establish early warning systems</p>
-                        </div>
-                        <div className="p-3 bg-blue-50 border-l-4 border-blue-400">
-                          <h5 className="font-medium text-blue-800">Medium-term Actions</h5>
-                          <p className="text-blue-700 text-sm">Engage with stakeholders and prepare contingency plans</p>
-                        </div>
-                        <div className="p-3 bg-purple-50 border-l-4 border-purple-400">
-                          <h5 className="font-medium text-purple-800">Long-term Strategy</h5>
-                          <p className="text-purple-700 text-sm">Implement systemic changes to address root causes</p>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                        <h5 className="font-medium mb-2">📞 Key Contacts & Resources:</h5>
-                        <ul className="text-sm space-y-1 text-gray-700">
-                          <li>• Local government offices</li>
-                          <li>• Emergency services</li>
-                          <li>• Media outlets</li>
-                          <li>• Civil society organizations</li>
-                        </ul>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* AI & API Integration Notice */}
-      <section className="py-8 bg-white/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                  🤖 AI & API Integration
-                </h3>
-                <p className="text-gray-600">
-                  Our predictions are powered by an internal AI engine and verified through trusted external sources via API. 
-                  Results are continuously improved to provide clarity, not final conclusions.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Disclaimer */}
-      <section className="py-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-sm text-gray-600">
-            <p className="mb-2">
-              ⚠️ <strong>Disclaimer:</strong> This prediction tool is for informational purposes only. 
-              Users are advised to seek expert guidance when taking action. 
-              We are not legally responsible for decisions made based on AI output.
+            <p className="text-lg text-gray-600 max-w-3xl">
+              AI-powered early warning system for natural disasters, economic shifts, and global events.
             </p>
           </div>
+
+          {/* Configuration Check */}
+          {!isConfigured ? (
+            <Card className="mb-8">
+              <CardContent className="p-8 text-center">
+                <Settings className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Prediction Engine Not Configured</h3>
+                <p className="text-gray-600 mb-4">
+                  No predictions yet. Please configure prediction sources and AI models via admin dashboard.
+                </p>
+                <Button 
+                  onClick={() => setIsConfigured(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Enable Demo Mode
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Filter Section */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedType === 'all' ? 'default' : 'outline'}
+                    onClick={() => setSelectedType('all')}
+                    className="text-sm"
+                  >
+                    All Predictions
+                  </Button>
+                  <Button
+                    variant={selectedType === 'natural-disaster' ? 'default' : 'outline'}
+                    onClick={() => setSelectedType('natural-disaster')}
+                    className="text-sm"
+                  >
+                    Natural Disasters
+                  </Button>
+                  <Button
+                    variant={selectedType === 'economic' ? 'default' : 'outline'}
+                    onClick={() => setSelectedType('economic')}
+                    className="text-sm"
+                  >
+                    Economic
+                  </Button>
+                  <Button
+                    variant={selectedType === 'security' ? 'default' : 'outline'}
+                    onClick={() => setSelectedType('security')}
+                    className="text-sm"
+                  >
+                    Security
+                  </Button>
+                </div>
+              </div>
+
+              {/* Predictions Grid */}
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Loading predictions...</p>
+                </div>
+              ) : (
+                <div className="grid gap-6">
+                  {filteredPredictions.map((prediction) => (
+                    <Card key={prediction.id} className="hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            {getTypeIcon(prediction.type)}
+                            <div>
+                              <CardTitle className="text-xl">{prediction.title}</CardTitle>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Badge className={getSeverityColor(prediction.severity)}>
+                                  {prediction.severity.toUpperCase()}
+                                </Badge>
+                                <span className="text-sm text-gray-500">
+                                  {prediction.probability}% probability
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right text-sm text-gray-500">
+                            <div className="flex items-center gap-1 mb-1">
+                              <Clock className="h-4 w-4" />
+                              {formatTimeAgo(prediction.lastUpdated)}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {prediction.location}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <p className="text-gray-700">{prediction.description}</p>
+                          
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-medium text-gray-900 mb-2">Timeframe</h4>
+                              <p className="text-sm text-gray-600">{prediction.timeframe}</p>
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-gray-900 mb-2">Potential Impact</h4>
+                              <p className="text-sm text-gray-600">{prediction.impact}</p>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">Sources</h4>
+                            <div className="flex flex-wrap gap-2">
+                              {prediction.sources.map((source, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {source}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      </section>
+      </div>
 
       <Footer />
-
-      {/* Weather Widget Script - Only load if configured */}
-      {isAdminConfigured && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];
-              if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';
-              fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-            `
-          }}
-        />
-      )}
     </div>
   );
 };

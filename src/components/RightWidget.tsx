@@ -35,65 +35,91 @@ const RightWidget = () => {
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
-  // Fetch breaking news from the new JSON endpoint
+  // Restore breaking news from Amnewsworld
   useEffect(() => {
     const fetchBreakingNews = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://www.amnewsworld.com/wp-json/amniva/v1/breaking-news');
+        
+        // Try to fetch from the breaking news category
+        const response = await fetch('https://www.amnewsworld.com/category/breaking-news/');
         
         if (!response.ok) {
           throw new Error('Failed to fetch breaking news');
         }
         
-        const data = await response.json();
+        const html = await response.text();
         
-        // Take only the 5 most recent items with unique images for each
-        const recentNews = data.slice(0, 5).map((item: any, index: number) => ({
-          id: item.id || index + 1,
-          title: item.title || 'Breaking News Story',
-          url: item.url || '#',
-          image: item.image || `https://images.unsplash.com/photo-${1504711434969 + index}?w=400&h=200&fit=crop`,
-          timestamp: item.timestamp || new Date(Date.now() - index * 2 * 60 * 60 * 1000).toISOString()
-        }));
+        // Parse HTML to extract news items (simplified extraction)
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
         
-        setBreakingNews(recentNews);
+        // Look for article elements or news items
+        const articles = doc.querySelectorAll('article, .post, .news-item, .entry');
+        const newsItems: NewsItem[] = [];
+        
+        articles.forEach((article, index) => {
+          if (index < 5) { // Limit to 5 items
+            const titleElement = article.querySelector('h1, h2, h3, .title, .headline');
+            const linkElement = article.querySelector('a');
+            const imageElement = article.querySelector('img');
+            const timeElement = article.querySelector('time, .date, .timestamp');
+            
+            if (titleElement && linkElement) {
+              newsItems.push({
+                id: index + 1,
+                title: titleElement.textContent?.trim() || `Breaking News Story ${index + 1}`,
+                url: linkElement.href || '#',
+                image: imageElement?.src || `https://images.unsplash.com/photo-${1504711434969 + index}?w=400&h=200&fit=crop`,
+                timestamp: timeElement?.textContent || new Date(Date.now() - index * 2 * 60 * 60 * 1000).toISOString()
+              });
+            }
+          }
+        });
+        
+        if (newsItems.length > 0) {
+          setBreakingNews(newsItems);
+        } else {
+          throw new Error('No news items found');
+        }
+        
       } catch (error) {
-        console.error('Error fetching breaking news:', error);
-        // Fallback news data with unique images
+        console.error('Error fetching breaking news from Amnewsworld:', error);
+        
+        // Fallback to static news with unique images
         setBreakingNews([
           {
             id: 1,
             title: "Global Climate Summit Reaches Historic Agreement",
-            url: "#",
+            url: "https://www.amnewsworld.com/",
             image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=200&fit=crop",
             timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 2,
             title: "AI-Powered Weather Prediction Shows 95% Accuracy",
-            url: "#",
+            url: "https://www.amnewsworld.com/",
             image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=400&h=200&fit=crop",
             timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 3,
             title: "New Earthquake Early Warning System Deployed",
-            url: "#",
+            url: "https://www.amnewsworld.com/",
             image: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=400&h=200&fit=crop",
             timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 4,
             title: "Economic Markets Show Unprecedented Growth",
-            url: "#",
+            url: "https://www.amnewsworld.com/",
             image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=200&fit=crop",
             timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
           },
           {
             id: 5,
             title: "Technology Breakthrough in Renewable Energy",
-            url: "#",
+            url: "https://www.amnewsworld.com/",
             image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=400&h=200&fit=crop",
             timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString()
           }
@@ -105,8 +131,8 @@ const RightWidget = () => {
 
     fetchBreakingNews();
     
-    // Set up automatic refresh every 5 minutes
-    const refreshInterval = setInterval(fetchBreakingNews, 5 * 60 * 1000);
+    // Set up automatic refresh every 10 minutes
+    const refreshInterval = setInterval(fetchBreakingNews, 10 * 60 * 1000);
     
     return () => clearInterval(refreshInterval);
   }, []);
@@ -199,7 +225,7 @@ const RightWidget = () => {
         </Button>
       </Card>
 
-      {/* Breaking News Carousel - Fixed image cycling */}
+      {/* Breaking News Carousel - Restored with Amnewsworld integration */}
       <Card className="p-4 bg-white border-gray-200 rounded-2xl shadow-md">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-[#374151]">Breaking News</h3>
@@ -285,7 +311,7 @@ const RightWidget = () => {
         )}
       </Card>
 
-      {/* AMN News Live Radio - Updated branding */}
+      {/* AMN News Live Radio */}
       <Card className="p-4 bg-gradient-to-br from-[#1D4ED8]/5 to-[#3B82F6]/5 border-[#1D4ED8]/20">
         <div className="flex items-center gap-2 mb-3">
           <div className="flex items-center gap-2">
