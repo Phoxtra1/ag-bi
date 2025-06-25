@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   BarChart3, 
@@ -40,10 +39,10 @@ import HelpSupport from '@/components/dashboard/HelpSupport';
 const UserDashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');
   
-  // Simulate authentication check (will be replaced with real auth later)
-  const isAuthenticated = false; // Set to false to show login requirement
+  // Allow access during development - will be replaced with real auth later
+  const isAuthenticated = true; // Changed to true for development access
   
-  // Show login requirement screen
+  // Show login requirement screen (this will be activated later when auth is implemented)
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">

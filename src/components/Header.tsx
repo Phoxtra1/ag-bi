@@ -58,13 +58,8 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Dashboard button removed */}
           <div className="flex items-center space-x-4">
-            <Link to="/dashboard">
-              <Button variant="outline" className="border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white">
-                Dashboard
-              </Button>
-            </Link>
             <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white">
               Get Started
             </Button>
