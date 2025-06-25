@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +28,7 @@ const Predictions = () => {
   const [isConfigured, setIsConfigured] = useState(false);
   const [showDemo, setShowDemo] = useState(false);
 
-  // Mock prediction data for demo
+  // Mock prediction data for demo - these will be replaced by real-time data
   const mockPredictions: Prediction[] = [
     {
       id: '1',
@@ -128,6 +127,34 @@ const Predictions = () => {
       lastUpdated: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
       sources: ['WHO', 'CDC', 'Global Health Monitoring Network'],
       impact: 'Healthcare system strain and public health measures'
+    },
+    {
+      id: '8',
+      title: 'Supply Chain Disruption Alert',
+      type: 'economic',
+      severity: 'medium',
+      location: 'Global Shipping Routes',
+      probability: 62,
+      timeframe: '3-5 weeks',
+      description: 'Weather patterns and geopolitical tensions may impact major shipping corridors affecting global trade.',
+      excerpt: 'Global supply chain vulnerabilities identified...',
+      lastUpdated: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+      sources: ['Maritime Intelligence', 'Trade Analytics', 'Weather Services'],
+      impact: 'Potential delays in global commodity and manufactured goods'
+    },
+    {
+      id: '9',
+      title: 'Infrastructure Security Vulnerabilities',
+      type: 'security',
+      severity: 'high',
+      location: 'Urban Infrastructure',
+      probability: 71,
+      timeframe: '1-2 weeks',
+      description: 'Analysis indicates potential vulnerabilities in critical urban infrastructure systems requiring attention.',
+      excerpt: 'Critical infrastructure vulnerabilities detected...',
+      lastUpdated: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
+      sources: ['Infrastructure Monitoring', 'Security Analytics', 'Amniva Intelligence'],
+      impact: 'Potential service disruptions and safety concerns'
     }
   ];
 
@@ -239,13 +266,16 @@ const Predictions = () => {
         
         <div className="py-8 px-4">
           <div className="max-w-7xl mx-auto">
-            {/* Header Section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="h-8 w-8 text-blue-600" />
-                  <h1 className="text-4xl font-bold text-gray-900">Prediction Results - Demo</h1>
-                </div>
+            {/* Centered Header Section */}
+            <div className="mb-8 text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <TrendingUp className="h-8 w-8 text-blue-600" />
+                <h1 className="text-4xl font-bold text-gray-900">Prediction Results - Demo</h1>
+              </div>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Sample prediction results showcasing AI-powered analysis across multiple categories.
+              </p>
+              <div className="mt-4">
                 <Button
                   onClick={() => setShowDemo(false)}
                   variant="outline"
@@ -254,9 +284,6 @@ const Predictions = () => {
                   Back to Main
                 </Button>
               </div>
-              <p className="text-lg text-gray-600 max-w-3xl">
-                Sample prediction results showcasing AI-powered analysis across multiple categories.
-              </p>
             </div>
 
             {/* Categories Overview */}
@@ -276,7 +303,7 @@ const Predictions = () => {
 
             {/* Filter Section */}
             <div className="mb-6">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 justify-center">
                 <Button
                   variant={selectedType === 'all' ? 'default' : 'outline'}
                   onClick={() => setSelectedType('all')}
@@ -299,7 +326,7 @@ const Predictions = () => {
 
             {/* Predictions Grid */}
             <div className="grid gap-6">
-              {filteredPredictions.map((prediction) => (
+              {(selectedType === 'all' ? mockPredictions : mockPredictions.filter(p => p.type === selectedType)).map((prediction) => (
                 <Card key={prediction.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -373,13 +400,13 @@ const Predictions = () => {
       
       <div className="py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* Header Section */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
+          {/* Centered Header Section */}
+          <div className="mb-8 text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
               <TrendingUp className="h-8 w-8 text-blue-600" />
               <h1 className="text-4xl font-bold text-gray-900">Prediction Insight</h1>
             </div>
-            <p className="text-lg text-gray-600 max-w-3xl">
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               AI-powered early warning system for natural disasters, economic shifts, and global events.
             </p>
           </div>
@@ -405,7 +432,7 @@ const Predictions = () => {
             <>
               {/* Filter Section */}
               <div className="mb-6">
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 justify-center">
                   <Button
                     variant={selectedType === 'all' ? 'default' : 'outline'}
                     onClick={() => setSelectedType('all')}
