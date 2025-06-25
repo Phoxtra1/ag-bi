@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { TrendingUp, Shield, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface NewsItem {
@@ -179,12 +179,14 @@ const RightWidget = () => {
             </div>
           ))}
         </div>
-        <Button 
-          variant="outline" 
-          className="w-full mt-3 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white"
-        >
-          View All Trending
-        </Button>
+        <Link to="/trending">
+          <Button 
+            variant="outline" 
+            className="w-full mt-3 border-[#1D4ED8] text-[#1D4ED8] hover:bg-[#1D4ED8] hover:text-white"
+          >
+            View All Trending
+          </Button>
+        </Link>
       </Card>
 
       {/* False Info Checker */}
@@ -196,9 +198,11 @@ const RightWidget = () => {
         <p className="text-sm text-[#374151] mb-4">
           Paste a link or headline to instantly verify information
         </p>
-        <Button className="w-full bg-[#F59E0B] hover:bg-[#D97706] text-white">
-          Verify Info Now
-        </Button>
+        <Link to="/verify">
+          <Button className="w-full bg-[#F59E0B] hover:bg-[#D97706] text-white">
+            Verify Info Now
+          </Button>
+        </Link>
       </Card>
 
       {/* Disaster Prediction Alert */}
@@ -214,15 +218,17 @@ const RightWidget = () => {
           </div>
         </div>
         <div className="bg-white rounded-lg p-3 mb-3">
-          <p className="text-sm font-medium text-red-700 mb-1">⚠️ Potential landslide risk in Dakar</p>
+          <p className="text-sm font-medium text-red-700 mb-1">Potential landslide risk in Dakar</p>
           <p className="text-xs text-gray-600">Updated 30 min ago</p>
         </div>
-        <Button 
-          variant="outline" 
-          className="w-full border-red-300 text-red-700 hover:bg-red-50"
-        >
-          View Disaster Alerts
-        </Button>
+        <Link to="/predictions">
+          <Button 
+            variant="outline" 
+            className="w-full border-red-300 text-red-700 hover:bg-red-50"
+          >
+            View Disaster Alerts
+          </Button>
+        </Link>
       </Card>
 
       {/* Breaking News Carousel - Restored with Amnewsworld integration */}

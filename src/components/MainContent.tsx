@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,28 +11,24 @@ const MainContent = () => {
       title: "Misinformation Detection",
       description: "Real-time verification of news, claims, and viral content using AI-powered fact-checking.",
       icon: <Shield className="h-6 w-6 text-blue-600" />,
-      link: "/verify",
       buttonText: "Verify Info Now"
     },
     {
       title: "Crisis Prediction",
       description: "Early warning system for natural disasters, political instability, and economic shifts.",
       icon: <AlertTriangle className="h-6 w-6 text-red-600" />,
-      link: "/predictions",
       buttonText: "View Predictions"
     },
     {
       title: "Trending Analysis",
       description: "Track real-time verified trends and emerging stories from trusted sources.",
       icon: <TrendingUp className="h-6 w-6 text-green-600" />,
-      link: "/trending",
       buttonText: "Explore Trends"
     },
     {
       title: "Data Insights",
       description: "Comprehensive reports and analytics for organizations and decision-makers.",
       icon: <BarChart3 className="h-6 w-6 text-purple-600" />,
-      link: "/reports",
       buttonText: "View Reports"
     }
   ];
@@ -83,11 +78,9 @@ const MainContent = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link to={feature.link}>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                    {feature.buttonText}
-                  </Button>
-                </Link>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled>
+                  {feature.buttonText}
+                </Button>
               </CardContent>
             </Card>
           ))}
