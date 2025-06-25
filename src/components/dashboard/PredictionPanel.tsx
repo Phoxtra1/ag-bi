@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { TrendingUp, AlertTriangle, Globe, DollarSign, Send, History } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Globe, DollarSign, Send, History, Upload, Lock } from 'lucide-react';
 
 const PredictionPanel = () => {
   const [selectedTool, setSelectedTool] = useState('');
@@ -130,6 +130,40 @@ const PredictionPanel = () => {
             >
               <Send className="w-4 h-4 mr-2" />
               Submit for Prediction
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Custom Data Submission - Placeholder for Paid Users */}
+      <Card className="border-dashed border-2 border-blue-200">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="w-5 h-5" />
+            Submit Custom Data for Prediction
+            <Lock className="w-4 h-4 text-amber-500" />
+          </CardTitle>
+          <CardDescription>
+            Upload your own datasets for AI-powered prediction analysis (Premium Feature)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6 space-y-4">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+              <Upload className="w-8 h-8 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Custom Prediction Analysis</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Submit your own data files (CSV, JSON, TXT) for personalized prediction insights
+              </p>
+              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                Premium Feature - Subscription Required
+              </Badge>
+            </div>
+            <Button disabled className="bg-gray-300 text-gray-500 cursor-not-allowed">
+              <Lock className="w-4 h-4 mr-2" />
+              Upgrade to Access
             </Button>
           </div>
         </CardContent>
