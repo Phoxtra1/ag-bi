@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Star } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 const Pricing = () => {
   const freePlan = {
@@ -112,8 +112,8 @@ const Pricing = () => {
               <div className="stripe-pricing-container">
                 <stripe-pricing-table 
                   pricing-table-id="prctbl_1RePAsRoPr9Ap5vF4dX5FwF0"
-                  publishable-key="pk_live_51PYzuYRoPr9Ap5vF7KyQfStpqVfA6umHYSsYhWhMgNgkAuvAfvHGaF7cp3ubCaRVmOxSKPQCsueFjxsWmmicqfr800DjAQrpDX">
-                </stripe-pricing-table>
+                  publishable-key="pk_live_51PYzuYRoPr9Ap5vF7KyQfStpqVfA6umHYSsYhWhMgNgkAuvAfvHGaF7cp3ubCaRVmOxSKPQCsueFjxsWmmicqfr800DjAQrpDX"
+                />
               </div>
             </div>
           </div>
