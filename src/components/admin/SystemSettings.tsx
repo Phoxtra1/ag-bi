@@ -14,11 +14,12 @@ import {
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
 import AIEnginePanel from './AIEnginePanel';
+import IntegrationsPanel from './IntegrationsPanel';
 import { useToast } from '@/hooks/use-toast';
 
 const SystemSettings = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('ai-engines');
+  const [activeTab, setActiveTab] = useState('integrations');
 
   const [generalSettings, setGeneralSettings] = useState({
     siteName: 'Amnova™',
@@ -59,14 +60,18 @@ const SystemSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="integrations" className="flex items-center gap-2">
+            <Zap className="w-4 h-4" />
+            Integrations
+          </TabsTrigger>
           <TabsTrigger value="ai-engines" className="flex items-center gap-2">
             <Brain className="w-4 h-4" />
             AI Engines
           </TabsTrigger>
-          <TabsTrigger value="integrations" className="flex items-center gap-2">
+          <TabsTrigger value="engines" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
-            Integrations
+            Engines
           </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -82,11 +87,15 @@ const SystemSettings = () => {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="integrations">
+          <IntegrationsPanel />
+        </TabsContent>
+
         <TabsContent value="ai-engines">
           <AIEnginePanel />
         </TabsContent>
 
-        <TabsContent value="integrations">
+        <TabsContent value="engines">
           <IntegrationsEngines />
         </TabsContent>
 
