@@ -17,7 +17,7 @@ const Footer = () => {
   ];
 
   const companyLinks = [
-    { name: 'AMN News Agency', href: 'https://www.amnewsworld.com' },
+    { name: 'Amnewsworld', href: '/amnewsworld' },
     { name: 'About Amniva', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Contact Us', href: '/contact' }
@@ -111,7 +111,7 @@ const Footer = () => {
         <div className="mt-12 pt-8 border-t border-[#F59E0B]/30">
           <div className="text-center">
             <p className="text-sm text-gray-400">
-              © 2025 Amniva™. All rights reserved. Powered by AMN News Agency.
+              © 2025 Amniva. All rights reserved. Powered by Amnewsworld.
             </p>
           </div>
         </div>
