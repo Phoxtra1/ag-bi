@@ -15,7 +15,7 @@ const Header = () => {
               alt="Amniva Logo" 
               className="h-8 w-8"
             />
-            <span className="text-xl font-bold text-[#1D4ED8]">Amniva™</span>
+            <span className="text-xl font-bold text-[#1D4ED8]">Amniva</span>
           </Link>
 
           {/* Navigation Links */}
