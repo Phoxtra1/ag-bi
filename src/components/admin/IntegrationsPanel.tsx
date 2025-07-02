@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,8 @@ import {
   CheckCircle,
   AlertCircle,
   Settings,
-  Key
+  Key,
+  ExternalLink
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -44,6 +44,10 @@ const IntegrationsPanel = () => {
   React.useEffect(() => {
     const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
     setSavedVideoUrl(savedUrl);
+    const savedOdenehoKey = localStorage.getItem('odenehoApiKey') || '';
+    setSavedOdenehoApiKey(savedOdenehoKey);
+    const savedBrevoKey = localStorage.getItem('brevoApiKey') || '';
+    setSavedBrevoApiKey(savedBrevoKey);
   }, []);
 
   const handleChatBotToggle = (enabled: boolean) => {
@@ -118,6 +122,16 @@ const IntegrationsPanel = () => {
       toast({
         title: "Error",
         description: "Please enter a valid video URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate URL format
+    if (demoVideoUrl.includes('youtube.com') || demoVideoUrl.includes('youtu.be') || demoVideoUrl.includes('vimeo.com')) {
+      toast({
+        title: "Unsupported Video Format",
+        description: "Please use a direct video file URL (.mp4, .mov, .webm) instead of YouTube or Vimeo links.",
         variant: "destructive",
       });
       return;
@@ -380,7 +394,7 @@ const IntegrationsPanel = () => {
                 <div>
                   <Label htmlFor="video-url">Video URL</Label>
                   <p className="text-sm text-gray-600 mb-2">
-                    Enter a direct link to your video file (MP4, MOV, etc.)
+                    Enter a direct link to your video file (MP4, MOV, WEBM)
                   </p>
                   <Input
                     id="video-url"
@@ -411,11 +425,32 @@ const IntegrationsPanel = () => {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                   <div>
-                    <p className="font-medium text-blue-900">Note</p>
-                    <p className="text-sm text-blue-700">
-                      If no video URL is provided, the Watch Demo page will display: 
-                      "Demo video currently unavailable. Please check back later."
-                    </p>
+                    <p className="font-medium text-blue-900">Video URL Requirements</p>
+                    <div className="text-sm text-blue-700 mt-2 space-y-2">
+                      <div>
+                        <p className="font-medium text-green-700">✅ Supported:</p>
+                        <ul className="list-disc list-inside ml-2">
+                          <li>Direct video files (.mp4, .mov, .webm)</li>
+                          <li>Direct download links from file hosting</li>
+                          <li>CDN video URLs</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-medium text-red-700">❌ Not supported:</p>
+                        <ul className="list-disc list-inside ml-2">
+                          <li>Google Drive sharing links</li>
+                          <li>YouTube links</li>
+                          <li>Vimeo links</li>
+                          <li>Private/password-protected videos</li>
+                        </ul>
+                      </div>
+                      <div className="mt-3 p-2 bg-yellow-100 rounded text-yellow-800">
+                        <p className="text-xs">
+                          <strong>Tip:</strong> For Google Drive, use "Get link" → "Anyone with the link can view" → 
+                          modify the URL format to direct download, or better yet, host your video on a proper video hosting service.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
