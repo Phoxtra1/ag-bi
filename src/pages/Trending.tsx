@@ -118,13 +118,13 @@ const Trending = () => {
   const getVerificationBadge = (status: string) => {
     switch (status) {
       case 'verified':
-        return <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">✅ Verified</Badge>;
+        return <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">Verified</Badge>;
       case 'under-review':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">⚠️ Under Review</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">Under Review</Badge>;
       case 'unverified':
-        return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">❌ Unverified</Badge>;
+        return <Badge variant="destructive" className="bg-red-100 text-red-800 border-red-200">Unverified</Badge>;
       default:
-        return <Badge variant="outline">❓ Unknown</Badge>;
+        return <Badge variant="outline">Unknown</Badge>;
     }
   };
 
@@ -153,10 +153,10 @@ const Trending = () => {
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                   <TrendingUp className="h-8 w-8 text-blue-600" />
-                  <h1 className="text-4xl font-bold text-gray-900">🗞 Today's Trending Insights</h1>
+                  <h1 className="text-4xl font-bold text-gray-900">Today's Trending Insights</h1>
                 </div>
                 <p className="text-lg text-gray-600 max-w-3xl">
-                  Curated updates from verified media channels to help you stay informed — not misled.
+                  Curated updates from verified media channels to help you stay informed, not misled.
                 </p>
               </div>
 
@@ -168,7 +168,7 @@ const Trending = () => {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">Why This Matters</h3>
                       <p className="text-gray-700">
-                        In a world overwhelmed by misinformation, Amnova ensures you're updated with <strong>accurate, timely, and engaging</strong> headlines. 
+                        In a world overwhelmed by misinformation, Amniva ensures you're updated with <strong>accurate, timely, and engaging</strong> headlines. 
                         This isn't just what's trending, it's what's <strong>trustworthy</strong>.
                       </p>
                     </div>
@@ -197,9 +197,9 @@ const Trending = () => {
                       <div>
                         <span className="text-gray-700">Categorized for truth:</span>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <Badge className="bg-green-100 text-green-800 border-green-200">✅ Verified</Badge>
-                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">⚠️ Under Review</Badge>
-                          <Badge className="bg-red-100 text-red-800 border-red-200">❌ Unverified</Badge>
+                          <Badge className="bg-green-100 text-green-800 border-green-200">Verified</Badge>
+                          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Under Review</Badge>
+                          <Badge className="bg-red-100 text-red-800 border-red-200">Unverified</Badge>
                         </div>
                       </div>
                     </div>
@@ -219,21 +219,21 @@ const Trending = () => {
                     <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
                       <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                       <div>
-                        <div className="font-medium text-green-800">✅ Verified</div>
+                        <div className="font-medium text-green-800">Verified</div>
                         <div className="text-sm text-green-700">AI + fact-check confirmed</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                       <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
                       <div>
-                        <div className="font-medium text-yellow-800">⚠️ Under Review</div>
+                        <div className="font-medium text-yellow-800">Under Review</div>
                         <div className="text-sm text-yellow-700">Still under assessment</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-3 p-4 bg-red-50 rounded-lg border border-red-200">
                       <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
                       <div>
-                        <div className="font-medium text-red-800">❌ Unverified</div>
+                        <div className="font-medium text-red-800">Unverified</div>
                         <div className="text-sm text-red-700">No evidence backing</div>
                       </div>
                     </div>
@@ -251,12 +251,12 @@ const Trending = () => {
               </div>
             </div>
 
-            {/* Right Column - 1/4 width - UNTOUCHED */}
+            {/* Right Column - 1/4 width */}
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    🔥 Live Trending Stories
+                    Live Trending Stories
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">

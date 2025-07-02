@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Shield, Search, CheckCircle, Upload, AlertCircle } from 'lucide-react';
@@ -99,7 +100,7 @@ const VerifyInfo = () => {
       <div className="bg-blue-600 text-white py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm md:text-base">
-            📢 Amniva's Fact Verification Service helps you check the credibility of any media content or claim.
+            Amniva's Fact Verification Service helps you check the credibility of any media content or claim.
           </p>
         </div>
       </div>

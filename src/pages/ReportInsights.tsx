@@ -85,13 +85,13 @@ const ReportInsights = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              📊 Report Insights
+              Report Insights
             </h1>
             <p className="text-xl md:text-2xl mb-6 text-blue-100">
               Deeper analysis of verified reports, incidents, and global patterns
             </p>
             <p className="text-lg max-w-3xl mx-auto text-blue-50">
-              Welcome to Amnova's intelligence hub, where AI-powered analytics transform raw reports 
+              Welcome to Amniva's intelligence hub, where AI-powered analytics transform raw reports 
               into actionable insights. Discover trends, verify patterns, and understand the bigger 
               picture behind global information flows.
             </p>
@@ -103,12 +103,12 @@ const ReportInsights = () => {
         
         {/* AI-Powered Insights Section */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">🧠 AI-Powered Intelligence</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">AI-Powered Intelligence</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="border-l-4 border-l-green-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  📈 Insight Summary
+                  Insight Summary
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -126,7 +126,7 @@ const ReportInsights = () => {
             <Card className="border-l-4 border-l-amber-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🔍 Root Cause Analysis
+                  Root Cause Analysis
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -143,7 +143,7 @@ const ReportInsights = () => {
             <Card className="border-l-4 border-l-blue-500">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  🔮 Predicted Outcome
+                  Predicted Outcome
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -161,7 +161,7 @@ const ReportInsights = () => {
 
         {/* Visual Analytics Section */}
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">📈 Visual Analytics</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Visual Analytics</h2>
           
           <Tabs defaultValue="issues" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
@@ -174,7 +174,7 @@ const ReportInsights = () => {
             <TabsContent value="issues" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>🔥 Top 5 Reported Issues This Week</CardTitle>
+                  <CardTitle>Top 5 Reported Issues This Week</CardTitle>
                   <CardDescription>Issues by volume and verification status</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -203,7 +203,7 @@ const ReportInsights = () => {
             <TabsContent value="verification" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>✅ Verified vs Unverified Content Ratios</CardTitle>
+                  <CardTitle>Verified vs Unverified Content Ratios</CardTitle>
                   <CardDescription>Overall verification status of submitted reports</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -240,7 +240,7 @@ const ReportInsights = () => {
             <TabsContent value="regional" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>🌍 Frequency by Region</CardTitle>
+                  <CardTitle>Frequency by Region</CardTitle>
                   <CardDescription>Report volume and accuracy rates by geographic region</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -268,7 +268,7 @@ const ReportInsights = () => {
             <TabsContent value="trends" className="mt-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>📊 Weekly Verification Trends</CardTitle>
+                  <CardTitle>Weekly Verification Trends</CardTitle>
                   <CardDescription>Verified vs fake content trends over the past month</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -300,7 +300,7 @@ const ReportInsights = () => {
         <div className="mb-12">
           <Card>
             <CardHeader>
-              <CardTitle>🗺️ Global Misinformation Heat Map</CardTitle>
+              <CardTitle>Global Misinformation Heat Map</CardTitle>
               <CardDescription>Geographic trends in reporting and misinformation (Interactive map coming soon)</CardDescription>
             </CardHeader>
             <CardContent>
@@ -322,7 +322,7 @@ const ReportInsights = () => {
           {/* Submit Your Insight */}
           <Card>
             <CardHeader>
-              <CardTitle>💡 Submit Your Insight</CardTitle>
+              <CardTitle>Submit Your Insight</CardTitle>
               <CardDescription>Share your analysis and contribute to our intelligence network</CardDescription>
             </CardHeader>
             <CardContent>
@@ -410,7 +410,7 @@ const ReportInsights = () => {
           {/* Weekly/Monthly Briefs */}
           <Card>
             <CardHeader>
-              <CardTitle>📋 Intelligence Briefs</CardTitle>
+              <CardTitle>Intelligence Briefs</CardTitle>
               <CardDescription>Weekly and monthly summaries of key findings</CardDescription>
             </CardHeader>
             <CardContent>
@@ -479,13 +479,13 @@ const ReportInsights = () => {
         {/* What to Do Next Section */}
         <Card className="mb-12">
           <CardHeader>
-            <CardTitle>🎯 What to Do Next</CardTitle>
+            <CardTitle>What to Do Next</CardTitle>
             <CardDescription>Actionable recommendations based on current intelligence</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="p-4 bg-blue-50 rounded-lg">
-                <h3 className="font-semibold text-blue-800 mb-2">🚨 For Public Safety Officials</h3>
+                <h3 className="font-semibold text-blue-800 mb-2">For Public Safety Officials</h3>
                 <ul className="text-sm text-blue-700 space-y-1">
                   <li>• Monitor health misinformation spikes</li>
                   <li>• Prepare counter-narrative campaigns</li>
@@ -495,9 +495,9 @@ const ReportInsights = () => {
               </div>
               
               <div className="p-4 bg-green-50 rounded-lg">
-                <h3 className="font-semibold text-green-800 mb-2">📰 For Journalists & Media</h3>
+                <h3 className="font-semibold text-green-800 mb-2">For Journalists & Media</h3>
                 <ul className="text-sm text-green-700 space-y-1">
-                  <li>• Verify sources using Amnova tools</li>
+                  <li>• Verify sources using Amniva tools</li>
                   <li>• Focus on climate misinformation stories</li>
                   <li>• Investigate coordinated inauthentic behavior</li>
                   <li>• Collaborate on fact-checking initiatives</li>
@@ -505,7 +505,7 @@ const ReportInsights = () => {
               </div>
               
               <div className="p-4 bg-amber-50 rounded-lg">
-                <h3 className="font-semibold text-amber-800 mb-2">⚖️ For Platform Moderators</h3>
+                <h3 className="font-semibold text-amber-800 mb-2">For Platform Moderators</h3>
                 <ul className="text-sm text-amber-700 space-y-1">
                   <li>• Increase AI-generated content detection</li>
                   <li>• Flag coordinated campaigns early</li>
@@ -521,7 +521,7 @@ const ReportInsights = () => {
         <Card className="bg-gradient-to-r from-indigo-50 to-blue-50 border-blue-200">
           <CardContent className="pt-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-indigo-800 mb-2">🤖 AI & Intelligence Integration</h3>
+              <h3 className="text-lg font-semibold text-indigo-800 mb-2">AI & Intelligence Integration</h3>
               <p className="text-indigo-700 mb-4">
                 Our insights are powered by advanced AI analysis, real-time data feeds, and expert verification networks. 
                 Results are continuously refined through machine learning and human oversight.
