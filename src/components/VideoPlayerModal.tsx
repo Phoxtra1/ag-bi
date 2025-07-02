@@ -17,27 +17,42 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const processVideoUrl = (url: string): string => {
     if (!url) return '';
     
-    // Handle Google Drive links
+    console.log('Original URL:', url);
+    
+    // Handle Google Drive links - convert to direct download
     if (url.includes('drive.google.com')) {
-      const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-      if (fileIdMatch) {
-        return `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+      let fileId = '';
+      
+      // Handle different Google Drive URL formats
+      if (url.includes('/file/d/')) {
+        const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) fileId = match[1];
+      } else if (url.includes('id=')) {
+        const match = url.match(/id=([a-zA-Z0-9-_]+)/);
+        if (match) fileId = match[1];
+      } else if (url.includes('/d/')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) fileId = match[1];
+      }
+      
+      if (fileId) {
+        const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+        console.log('Converted Google Drive URL:', directUrl);
+        return directUrl;
       }
     }
     
-    // Handle YouTube links
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      console.log('YouTube videos cannot be embedded directly in video tags. Please use a direct video file URL.');
-      return '';
-    }
-    
-    // Handle Vimeo links
-    if (url.includes('vimeo.com')) {
-      console.log('Vimeo videos cannot be embedded directly in video tags. Please use a direct video file URL.');
-      return '';
+    // Handle Dropbox links
+    if (url.includes('dropbox.com') && !url.includes('dl=1')) {
+      const dropboxUrl = url.replace('dl=0', 'dl=1').replace('?dl=0', '?dl=1');
+      if (!dropboxUrl.includes('dl=1')) {
+        return dropboxUrl + (dropboxUrl.includes('?') ? '&dl=1' : '?dl=1');
+      }
+      return dropboxUrl;
     }
     
     // Return direct URLs as-is
+    console.log('Using direct URL:', url);
     return url;
   };
 
@@ -46,6 +61,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       setIsLoading(true);
       setVideoError(false);
       const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+      console.log('Saved URL from localStorage:', savedUrl);
       setVideoUrl(savedUrl);
       const processed = processVideoUrl(savedUrl);
       setProcessedUrl(processed);
@@ -53,13 +69,18 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
     }
   }, [isOpen]);
 
-  const handleVideoError = () => {
-    console.log('Video failed to load:', processedUrl);
+  const handleVideoError = (e: any) => {
+    console.error('Video failed to load:', processedUrl, e);
     setVideoError(true);
   };
 
   const handleVideoLoad = () => {
     console.log('Video loaded successfully:', processedUrl);
+    setVideoError(false);
+  };
+
+  const handleVideoCanPlay = () => {
+    console.log('Video can play:', processedUrl);
     setVideoError(false);
   };
 
@@ -72,7 +93,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
             Watch How Amniva Works
           </DialogTitle>
           <p className="text-gray-600">
-            This demo shows how our innovation platform transforms media and tech.
+            See our Real-time Media Intelligence Tool in action.
           </p>
         </DialogHeader>
         
@@ -86,13 +107,17 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
               <video
                 controls
                 autoPlay
+                preload="metadata"
                 className="w-full h-full object-cover"
                 onError={handleVideoError}
                 onLoadedData={handleVideoLoad}
+                onCanPlay={handleVideoCanPlay}
+                crossOrigin="anonymous"
               >
                 <source src={processedUrl} type="video/mp4" />
                 <source src={processedUrl} type="video/mov" />
                 <source src={processedUrl} type="video/webm" />
+                <source src={processedUrl} type="video/avi" />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -101,23 +126,19 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
               <div className="text-center p-8">
                 <AlertCircle className="h-16 w-16 mx-auto mb-4 text-red-500" />
                 <h3 className="text-xl font-semibold text-red-700 mb-2">
-                  ❌ Video cannot be played
+                  Video Loading Failed
                 </h3>
                 <p className="text-red-600 mb-4">
-                  The video URL provided cannot be played directly.
+                  The video could not be loaded. This might be due to:
                 </p>
-                <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg">
-                  <p className="font-medium mb-1">Supported formats:</p>
-                  <ul className="text-left list-disc list-inside space-y-1">
-                    <li>Direct video files (.mp4, .mov, .webm)</li>
-                    <li>Direct download links</li>
+                <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left">
+                  <ul className="list-disc list-inside space-y-1">
+                    <li>Incorrect sharing permissions on Google Drive</li>
+                    <li>Video file is private or restricted</li>
+                    <li>Network connectivity issues</li>
+                    <li>Unsupported video format</li>
                   </ul>
-                  <p className="mt-2 font-medium">Not supported:</p>
-                  <ul className="text-left list-disc list-inside space-y-1">
-                    <li>Google Drive sharing links</li>
-                    <li>YouTube links</li>
-                    <li>Vimeo links</li>
-                  </ul>
+                  <p className="mt-2 font-medium">Current URL: {processedUrl}</p>
                 </div>
               </div>
             </div>
@@ -126,10 +147,10 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
               <div className="text-center p-8">
                 <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  🚫 Demo video currently unavailable
+                  No Demo Video Available
                 </h3>
                 <p className="text-gray-500">
-                  Please check back later.
+                  Please configure a video URL in the admin panel.
                 </p>
               </div>
             </div>

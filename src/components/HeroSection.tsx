@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { CheckCircle, Play, ArrowRight, Shield, Zap, Globe } from 'lucide-react';
@@ -81,6 +80,7 @@ const HeroSection = () => {
                 <div className="text-white font-semibold">Reuters</div>
                 <div className="text-white font-semibold">BBC</div>
                 <div className="text-white font-semibold">AP News</div>
+                <div className="text-white font-semibold">Amnewsworld</div>
                 <div className="text-white font-semibold">Guardian</div>
               </div>
             </div>

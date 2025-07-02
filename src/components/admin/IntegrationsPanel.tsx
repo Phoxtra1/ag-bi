@@ -27,8 +27,8 @@ const IntegrationsPanel = () => {
   // Odeneho Chat Bot State
   const [chatBotEnabled, setChatBotEnabled] = useState(true);
   const [chatBotTraining, setChatBotTraining] = useState(false);
-  const [odenehoApiKey, setOdenehoApiKey] = useState('');
-  const [savedOdenehoApiKey, setSavedOdenehoApiKey] = useState('');
+  const [chatbaseApiKey, setChatbaseApiKey] = useState('');
+  const [savedChatbaseApiKey, setSavedChatbaseApiKey] = useState('');
   
   // Brevo Newsletter State
   const [brevoEnabled, setBrevoEnabled] = useState(true);
@@ -44,8 +44,8 @@ const IntegrationsPanel = () => {
   React.useEffect(() => {
     const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
     setSavedVideoUrl(savedUrl);
-    const savedOdenehoKey = localStorage.getItem('odenehoApiKey') || '';
-    setSavedOdenehoApiKey(savedOdenehoKey);
+    const savedChatbaseKey = localStorage.getItem('chatbaseApiKey') || '';
+    setSavedChatbaseApiKey(savedChatbaseKey);
     const savedBrevoKey = localStorage.getItem('brevoApiKey') || '';
     setSavedBrevoApiKey(savedBrevoKey);
   }, []);
@@ -73,8 +73,8 @@ const IntegrationsPanel = () => {
     }
   };
 
-  const handleOdenehoApiKeySave = () => {
-    if (!odenehoApiKey.trim()) {
+  const handleChatbaseApiKeySave = () => {
+    if (!chatbaseApiKey.trim()) {
       toast({
         title: "Error",
         description: "Please enter a valid API key.",
@@ -83,11 +83,11 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    setSavedOdenehoApiKey(odenehoApiKey);
-    localStorage.setItem('odenehoApiKey', odenehoApiKey);
+    setSavedChatbaseApiKey(chatbaseApiKey);
+    localStorage.setItem('chatbaseApiKey', chatbaseApiKey);
     toast({
       title: "API Key Saved",
-      description: "Odeneho API key has been saved successfully.",
+      description: "Chatbase API key has been saved successfully.",
     });
   };
 
@@ -127,11 +127,11 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    // Validate URL format
-    if (demoVideoUrl.includes('youtube.com') || demoVideoUrl.includes('youtu.be') || demoVideoUrl.includes('vimeo.com')) {
+    // Only warn about clearly unsupported formats
+    if (demoVideoUrl.includes('youtu.be') || demoVideoUrl.includes('youtube.com/watch') || demoVideoUrl.includes('vimeo.com/')) {
       toast({
         title: "Unsupported Video Format",
-        description: "Please use a direct video file URL (.mp4, .mov, .webm) instead of YouTube or Vimeo links.",
+        description: "YouTube and Vimeo links are not supported. Please use direct video file URLs or Google Drive/Dropbox links.",
         variant: "destructive",
       });
       return;
@@ -223,22 +223,25 @@ const IntegrationsPanel = () => {
                 <h3 className="text-lg font-semibold">API Configuration</h3>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="odeneho-api-key">Odeneho API Key</Label>
+                    <Label htmlFor="chatbase-api-key">Chatbase API Key</Label>
+                    <p className="text-sm text-gray-600 mb-2">
+                      Enter your Chatbase API key to power the Odeneho chat bot
+                    </p>
                     <div className="flex gap-2 mt-2">
                       <Input
-                        id="odeneho-api-key"
+                        id="chatbase-api-key"
                         type="password"
-                        placeholder="Enter your Odeneho API key"
-                        value={odenehoApiKey}
-                        onChange={(e) => setOdenehoApiKey(e.target.value)}
+                        placeholder="Enter your Chatbase API key"
+                        value={chatbaseApiKey}
+                        onChange={(e) => setChatbaseApiKey(e.target.value)}
                       />
-                      <Button onClick={handleOdenehoApiKeySave}>
+                      <Button onClick={handleChatbaseApiKeySave}>
                         <Key className="w-4 h-4 mr-2" />
                         Save
                       </Button>
                     </div>
-                    {savedOdenehoApiKey && (
-                      <p className="text-sm text-green-600 mt-1">✓ API key configured</p>
+                    {savedChatbaseApiKey && (
+                      <p className="text-sm text-green-600 mt-1">✓ Chatbase API key configured</p>
                     )}
                   </div>
                 </div>
