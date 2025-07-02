@@ -16,7 +16,8 @@ import {
   BarChart3,
   CheckCircle,
   AlertCircle,
-  Settings
+  Settings,
+  Key
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,14 +27,24 @@ const IntegrationsPanel = () => {
   // Odeneho Chat Bot State
   const [chatBotEnabled, setChatBotEnabled] = useState(true);
   const [chatBotTraining, setChatBotTraining] = useState(false);
+  const [odenehoApiKey, setOdenehoApiKey] = useState('');
+  const [savedOdenehoApiKey, setSavedOdenehoApiKey] = useState('');
   
   // Brevo Newsletter State
   const [brevoEnabled, setBrevoEnabled] = useState(true);
   const [subscriberCount, setSubscriberCount] = useState(1247);
+  const [brevoApiKey, setBrevoApiKey] = useState('');
+  const [savedBrevoApiKey, setSavedBrevoApiKey] = useState('');
   
   // Demo Video State
   const [demoVideoUrl, setDemoVideoUrl] = useState('');
-  const [savedVideoUrl, setSavedVideoUrl] = useState('https://example.com/demo-video.mp4');
+  const [savedVideoUrl, setSavedVideoUrl] = useState('');
+
+  // Load saved video URL from localStorage on component mount
+  React.useEffect(() => {
+    const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+    setSavedVideoUrl(savedUrl);
+  }, []);
 
   const handleChatBotToggle = (enabled: boolean) => {
     setChatBotEnabled(enabled);
@@ -58,11 +69,47 @@ const IntegrationsPanel = () => {
     }
   };
 
+  const handleOdenehoApiKeySave = () => {
+    if (!odenehoApiKey.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid API key.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavedOdenehoApiKey(odenehoApiKey);
+    localStorage.setItem('odenehoApiKey', odenehoApiKey);
+    toast({
+      title: "API Key Saved",
+      description: "Odeneho API key has been saved successfully.",
+    });
+  };
+
   const handleBrevoToggle = (enabled: boolean) => {
     setBrevoEnabled(enabled);
     toast({
       title: enabled ? "Brevo Newsletter Enabled" : "Brevo Newsletter Disabled",
       description: `Newsletter engine has been ${enabled ? 'activated' : 'deactivated'}.`,
+    });
+  };
+
+  const handleBrevoApiKeySave = () => {
+    if (!brevoApiKey.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid API key.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSavedBrevoApiKey(brevoApiKey);
+    localStorage.setItem('brevoApiKey', brevoApiKey);
+    toast({
+      title: "API Key Saved",
+      description: "Brevo API key has been saved successfully.",
     });
   };
 
@@ -77,6 +124,7 @@ const IntegrationsPanel = () => {
     }
 
     setSavedVideoUrl(demoVideoUrl);
+    localStorage.setItem('adminDemoVideoUrl', demoVideoUrl);
     toast({
       title: "Video Link Updated Successfully",
       description: "The demo video has been updated and will be displayed on the public page.",
@@ -154,6 +202,31 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Daily Queries</span>
                   </div>
                   <p className="text-lg font-semibold text-purple-600">156</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">API Configuration</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="odeneho-api-key">Odeneho API Key</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="odeneho-api-key"
+                        type="password"
+                        placeholder="Enter your Odeneho API key"
+                        value={odenehoApiKey}
+                        onChange={(e) => setOdenehoApiKey(e.target.value)}
+                      />
+                      <Button onClick={handleOdenehoApiKeySave}>
+                        <Key className="w-4 h-4 mr-2" />
+                        Save
+                      </Button>
+                    </div>
+                    {savedOdenehoApiKey && (
+                      <p className="text-sm text-green-600 mt-1">✓ API key configured</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -236,6 +309,31 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Open Rate</span>
                   </div>
                   <p className="text-lg font-semibold text-purple-600">68.5%</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">API Configuration</h3>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="brevo-api-key">Brevo API Key</Label>
+                    <div className="flex gap-2 mt-2">
+                      <Input
+                        id="brevo-api-key"
+                        type="password"
+                        placeholder="Enter your Brevo API key"
+                        value={brevoApiKey}
+                        onChange={(e) => setBrevoApiKey(e.target.value)}
+                      />
+                      <Button onClick={handleBrevoApiKeySave}>
+                        <Key className="w-4 h-4 mr-2" />
+                        Save
+                      </Button>
+                    </div>
+                    {savedBrevoApiKey && (
+                      <p className="text-sm text-green-600 mt-1">✓ API key configured</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
