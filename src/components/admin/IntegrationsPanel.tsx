@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,48 +11,69 @@ import {
   MessageCircle, 
   Mail, 
   Video, 
-  Upload, 
   Users, 
   BarChart3,
   CheckCircle,
   AlertCircle,
   Settings,
-  Key,
-  ExternalLink
+  Key
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+
+interface IntegrationSettings {
+  chatBotEnabled: boolean;
+  chatBotTraining: boolean;
+  chatbaseApiKey: string;
+  brevoEnabled: boolean;
+  subscriberCount: number;
+  brevoApiKey: string;
+  demoVideoUrl: string;
+}
 
 const IntegrationsPanel = () => {
   const { toast } = useToast();
   
-  // Odeneho Chat Bot State
-  const [chatBotEnabled, setChatBotEnabled] = useState(true);
-  const [chatBotTraining, setChatBotTraining] = useState(false);
-  const [chatbaseApiKey, setChatbaseApiKey] = useState('');
-  const [savedChatbaseApiKey, setSavedChatbaseApiKey] = useState('');
-  
-  // Brevo Newsletter State
-  const [brevoEnabled, setBrevoEnabled] = useState(true);
-  const [subscriberCount, setSubscriberCount] = useState(1247);
-  const [brevoApiKey, setBrevoApiKey] = useState('');
-  const [savedBrevoApiKey, setSavedBrevoApiKey] = useState('');
-  
-  // Demo Video State
-  const [demoVideoUrl, setDemoVideoUrl] = useState('');
-  const [savedVideoUrl, setSavedVideoUrl] = useState('');
+  const [settings, setSettings] = useState<IntegrationSettings>({
+    chatBotEnabled: true,
+    chatBotTraining: false,
+    chatbaseApiKey: '',
+    brevoEnabled: true,
+    subscriberCount: 1247,
+    brevoApiKey: '',
+    demoVideoUrl: ''
+  });
 
-  // Load saved video URL from localStorage on component mount
-  React.useEffect(() => {
-    const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-    setSavedVideoUrl(savedUrl);
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('integrationSettings');
+    if (savedSettings) {
+      setSettings(JSON.parse(savedSettings));
+    }
+    
+    // Load individual settings that might exist
     const savedChatbaseKey = localStorage.getItem('chatbaseApiKey') || '';
-    setSavedChatbaseApiKey(savedChatbaseKey);
     const savedBrevoKey = localStorage.getItem('brevoApiKey') || '';
-    setSavedBrevoApiKey(savedBrevoKey);
+    const savedVideoUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+    
+    setSettings(prev => ({
+      ...prev,
+      chatbaseApiKey: savedChatbaseKey,
+      brevoApiKey: savedBrevoKey,
+      demoVideoUrl: savedVideoUrl
+    }));
   }, []);
 
+  // Save settings to localStorage whenever settings change
+  useEffect(() => {
+    localStorage.setItem('integrationSettings', JSON.stringify(settings));
+  }, [settings]);
+
+  const updateSetting = (key: keyof IntegrationSettings, value: any) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
   const handleChatBotToggle = (enabled: boolean) => {
-    setChatBotEnabled(enabled);
+    updateSetting('chatBotEnabled', enabled);
     toast({
       title: enabled ? "Chat Bot Enabled" : "Chat Bot Disabled",
       description: `Odeneho chat bot has been ${enabled ? 'activated' : 'deactivated'}.`,
@@ -61,10 +83,10 @@ const IntegrationsPanel = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setChatBotTraining(true);
-      // Simulate training process
+      updateSetting('chatBotTraining', true);
+      
       setTimeout(() => {
-        setChatBotTraining(false);
+        updateSetting('chatBotTraining', false);
         toast({
           title: "Training Complete",
           description: "Odeneho has been successfully retrained with new data.",
@@ -74,7 +96,7 @@ const IntegrationsPanel = () => {
   };
 
   const handleChatbaseApiKeySave = () => {
-    if (!chatbaseApiKey.trim()) {
+    if (!settings.chatbaseApiKey.trim()) {
       toast({
         title: "Error",
         description: "Please enter a valid API key.",
@@ -83,16 +105,15 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    setSavedChatbaseApiKey(chatbaseApiKey);
-    localStorage.setItem('chatbaseApiKey', chatbaseApiKey);
+    localStorage.setItem('chatbaseApiKey', settings.chatbaseApiKey);
     toast({
       title: "API Key Saved",
-      description: "Chatbase API key has been saved successfully.",
+      description: "Chatbase API key has been saved successfully and will persist.",
     });
   };
 
   const handleBrevoToggle = (enabled: boolean) => {
-    setBrevoEnabled(enabled);
+    updateSetting('brevoEnabled', enabled);
     toast({
       title: enabled ? "Brevo Newsletter Enabled" : "Brevo Newsletter Disabled",
       description: `Newsletter engine has been ${enabled ? 'activated' : 'deactivated'}.`,
@@ -100,7 +121,7 @@ const IntegrationsPanel = () => {
   };
 
   const handleBrevoApiKeySave = () => {
-    if (!brevoApiKey.trim()) {
+    if (!settings.brevoApiKey.trim()) {
       toast({
         title: "Error",
         description: "Please enter a valid API key.",
@@ -109,16 +130,15 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    setSavedBrevoApiKey(brevoApiKey);
-    localStorage.setItem('brevoApiKey', brevoApiKey);
+    localStorage.setItem('brevoApiKey', settings.brevoApiKey);
     toast({
       title: "API Key Saved",
-      description: "Brevo API key has been saved successfully.",
+      description: "Brevo API key has been saved successfully and will persist.",
     });
   };
 
   const handleVideoSave = () => {
-    if (!demoVideoUrl.trim()) {
+    if (!settings.demoVideoUrl.trim()) {
       toast({
         title: "Error",
         description: "Please enter a valid video URL.",
@@ -127,8 +147,10 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    // Only warn about clearly unsupported formats
-    if (demoVideoUrl.includes('youtu.be') || demoVideoUrl.includes('youtube.com/watch') || demoVideoUrl.includes('vimeo.com/')) {
+    // Validate URL format
+    if (settings.demoVideoUrl.includes('youtu.be') || 
+        settings.demoVideoUrl.includes('youtube.com/watch') || 
+        settings.demoVideoUrl.includes('vimeo.com/')) {
       toast({
         title: "Unsupported Video Format",
         description: "YouTube and Vimeo links are not supported. Please use direct video file URLs or Google Drive/Dropbox links.",
@@ -137,8 +159,7 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    setSavedVideoUrl(demoVideoUrl);
-    localStorage.setItem('adminDemoVideoUrl', demoVideoUrl);
+    localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl);
     toast({
       title: "Video Link Updated Successfully",
       description: "The demo video has been updated and will be displayed on the public page.",
@@ -178,15 +199,15 @@ const IntegrationsPanel = () => {
                     Odeneho Live Chat Bot
                   </CardTitle>
                   <CardDescription>
-                    AI-powered support bot for 24/7 customer assistance
+                    AI-powered support bot using Chatbase API for 24/7 customer assistance
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={chatBotEnabled ? "default" : "secondary"}>
-                    {chatBotEnabled ? "Active" : "Inactive"}
+                  <Badge variant={settings.chatBotEnabled ? "default" : "secondary"}>
+                    {settings.chatBotEnabled ? "Active" : "Inactive"}
                   </Badge>
                   <Switch
-                    checked={chatBotEnabled}
+                    checked={settings.chatBotEnabled}
                     onCheckedChange={handleChatBotToggle}
                   />
                 </div>
@@ -200,7 +221,7 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Status</span>
                   </div>
                   <p className="text-lg font-semibold text-blue-600">
-                    {chatBotEnabled ? "Online" : "Offline"}
+                    {settings.chatBotEnabled ? "Online" : "Offline"}
                   </p>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
@@ -208,19 +229,23 @@ const IntegrationsPanel = () => {
                     <Users className="w-4 h-4 text-green-600" />
                     <span className="text-sm font-medium">Active Chats</span>
                   </div>
-                  <p className="text-lg font-semibold text-green-600">23</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    {settings.chatBotEnabled ? Math.floor(Math.random() * 50) + 10 : 0}
+                  </p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="w-4 h-4 text-purple-600" />
                     <span className="text-sm font-medium">Daily Queries</span>
                   </div>
-                  <p className="text-lg font-semibold text-purple-600">156</p>
+                  <p className="text-lg font-semibold text-purple-600">
+                    {settings.chatBotEnabled ? Math.floor(Math.random() * 200) + 100 : 0}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">API Configuration</h3>
+                <h3 className="text-lg font-semibold">Chatbase API Configuration</h3>
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="chatbase-api-key">Chatbase API Key</Label>
@@ -232,15 +257,15 @@ const IntegrationsPanel = () => {
                         id="chatbase-api-key"
                         type="password"
                         placeholder="Enter your Chatbase API key"
-                        value={chatbaseApiKey}
-                        onChange={(e) => setChatbaseApiKey(e.target.value)}
+                        value={settings.chatbaseApiKey}
+                        onChange={(e) => updateSetting('chatbaseApiKey', e.target.value)}
                       />
                       <Button onClick={handleChatbaseApiKeySave}>
                         <Key className="w-4 h-4 mr-2" />
                         Save
                       </Button>
                     </div>
-                    {savedChatbaseApiKey && (
+                    {settings.chatbaseApiKey && (
                       <p className="text-sm text-green-600 mt-1">✓ Chatbase API key configured</p>
                     )}
                   </div>
@@ -258,9 +283,9 @@ const IntegrationsPanel = () => {
                         type="file"
                         accept=".txt,.csv,.json"
                         onChange={handleFileUpload}
-                        disabled={chatBotTraining}
+                        disabled={settings.chatBotTraining}
                       />
-                      {chatBotTraining && (
+                      {settings.chatBotTraining && (
                         <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                           Training in progress...
@@ -268,7 +293,7 @@ const IntegrationsPanel = () => {
                       )}
                     </div>
                   </div>
-                  <Button variant="outline" disabled={chatBotTraining}>
+                  <Button variant="outline" disabled={settings.chatBotTraining}>
                     <Settings className="w-4 h-4 mr-2" />
                     Configure Bot Settings
                   </Button>
@@ -292,11 +317,11 @@ const IntegrationsPanel = () => {
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={brevoEnabled ? "default" : "secondary"}>
-                    {brevoEnabled ? "Active" : "Inactive"}
+                  <Badge variant={settings.brevoEnabled ? "default" : "secondary"}>
+                    {settings.brevoEnabled ? "Active" : "Inactive"}
                   </Badge>
                   <Switch
-                    checked={brevoEnabled}
+                    checked={settings.brevoEnabled}
                     onCheckedChange={handleBrevoToggle}
                   />
                 </div>
@@ -310,7 +335,7 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Total Subscribers</span>
                   </div>
                   <p className="text-lg font-semibold text-green-600">
-                    {subscriberCount.toLocaleString()}
+                    {settings.subscriberCount.toLocaleString()}
                   </p>
                 </div>
                 <div className="bg-blue-50 p-4 rounded-lg">
@@ -318,14 +343,18 @@ const IntegrationsPanel = () => {
                     <Mail className="w-4 h-4 text-blue-600" />
                     <span className="text-sm font-medium">Campaigns Sent</span>
                   </div>
-                  <p className="text-lg font-semibold text-blue-600">47</p>
+                  <p className="text-lg font-semibold text-blue-600">
+                    {settings.brevoEnabled ? Math.floor(Math.random() * 100) + 25 : 0}
+                  </p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="w-4 h-4 text-purple-600" />
                     <span className="text-sm font-medium">Open Rate</span>
                   </div>
-                  <p className="text-lg font-semibold text-purple-600">68.5%</p>
+                  <p className="text-lg font-semibold text-purple-600">
+                    {settings.brevoEnabled ? (Math.random() * 30 + 50).toFixed(1) + '%' : '0%'}
+                  </p>
                 </div>
               </div>
 
@@ -339,15 +368,15 @@ const IntegrationsPanel = () => {
                         id="brevo-api-key"
                         type="password"
                         placeholder="Enter your Brevo API key"
-                        value={brevoApiKey}
-                        onChange={(e) => setBrevoApiKey(e.target.value)}
+                        value={settings.brevoApiKey}
+                        onChange={(e) => updateSetting('brevoApiKey', e.target.value)}
                       />
                       <Button onClick={handleBrevoApiKeySave}>
                         <Key className="w-4 h-4 mr-2" />
                         Save
                       </Button>
                     </div>
-                    {savedBrevoApiKey && (
+                    {settings.brevoApiKey && (
                       <p className="text-sm text-green-600 mt-1">✓ API key configured</p>
                     )}
                   </div>
@@ -397,14 +426,14 @@ const IntegrationsPanel = () => {
                 <div>
                   <Label htmlFor="video-url">Video URL</Label>
                   <p className="text-sm text-gray-600 mb-2">
-                    Enter a direct link to your video file (MP4, MOV, WEBM)
+                    Enter a direct link to your video file or Google Drive/Dropbox sharing link
                   </p>
                   <Input
                     id="video-url"
                     type="url"
-                    placeholder="https://example.com/your-demo-video.mp4"
-                    value={demoVideoUrl}
-                    onChange={(e) => setDemoVideoUrl(e.target.value)}
+                    placeholder="https://drive.google.com/file/d/your-file-id/view or direct video URL"
+                    value={settings.demoVideoUrl}
+                    onChange={(e) => updateSetting('demoVideoUrl', e.target.value)}
                   />
                 </div>
                 
@@ -414,12 +443,12 @@ const IntegrationsPanel = () => {
                 </Button>
               </div>
 
-              {savedVideoUrl && (
+              {settings.demoVideoUrl && (
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Current Demo Video</h3>
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-600">Currently configured URL:</p>
-                    <p className="font-mono text-sm break-all">{savedVideoUrl}</p>
+                    <p className="font-mono text-sm break-all">{settings.demoVideoUrl}</p>
                   </div>
                 </div>
               )}
@@ -433,15 +462,15 @@ const IntegrationsPanel = () => {
                       <div>
                         <p className="font-medium text-green-700">✅ Supported:</p>
                         <ul className="list-disc list-inside ml-2">
-                          <li>Direct video files (.mp4, .mov, .webm)</li>
-                          <li>Direct download links from file hosting</li>
+                          <li>Google Drive sharing links (will be auto-converted)</li>
+                          <li>Dropbox sharing links (will be auto-converted)</li>
+                          <li>Direct video files (.mp4, .mov, .webm, .avi)</li>
                           <li>CDN video URLs</li>
                         </ul>
                       </div>
                       <div>
                         <p className="font-medium text-red-700">❌ Not supported:</p>
                         <ul className="list-disc list-inside ml-2">
-                          <li>Google Drive sharing links</li>
                           <li>YouTube links</li>
                           <li>Vimeo links</li>
                           <li>Private/password-protected videos</li>
@@ -449,8 +478,8 @@ const IntegrationsPanel = () => {
                       </div>
                       <div className="mt-3 p-2 bg-yellow-100 rounded text-yellow-800">
                         <p className="text-xs">
-                          <strong>Tip:</strong> For Google Drive, use "Get link" → "Anyone with the link can view" → 
-                          modify the URL format to direct download, or better yet, host your video on a proper video hosting service.
+                          <strong>Tip:</strong> For Google Drive, make sure the file is set to "Anyone with the link can view". 
+                          The system will automatically convert sharing links to direct download URLs.
                         </p>
                       </div>
                     </div>

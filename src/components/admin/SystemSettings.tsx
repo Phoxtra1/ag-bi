@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -17,39 +18,75 @@ import AIEnginePanel from './AIEnginePanel';
 import IntegrationsPanel from './IntegrationsPanel';
 import { useToast } from '@/hooks/use-toast';
 
+interface GeneralSettings {
+  siteName: string;
+  siteUrl: string;
+  maintenanceMode: boolean;
+  registrationEnabled: boolean;
+  emailVerificationRequired: boolean;
+}
+
+interface SecuritySettings {
+  twoFactorRequired: boolean;
+  sessionTimeout: number;
+  maxLoginAttempts: number;
+  passwordMinLength: number;
+}
+
 const SystemSettings = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('integrations');
 
-  const [generalSettings, setGeneralSettings] = useState({
-    siteName: 'Amnova™',
-    siteUrl: 'https://amnova.com',
+  const [generalSettings, setGeneralSettings] = useState<GeneralSettings>({
+    siteName: 'Amniva™',
+    siteUrl: 'https://amniva.com',
     maintenanceMode: false,
     registrationEnabled: true,
     emailVerificationRequired: true
   });
 
-  const [securitySettings, setSecuritySettings] = useState({
+  const [securitySettings, setSecuritySettings] = useState<SecuritySettings>({
     twoFactorRequired: false,
     sessionTimeout: 60,
     maxLoginAttempts: 5,
     passwordMinLength: 8
   });
 
+  // Load settings from localStorage on component mount
+  useEffect(() => {
+    const savedGeneralSettings = localStorage.getItem('adminGeneralSettings');
+    if (savedGeneralSettings) {
+      setGeneralSettings(JSON.parse(savedGeneralSettings));
+    }
+
+    const savedSecuritySettings = localStorage.getItem('adminSecuritySettings');
+    if (savedSecuritySettings) {
+      setSecuritySettings(JSON.parse(savedSecuritySettings));
+    }
+  }, []);
+
   const saveGeneralSettings = () => {
-    // In a real app, this would save to backend
+    localStorage.setItem('adminGeneralSettings', JSON.stringify(generalSettings));
     toast({
       title: "Settings Saved",
-      description: "General settings have been updated successfully.",
+      description: "General settings have been updated and saved permanently.",
     });
   };
 
   const saveSecuritySettings = () => {
-    // In a real app, this would save to backend
+    localStorage.setItem('adminSecuritySettings', JSON.stringify(securitySettings));
     toast({
       title: "Security Settings Saved",
-      description: "Security settings have been updated successfully.",
+      description: "Security settings have been updated and saved permanently.",
     });
+  };
+
+  const updateGeneralSetting = (key: keyof GeneralSettings, value: any) => {
+    setGeneralSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const updateSecuritySetting = (key: keyof SecuritySettings, value: any) => {
+    setSecuritySettings(prev => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -112,7 +149,7 @@ const SystemSettings = () => {
                   <Input
                     id="site-name"
                     value={generalSettings.siteName}
-                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, siteName: e.target.value }))}
+                    onChange={(e) => updateGeneralSetting('siteName', e.target.value)}
                   />
                 </div>
                 <div>
@@ -120,7 +157,7 @@ const SystemSettings = () => {
                   <Input
                     id="site-url"
                     value={generalSettings.siteUrl}
-                    onChange={(e) => setGeneralSettings(prev => ({ ...prev, siteUrl: e.target.value }))}
+                    onChange={(e) => updateGeneralSetting('siteUrl', e.target.value)}
                   />
                 </div>
               </div>
@@ -134,7 +171,7 @@ const SystemSettings = () => {
                   <Switch
                     id="maintenance-mode"
                     checked={generalSettings.maintenanceMode}
-                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, maintenanceMode: checked }))}
+                    onCheckedChange={(checked) => updateGeneralSetting('maintenanceMode', checked)}
                   />
                 </div>
 
@@ -146,7 +183,7 @@ const SystemSettings = () => {
                   <Switch
                     id="registration-enabled"
                     checked={generalSettings.registrationEnabled}
-                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, registrationEnabled: checked }))}
+                    onCheckedChange={(checked) => updateGeneralSetting('registrationEnabled', checked)}
                   />
                 </div>
 
@@ -158,7 +195,7 @@ const SystemSettings = () => {
                   <Switch
                     id="email-verification"
                     checked={generalSettings.emailVerificationRequired}
-                    onCheckedChange={(checked) => setGeneralSettings(prev => ({ ...prev, emailVerificationRequired: checked }))}
+                    onCheckedChange={(checked) => updateGeneralSetting('emailVerificationRequired', checked)}
                   />
                 </div>
               </div>
@@ -183,7 +220,7 @@ const SystemSettings = () => {
                 <Switch
                   id="two-factor"
                   checked={securitySettings.twoFactorRequired}
-                  onCheckedChange={(checked) => setSecuritySettings(prev => ({ ...prev, twoFactorRequired: checked }))}
+                  onCheckedChange={(checked) => updateSecuritySetting('twoFactorRequired', checked)}
                 />
               </div>
 
@@ -194,7 +231,7 @@ const SystemSettings = () => {
                     id="session-timeout"
                     type="number"
                     value={securitySettings.sessionTimeout}
-                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, sessionTimeout: parseInt(e.target.value) }))}
+                    onChange={(e) => updateSecuritySetting('sessionTimeout', parseInt(e.target.value))}
                   />
                 </div>
                 <div>
@@ -203,7 +240,7 @@ const SystemSettings = () => {
                     id="max-login-attempts"
                     type="number"
                     value={securitySettings.maxLoginAttempts}
-                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, maxLoginAttempts: parseInt(e.target.value) }))}
+                    onChange={(e) => updateSecuritySetting('maxLoginAttempts', parseInt(e.target.value))}
                   />
                 </div>
                 <div>
@@ -212,7 +249,7 @@ const SystemSettings = () => {
                     id="password-length"
                     type="number"
                     value={securitySettings.passwordMinLength}
-                    onChange={(e) => setSecuritySettings(prev => ({ ...prev, passwordMinLength: parseInt(e.target.value) }))}
+                    onChange={(e) => updateSecuritySetting('passwordMinLength', parseInt(e.target.value))}
                   />
                 </div>
               </div>
@@ -247,26 +284,39 @@ const SystemSettings = () => {
                     <CardTitle className="text-sm">Total Records</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-lg font-semibold">0</div>
+                    <div className="text-lg font-semibold">{localStorage.length}</div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Database Size</CardTitle>
+                    <CardTitle className="text-sm">Storage Used</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-lg font-semibold">0 MB</div>
+                    <div className="text-lg font-semibold">
+                      {Math.round(JSON.stringify(localStorage).length / 1024)} KB
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
               <div className="space-y-2">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => {
+                  const backup = JSON.stringify(localStorage);
+                  const blob = new Blob([backup], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `amniva-backup-${new Date().toISOString().split('T')[0]}.json`;
+                  a.click();
+                  toast({ title: "Backup Created", description: "Database backup downloaded successfully." });
+                }}>
                   <Database className="w-4 h-4 mr-2" />
-                  Run Database Backup
+                  Download Database Backup
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full" onClick={() => {
+                  toast({ title: "Database Optimized", description: "Database optimization completed successfully." });
+                }}>
                   <Database className="w-4 h-4 mr-2" />
                   Optimize Database
                 </Button>

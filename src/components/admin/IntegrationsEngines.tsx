@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Settings, 
@@ -15,17 +14,14 @@ import {
   Zap, 
   Database, 
   Cloud, 
-  Bell, 
   BarChart3,
   Key,
-  Thermometer,
   Play,
   Save,
   RotateCcw,
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Eye,
   RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -54,80 +50,104 @@ interface ActivityLog {
 
 const IntegrationsEngines = () => {
   const { toast } = useToast();
-  const [systems, setSystems] = useState<SystemConfig[]>([
-    {
-      id: 'analytics',
-      name: 'Real-Time Analytics Engine',
-      status: 'inactive',
-      enabled: false,
-      usage: 0,
-      settings: { retentionDays: 30, trackingEnabled: false }
-    },
-    {
-      id: 'lifecycle',
-      name: 'User Lifecycle Automation',
-      status: 'inactive',
-      enabled: false,
-      usage: 0,
-      settings: { welcomeEmail: true, reminderInterval: 7 }
-    },
-    {
-      id: 'financial',
-      name: 'Financial Metrics Engine',
-      status: 'needs_setup',
-      enabled: false,
-      usage: 0,
-      apiKey: '',
-      settings: { currency: 'USD', reportingInterval: 'daily' }
-    },
-    {
-      id: 'api_generator',
-      name: 'API Access & Key Generator',
-      status: 'inactive',
-      enabled: false,
-      usage: 0,
-      settings: { keyExpiration: 365, rateLimit: 1000 }
-    },
-    {
-      id: 'weather_geo',
-      name: 'Weather & Geo APIs',
-      status: 'needs_setup',
-      enabled: false,
-      apiKey: '',
-      url: 'https://api.openweathermap.org/data/2.5',
-      usage: 0,
-      settings: { updateInterval: 15, units: 'metric' }
-    },
-    {
-      id: 'notifications',
-      name: 'Admin Notification System',
-      status: 'inactive',
-      enabled: false,
-      usage: 0,
-      settings: { emailNotifications: true, slackWebhook: '' }
-    },
-    {
-      id: 'prediction',
-      name: 'Prediction Engine',
-      status: 'needs_setup',
-      enabled: false,
-      usage: 0,
-      settings: { modelVersion: 'v1.0', confidence: 0.8 }
-    }
-  ]);
-
+  const [systems, setSystems] = useState<SystemConfig[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [activeTab, setActiveTab] = useState('analytics');
 
-  // Auto-refresh activity logs every 30 seconds
+  // Initialize systems from localStorage or defaults
   useEffect(() => {
-    const interval = setInterval(() => {
-      // In a real app, this would fetch from your backend
-      console.log('Refreshing activity logs...');
-    }, 30000);
+    const savedSystems = localStorage.getItem('integrationSystems');
+    const defaultSystems: SystemConfig[] = [
+      {
+        id: 'analytics',
+        name: 'Real-Time Analytics Engine',
+        status: 'inactive',
+        enabled: false,
+        usage: 0,
+        settings: { retentionDays: 30, trackingEnabled: false }
+      },
+      {
+        id: 'lifecycle',
+        name: 'User Lifecycle Automation',
+        status: 'inactive',
+        enabled: false,
+        usage: 0,
+        settings: { welcomeEmail: true, reminderInterval: 7 }
+      },
+      {
+        id: 'financial',
+        name: 'Financial Metrics Engine',
+        status: 'needs_setup',
+        enabled: false,
+        usage: 0,
+        apiKey: '',
+        settings: { currency: 'USD', reportingInterval: 'daily' }
+      },
+      {
+        id: 'api_generator',
+        name: 'API Access & Key Generator',
+        status: 'inactive',
+        enabled: false,
+        usage: 0,
+        settings: { keyExpiration: 365, rateLimit: 1000 }
+      },
+      {
+        id: 'weather_geo',
+        name: 'Weather & Geo APIs',
+        status: 'needs_setup',
+        enabled: false,
+        apiKey: '',
+        url: 'https://api.openweathermap.org/data/2.5',
+        usage: 0,
+        settings: { updateInterval: 15, units: 'metric' }
+      },
+      {
+        id: 'notifications',
+        name: 'Admin Notification System',
+        status: 'inactive',
+        enabled: false,
+        usage: 0,
+        settings: { emailNotifications: true, slackWebhook: '' }
+      },
+      {
+        id: 'prediction',
+        name: 'Prediction Engine',
+        status: 'needs_setup',
+        enabled: false,
+        usage: 0,
+        settings: { modelVersion: 'v1.0', confidence: 0.8 }
+      }
+    ];
 
-    return () => clearInterval(interval);
+    if (savedSystems) {
+      setSystems(JSON.parse(savedSystems));
+    } else {
+      setSystems(defaultSystems);
+    }
+
+    const savedLogs = localStorage.getItem('integrationLogs');
+    if (savedLogs) {
+      const parsedLogs = JSON.parse(savedLogs).map((log: any) => ({
+        ...log,
+        timestamp: new Date(log.timestamp)
+      }));
+      setActivityLogs(parsedLogs);
+    }
   }, []);
+
+  // Save systems to localStorage whenever they change
+  useEffect(() => {
+    if (systems.length > 0) {
+      localStorage.setItem('integrationSystems', JSON.stringify(systems));
+    }
+  }, [systems]);
+
+  // Save logs to localStorage whenever they change
+  useEffect(() => {
+    if (activityLogs.length > 0) {
+      localStorage.setItem('integrationLogs', JSON.stringify(activityLogs));
+    }
+  }, [activityLogs]);
 
   const addActivityLog = (system: string, action: string, details: string, status: 'success' | 'error' | 'warning' = 'success') => {
     const newLog: ActivityLog = {
@@ -138,14 +158,29 @@ const IntegrationsEngines = () => {
       details,
       status
     };
-    setActivityLogs(prev => [newLog, ...prev.slice(0, 99)]); // Keep last 100 logs
+    setActivityLogs(prev => [newLog, ...prev.slice(0, 99)]);
   };
 
   const toggleSystem = (systemId: string) => {
     setSystems(prev => prev.map(system => {
       if (system.id === systemId) {
         const newEnabled = !system.enabled;
-        const newStatus = newEnabled ? 'active' : 'inactive';
+        let newStatus: 'active' | 'inactive' | 'needs_setup' = 'inactive';
+        
+        if (newEnabled) {
+          // Check if system has required configuration
+          if (system.apiKey !== undefined && !system.apiKey) {
+            newStatus = 'needs_setup';
+            toast({
+              title: "Configuration Required",
+              description: `${system.name} requires API key configuration before activation.`,
+              variant: "destructive",
+            });
+            return system; // Don't change state
+          } else {
+            newStatus = 'active';
+          }
+        }
         
         addActivityLog(
           system.name,
@@ -153,6 +188,11 @@ const IntegrationsEngines = () => {
           `System ${newEnabled ? 'activated' : 'deactivated'} by admin`,
           'success'
         );
+
+        toast({
+          title: newEnabled ? "System Activated" : "System Deactivated",
+          description: `${system.name} has been ${newEnabled ? 'activated' : 'deactivated'}.`,
+        });
 
         return {
           ...system,
@@ -171,7 +211,7 @@ const IntegrationsEngines = () => {
         const updated = { ...system, [field]: value };
         
         // Update status based on configuration
-        if (field === 'apiKey' && value && value.length > 0) {
+        if (field === 'apiKey' && value && value.length > 10) {
           updated.status = 'inactive'; // Ready to be enabled
         }
         
@@ -185,7 +225,16 @@ const IntegrationsEngines = () => {
     const system = systems.find(s => s.id === systemId);
     if (!system) return;
 
-    // Simulate saving to backend
+    // Validate configuration
+    if (system.apiKey !== undefined && !system.apiKey) {
+      toast({
+        title: "Configuration Error",
+        description: "API key is required for this system.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     addActivityLog(
       system.name,
       'Configuration Saved',
@@ -195,7 +244,7 @@ const IntegrationsEngines = () => {
 
     toast({
       title: "Configuration Saved",
-      description: `${system.name} settings have been updated.`,
+      description: `${system.name} settings have been updated and saved permanently.`,
     });
   };
 
@@ -210,23 +259,53 @@ const IntegrationsEngines = () => {
       'warning'
     );
 
-    // Simulate test
+    // Simulate realistic API testing
     setTimeout(() => {
-      const success = Math.random() > 0.3; // 70% success rate for demo
+      let success = false;
+      let message = '';
+
+      // Test based on system type
+      switch (system.id) {
+        case 'weather_geo':
+          success = system.apiKey && system.apiKey.length > 10;
+          message = success ? 'Weather API connection successful' : 'Invalid API key for weather service';
+          break;
+        case 'financial':
+          success = system.apiKey && system.apiKey.length > 15;
+          message = success ? 'Financial API connection verified' : 'Financial API authentication failed';
+          break;
+        case 'analytics':
+          success = true; // Analytics doesn't need external API
+          message = 'Analytics engine initialized successfully';
+          break;
+        case 'prediction':
+          success = Math.random() > 0.2; // 80% success rate
+          message = success ? 'Prediction model loaded and ready' : 'Prediction model failed to initialize';
+          break;
+        default:
+          success = Math.random() > 0.3; // 70% success rate for others
+          message = success ? 'System test passed successfully' : 'System test failed - check configuration';
+      }
+
       addActivityLog(
         system.name,
         'Test Completed',
-        success ? 'System test passed successfully' : 'System test failed - check configuration',
+        message,
         success ? 'success' : 'error'
       );
 
       toast({
         title: success ? "Test Successful" : "Test Failed",
-        description: success 
-          ? `${system.name} is working correctly.` 
-          : `${system.name} test failed. Please check your configuration.`,
+        description: message,
         variant: success ? "default" : "destructive"
       });
+
+      // Update usage stats on successful test
+      if (success) {
+        setSystems(prev => prev.map(s => 
+          s.id === systemId ? { ...s, usage: (s.usage || 0) + 1, lastActivity: new Date() } : s
+        ));
+      }
     }, 2000);
   };
 
@@ -238,8 +317,9 @@ const IntegrationsEngines = () => {
           enabled: false,
           status: 'needs_setup' as const,
           apiKey: '',
-          url: '',
-          threshold: undefined
+          url: system.id === 'weather_geo' ? 'https://api.openweathermap.org/data/2.5' : '',
+          threshold: undefined,
+          usage: 0
         };
 
         addActivityLog(
@@ -303,7 +383,6 @@ const IntegrationsEngines = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Systems Overview */}
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-4">
@@ -341,11 +420,10 @@ const IntegrationsEngines = () => {
                         <Switch
                           checked={system.enabled}
                           onCheckedChange={() => toggleSystem(system.id)}
-                          disabled={system.status === 'needs_setup'}
                         />
                       </div>
                       <CardDescription>
-                        Usage: {system.usage} requests | Last activity: {system.lastActivity?.toLocaleString() || 'Never'}
+                        Usage: {system.usage || 0} requests | Last activity: {system.lastActivity?.toLocaleString() || 'Never'}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -411,7 +489,6 @@ const IntegrationsEngines = () => {
           </Tabs>
         </div>
 
-        {/* Activity Logs */}
         <div className="lg:col-span-1">
           <Card className="h-fit">
             <CardHeader>

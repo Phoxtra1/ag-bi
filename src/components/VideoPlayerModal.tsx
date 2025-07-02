@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Video, AlertCircle } from 'lucide-react';
+import { Video, AlertCircle, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface VideoPlayerModalProps {
   isOpen: boolean;
@@ -13,17 +14,18 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [processedUrl, setProcessedUrl] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const processVideoUrl = (url: string): string => {
     if (!url) return '';
     
-    console.log('Original URL:', url);
+    console.log('Processing URL:', url);
     
     // Handle Google Drive links - convert to direct download
     if (url.includes('drive.google.com')) {
       let fileId = '';
       
-      // Handle different Google Drive URL formats
+      // Extract file ID from various Google Drive URL formats
       if (url.includes('/file/d/')) {
         const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
         if (match) fileId = match[1];
@@ -36,19 +38,33 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       }
       
       if (fileId) {
+        // Use Google Drive's direct download endpoint
         const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        console.log('Converted Google Drive URL:', directUrl);
+        console.log('Converted Google Drive to direct URL:', directUrl);
         return directUrl;
       }
     }
     
     // Handle Dropbox links
-    if (url.includes('dropbox.com') && !url.includes('dl=1')) {
-      const dropboxUrl = url.replace('dl=0', 'dl=1').replace('?dl=0', '?dl=1');
-      if (!dropboxUrl.includes('dl=1')) {
-        return dropboxUrl + (dropboxUrl.includes('?') ? '&dl=1' : '?dl=1');
+    if (url.includes('dropbox.com')) {
+      let processedDropboxUrl = url;
+      if (url.includes('dl=0')) {
+        processedDropboxUrl = url.replace('dl=0', 'dl=1');
+      } else if (!url.includes('dl=1')) {
+        processedDropboxUrl = url + (url.includes('?') ? '&dl=1' : '?dl=1');
       }
-      return dropboxUrl;
+      console.log('Processed Dropbox URL:', processedDropboxUrl);
+      return processedDropboxUrl;
+    }
+    
+    // Handle OneDrive links
+    if (url.includes('onedrive.live.com') || url.includes('1drv.ms')) {
+      // Convert OneDrive sharing link to direct download
+      if (url.includes('?')) {
+        const directUrl = url.replace('?', '/download?');
+        console.log('Processed OneDrive URL:', directUrl);
+        return directUrl;
+      }
     }
     
     // Return direct URLs as-is
@@ -60,8 +76,18 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
     if (isOpen) {
       setIsLoading(true);
       setVideoError(false);
+      setErrorMessage('');
+      
       const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-      console.log('Saved URL from localStorage:', savedUrl);
+      console.log('Loading video URL from localStorage:', savedUrl);
+      
+      if (!savedUrl) {
+        setIsLoading(false);
+        setVideoError(true);
+        setErrorMessage('No video URL configured');
+        return;
+      }
+      
       setVideoUrl(savedUrl);
       const processed = processVideoUrl(savedUrl);
       setProcessedUrl(processed);
@@ -72,16 +98,25 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const handleVideoError = (e: any) => {
     console.error('Video failed to load:', processedUrl, e);
     setVideoError(true);
+    setErrorMessage('Video failed to load. The file may be private, the link may be incorrect, or the video format may not be supported.');
   };
 
   const handleVideoLoad = () => {
     console.log('Video loaded successfully:', processedUrl);
     setVideoError(false);
+    setErrorMessage('');
   };
 
   const handleVideoCanPlay = () => {
     console.log('Video can play:', processedUrl);
     setVideoError(false);
+    setErrorMessage('');
+  };
+
+  const openVideoInNewTab = () => {
+    if (processedUrl) {
+      window.open(processedUrl, '_blank');
+    }
   };
 
   return (
@@ -103,23 +138,35 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
           ) : processedUrl && !videoError ? (
-            <div className="aspect-video rounded-lg overflow-hidden bg-black">
-              <video
-                controls
-                autoPlay
-                preload="metadata"
-                className="w-full h-full object-cover"
-                onError={handleVideoError}
-                onLoadedData={handleVideoLoad}
-                onCanPlay={handleVideoCanPlay}
-                crossOrigin="anonymous"
-              >
-                <source src={processedUrl} type="video/mp4" />
-                <source src={processedUrl} type="video/mov" />
-                <source src={processedUrl} type="video/webm" />
-                <source src={processedUrl} type="video/avi" />
-                Your browser does not support the video tag.
-              </video>
+            <div className="space-y-4">
+              <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                <video
+                  controls
+                  preload="metadata"
+                  className="w-full h-full object-contain"
+                  onError={handleVideoError}
+                  onLoadedData={handleVideoLoad}
+                  onCanPlay={handleVideoCanPlay}
+                  crossOrigin="anonymous"
+                  key={processedUrl}
+                >
+                  <source src={processedUrl} type="video/mp4" />
+                  <source src={processedUrl} type="video/mov" />
+                  <source src={processedUrl} type="video/webm" />
+                  <source src={processedUrl} type="video/avi" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+              <div className="flex justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={openVideoInNewTab}
+                  className="flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open in New Tab
+                </Button>
+              </div>
             </div>
           ) : videoError ? (
             <div className="aspect-video bg-red-50 rounded-lg flex items-center justify-center border-2 border-red-200">
@@ -129,17 +176,26 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                   Video Loading Failed
                 </h3>
                 <p className="text-red-600 mb-4">
-                  The video could not be loaded. This might be due to:
+                  {errorMessage}
                 </p>
-                <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left">
+                <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left mb-4">
+                  <p className="font-medium mb-2">Troubleshooting:</p>
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Incorrect sharing permissions on Google Drive</li>
-                    <li>Video file is private or restricted</li>
-                    <li>Network connectivity issues</li>
-                    <li>Unsupported video format</li>
+                    <li>Ensure the Google Drive file is set to "Anyone with the link can view"</li>
+                    <li>For Dropbox, make sure the sharing link is public</li>
+                    <li>Try uploading the video to a direct hosting service</li>
+                    <li>Check if the video file format is supported (MP4, MOV, WEBM)</li>
                   </ul>
                   <p className="mt-2 font-medium">Current URL: {processedUrl}</p>
                 </div>
+                <Button 
+                  variant="outline" 
+                  onClick={openVideoInNewTab}
+                  className="flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Try Opening Direct Link
+                </Button>
               </div>
             </div>
           ) : (
