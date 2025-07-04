@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Video, AlertCircle, ExternalLink } from 'lucide-react';
+import { Video, AlertCircle, ExternalLink, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface VideoPlayerModalProps {
@@ -15,33 +15,61 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const [videoError, setVideoError] = useState(false);
   const [processedUrl, setProcessedUrl] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [videoType, setVideoType] = useState<'youtube' | 'vimeo' | 'direct' | 'unsupported'>('direct');
 
-  const processVideoUrl = (url: string): string => {
-    if (!url) return '';
+  const processVideoUrl = (url: string): { processedUrl: string; type: 'youtube' | 'vimeo' | 'direct' | 'unsupported' } => {
+    if (!url) return { processedUrl: '', type: 'unsupported' };
     
     console.log('Processing URL:', url);
+    
+    // Handle YouTube URLs
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('watch?v=')) {
+        videoId = url.split('watch?v=')[1].split('&')[0];
+      } else if (url.includes('embed/')) {
+        videoId = url.split('embed/')[1].split('?')[0];
+      }
+      
+      if (videoId) {
+        return { 
+          processedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`, 
+          type: 'youtube' 
+        };
+      }
+    }
+    
+    // Handle Vimeo URLs
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('/').pop()?.split('?')[0];
+      if (videoId && !isNaN(Number(videoId))) {
+        return { 
+          processedUrl: `https://player.vimeo.com/video/${videoId}?autoplay=1`, 
+          type: 'vimeo' 
+        };
+      }
+    }
     
     // Handle Google Drive links - convert to direct download
     if (url.includes('drive.google.com')) {
       let fileId = '';
       
-      // Extract file ID from various Google Drive URL formats
       if (url.includes('/file/d/')) {
         const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
         if (match) fileId = match[1];
       } else if (url.includes('id=')) {
         const match = url.match(/id=([a-zA-Z0-9-_]+)/);
         if (match) fileId = match[1];
-      } else if (url.includes('/d/')) {
-        const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-        if (match) fileId = match[1];
       }
       
       if (fileId) {
-        // Use Google Drive's direct download endpoint
-        const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-        console.log('Converted Google Drive to direct URL:', directUrl);
-        return directUrl;
+        return { 
+          processedUrl: `https://drive.google.com/uc?export=download&id=${fileId}`, 
+          type: 'direct' 
+        };
       }
     }
     
@@ -53,23 +81,19 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       } else if (!url.includes('dl=1')) {
         processedDropboxUrl = url + (url.includes('?') ? '&dl=1' : '?dl=1');
       }
-      console.log('Processed Dropbox URL:', processedDropboxUrl);
-      return processedDropboxUrl;
+      return { processedUrl: processedDropboxUrl, type: 'direct' };
     }
     
     // Handle OneDrive links
     if (url.includes('onedrive.live.com') || url.includes('1drv.ms')) {
-      // Convert OneDrive sharing link to direct download
       if (url.includes('?')) {
         const directUrl = url.replace('?', '/download?');
-        console.log('Processed OneDrive URL:', directUrl);
-        return directUrl;
+        return { processedUrl: directUrl, type: 'direct' };
       }
     }
     
     // Return direct URLs as-is
-    console.log('Using direct URL:', url);
-    return url;
+    return { processedUrl: url, type: 'direct' };
   };
 
   useEffect(() => {
@@ -84,21 +108,24 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       if (!savedUrl) {
         setIsLoading(false);
         setVideoError(true);
-        setErrorMessage('No video URL configured');
+        setErrorMessage('No video URL configured in Admin Panel');
         return;
       }
       
       setVideoUrl(savedUrl);
-      const processed = processVideoUrl(savedUrl);
-      setProcessedUrl(processed);
+      const { processedUrl, type } = processVideoUrl(savedUrl);
+      setProcessedUrl(processedUrl);
+      setVideoType(type);
       setIsLoading(false);
+      
+      console.log('Video processed:', { processedUrl, type });
     }
   }, [isOpen]);
 
   const handleVideoError = (e: any) => {
     console.error('Video failed to load:', processedUrl, e);
     setVideoError(true);
-    setErrorMessage('Video failed to load. The file may be private, the link may be incorrect, or the video format may not be supported.');
+    setErrorMessage('Video failed to load. Please check the URL or try a different format.');
   };
 
   const handleVideoLoad = () => {
@@ -107,15 +134,45 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
     setErrorMessage('');
   };
 
-  const handleVideoCanPlay = () => {
-    console.log('Video can play:', processedUrl);
-    setVideoError(false);
-    setErrorMessage('');
-  };
-
   const openVideoInNewTab = () => {
     if (processedUrl) {
-      window.open(processedUrl, '_blank');
+      window.open(videoType === 'youtube' || videoType === 'vimeo' ? videoUrl : processedUrl, '_blank');
+    }
+  };
+
+  const renderVideoPlayer = () => {
+    if (videoType === 'youtube' || videoType === 'vimeo') {
+      return (
+        <iframe
+          src={processedUrl}
+          className="w-full h-full"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          onError={handleVideoError}
+          onLoad={handleVideoLoad}
+        ></iframe>
+      );
+    } else {
+      return (
+        <video
+          controls
+          autoPlay
+          preload="metadata"
+          className="w-full h-full object-contain"
+          onError={handleVideoError}
+          onLoadedData={handleVideoLoad}
+          onCanPlay={handleVideoLoad}
+          crossOrigin="anonymous"
+          key={processedUrl}
+        >
+          <source src={processedUrl} type="video/mp4" />
+          <source src={processedUrl} type="video/mov" />
+          <source src={processedUrl} type="video/webm" />
+          <source src={processedUrl} type="video/avi" />
+          Your browser does not support the video tag.
+        </video>
+      );
     }
   };
 
@@ -135,27 +192,15 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
         <div className="px-6 pb-6">
           {isLoading ? (
             <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading video...</p>
+              </div>
             </div>
           ) : processedUrl && !videoError ? (
             <div className="space-y-4">
               <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                <video
-                  controls
-                  preload="metadata"
-                  className="w-full h-full object-contain"
-                  onError={handleVideoError}
-                  onLoadedData={handleVideoLoad}
-                  onCanPlay={handleVideoCanPlay}
-                  crossOrigin="anonymous"
-                  key={processedUrl}
-                >
-                  <source src={processedUrl} type="video/mp4" />
-                  <source src={processedUrl} type="video/mov" />
-                  <source src={processedUrl} type="video/webm" />
-                  <source src={processedUrl} type="video/avi" />
-                  Your browser does not support the video tag.
-                </video>
+                {renderVideoPlayer()}
               </div>
               <div className="flex justify-center">
                 <Button 
@@ -179,14 +224,9 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                   {errorMessage}
                 </p>
                 <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left mb-4">
-                  <p className="font-medium mb-2">Troubleshooting:</p>
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Ensure the Google Drive file is set to "Anyone with the link can view"</li>
-                    <li>For Dropbox, make sure the sharing link is public</li>
-                    <li>Try uploading the video to a direct hosting service</li>
-                    <li>Check if the video file format is supported (MP4, MOV, WEBM)</li>
-                  </ul>
-                  <p className="mt-2 font-medium">Current URL: {processedUrl}</p>
+                  <p className="font-medium mb-2">Current URL: {videoUrl}</p>
+                  <p className="font-medium mb-2">Processed URL: {processedUrl}</p>
+                  <p className="font-medium mb-2">Video Type: {videoType}</p>
                 </div>
                 <Button 
                   variant="outline" 
@@ -206,7 +246,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                   No Demo Video Available
                 </h3>
                 <p className="text-gray-500">
-                  Please configure a video URL in the admin panel.
+                  Please configure a video URL in the admin panel under Integrations > Demo Video.
                 </p>
               </div>
             </div>

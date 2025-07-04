@@ -1,65 +1,11 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { Mail, CheckCircle, Newspaper, TrendingUp, Globe } from 'lucide-react';
-
-interface NewsletterForm {
-  email: string;
-  consent: boolean;
-}
+import NewsletterSubscription from '@/components/NewsletterSubscription';
+import { Newspaper, TrendingUp, Globe, Mail } from 'lucide-react';
 
 const Newsletter = () => {
-  const [subscribed, setSubscribed] = useState(false);
-  const form = useForm<NewsletterForm>();
-
-  const onSubmit = (data: NewsletterForm) => {
-    console.log('Newsletter subscription:', data);
-    // Handle Brevo integration here
-    setSubscribed(true);
-    form.reset();
-  };
-
-  if (subscribed) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-        <Header />
-        
-        <main className="container mx-auto px-4 py-12 flex items-center justify-center">
-          <div className="text-center max-w-2xl">
-            <CheckCircle className="h-24 w-24 mx-auto mb-8 text-green-600" />
-            <h1 className="text-4xl font-bold text-gray-900 mb-6">
-              You're in!
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Expect valuable content soon. We'll keep you updated on the latest in media, 
-              innovation, technology, business, politics, and more from Amniva and Amnewsworld.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                onClick={() => setSubscribed(false)}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Subscribe Another Email
-              </Button>
-              <Button size="lg" variant="outline">
-                Explore Amniva Platform
-              </Button>
-            </div>
-          </div>
-        </main>
-
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <Header />
@@ -117,67 +63,13 @@ const Newsletter = () => {
               </p>
             </div>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  rules={{ 
-                    required: "Email is required",
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Please enter a valid email"
-                    }
-                  }}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700 font-medium">Email Address</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="Enter your email address" 
-                          {...field}
-                          className="border-2 border-gray-200 focus:border-blue-500 p-4 text-lg"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="consent"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="text-sm text-gray-700">
-                          I agree to receive emails from Amniva and its brands, including 
-                          Amnewsworld, AMN News Radio, and Amnet.
-                        </FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                
-                <Button 
-                  type="submit" 
-                  size="lg" 
-                  className="w-full bg-[#002A5C] hover:bg-[#001A3C] text-white py-4 text-lg font-semibold"
-                >
-                  <Mail className="mr-2 h-5 w-5" />
-                  Subscribe Now
-                </Button>
-              </form>
-            </Form>
+            <NewsletterSubscription 
+              className="mb-6"
+              placeholder="Enter your email address"
+              buttonText="Subscribe Now"
+            />
 
-            <div className="mt-6 text-center">
+            <div className="text-center">
               <p className="text-sm text-gray-500">
                 Powered by Brevo • Unsubscribe anytime • Privacy protected
               </p>

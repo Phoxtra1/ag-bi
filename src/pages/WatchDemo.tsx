@@ -4,26 +4,63 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Play, Video, ArrowRight } from 'lucide-react';
+import { Play, Video, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 
 const WatchDemo = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, this would fetch from your backend/database
-    // For now, we'll simulate fetching the saved video URL
-    const fetchVideoUrl = () => {
-      // Simulate API call
-      setTimeout(() => {
-        const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-        setVideoUrl(savedUrl);
-        setIsLoading(false);
-      }, 500);
+    const loadVideoUrl = () => {
+      const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+      console.log('WatchDemo: Loading video URL:', savedUrl);
+      setVideoUrl(savedUrl);
+      setIsLoading(false);
     };
 
-    fetchVideoUrl();
+    loadVideoUrl();
+
+    // Listen for storage changes to update in real-time
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'adminDemoVideoUrl') {
+        console.log('WatchDemo: Video URL updated:', e.newValue);
+        setVideoUrl(e.newValue || '');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
+
+  const processVideoUrl = (url: string) => {
+    if (!url) return null;
+    
+    // Handle YouTube URLs
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('watch?v=')) {
+        videoId = url.split('watch?v=')[1].split('&')[0];
+      }
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}`;
+      }
+    }
+    
+    // Handle Vimeo URLs
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('/').pop()?.split('?')[0];
+      if (videoId && !isNaN(Number(videoId))) {
+        return `https://player.vimeo.com/video/${videoId}`;
+      }
+    }
+    
+    return url;
+  };
+
+  const processedUrl = processVideoUrl(videoUrl);
+  const isEmbedVideo = videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') || videoUrl.includes('vimeo.com'));
 
   if (isLoading) {
     return (
@@ -31,7 +68,10 @@ const WatchDemo = () => {
         <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+              <p className="text-gray-600">Loading demo video...</p>
+            </div>
           </div>
         </main>
         <Footer />
@@ -60,17 +100,28 @@ const WatchDemo = () => {
         <div className="max-w-4xl mx-auto mb-12">
           <Card className="overflow-hidden shadow-2xl">
             <CardContent className="p-0">
-              {videoUrl ? (
+              {processedUrl ? (
                 <div className="aspect-video">
-                  <video
-                    controls
-                    className="w-full h-full object-cover"
-                    poster="/placeholder.svg"
-                  >
-                    <source src={videoUrl} type="video/mp4" />
-                    <source src={videoUrl} type="video/mov" />
-                    Your browser does not support the video tag.
-                  </video>
+                  {isEmbedVideo ? (
+                    <iframe
+                      src={processedUrl}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  ) : (
+                    <video
+                      controls
+                      className="w-full h-full object-cover"
+                      poster="/placeholder.svg"
+                    >
+                      <source src={processedUrl} type="video/mp4" />
+                      <source src={processedUrl} type="video/mov" />
+                      <source src={processedUrl} type="video/webm" />
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
                 </div>
               ) : (
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
@@ -79,8 +130,11 @@ const WatchDemo = () => {
                     <h3 className="text-xl font-semibold text-gray-700 mb-2">
                       Demo video currently unavailable
                     </h3>
-                    <p className="text-gray-500">
-                      Please check back later.
+                    <p className="text-gray-500 mb-4">
+                      Please check back later or contact us for more information.
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      Admin: Configure video URL in Admin Panel > Integrations > Demo Video
                     </p>
                   </div>
                 </div>

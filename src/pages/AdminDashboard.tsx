@@ -21,7 +21,8 @@ import {
   CreditCard,
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  Monitor
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -30,6 +31,7 @@ import ApiManagement from '@/components/admin/ApiManagement';
 import SystemSettings from '@/components/admin/SystemSettings';
 import ContentOversight from '@/components/admin/ContentOversight';
 import AdminInvitation from '@/components/admin/AdminInvitation';
+import SystemStatus from '@/components/admin/SystemStatus';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -55,6 +57,7 @@ const AdminDashboard = () => {
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: Activity },
+    { id: 'status', label: 'System Status', icon: Monitor },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'financials', label: 'Financials', icon: DollarSign },
@@ -135,6 +138,7 @@ const AdminDashboard = () => {
 
           {/* Tab Content */}
           {activeTab === 'overview' && <DashboardOverview stats={realTimeStats} />}
+          {activeTab === 'status' && <SystemStatus />}
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'admins' && <AdminInvitation />}
           {activeTab === 'financials' && <FinancialReports stats={realTimeStats} />}
