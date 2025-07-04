@@ -44,35 +44,70 @@ const IntegrationsPanel = () => {
 
   // Load settings from localStorage on component mount
   useEffect(() => {
+    console.log('IntegrationsPanel: Loading settings from localStorage');
+    
+    const savedVideoUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+    console.log('IntegrationsPanel: Loaded video URL:', savedVideoUrl);
+    
     const savedSettings = localStorage.getItem('integrationSettings');
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
+      const parsed = JSON.parse(savedSettings);
+      setSettings(prev => ({
+        ...prev,
+        ...parsed,
+        demoVideoUrl: savedVideoUrl // Always use the direct localStorage value
+      }));
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        demoVideoUrl: savedVideoUrl
+      }));
     }
-    
-    // Load individual settings that might exist
-    const savedChatbaseKey = localStorage.getItem('chatbaseApiKey') || '';
-    const savedBrevoKey = localStorage.getItem('brevoApiKey') || '';
-    const savedVideoUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-    
-    setSettings(prev => ({
-      ...prev,
-      chatbaseApiKey: savedChatbaseKey,
-      brevoApiKey: savedBrevoKey,
-      demoVideoUrl: savedVideoUrl
-    }));
   }, []);
 
-  // Save settings to localStorage whenever settings change
-  useEffect(() => {
-    localStorage.setItem('integrationSettings', JSON.stringify(settings));
-    // Also save the video URL separately for immediate access
-    if (settings.demoVideoUrl) {
-      localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl);
-    }
-  }, [settings]);
-
   const updateSetting = (key: keyof IntegrationSettings, value: any) => {
+    console.log('IntegrationsPanel: Updating setting', key, 'to:', value);
     setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleVideoSave = () => {
+    console.log('IntegrationsPanel: Saving video URL:', settings.demoVideoUrl);
+    
+    if (!settings.demoVideoUrl.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid video URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const cleanUrl = settings.demoVideoUrl.trim();
+    
+    // Save to localStorage with explicit key
+    localStorage.setItem('adminDemoVideoUrl', cleanUrl);
+    localStorage.setItem('integrationSettings', JSON.stringify(settings));
+    
+    console.log('IntegrationsPanel: Video URL saved to localStorage:', cleanUrl);
+    
+    // Dispatch multiple events to ensure the Watch Demo page updates
+    window.dispatchEvent(new CustomEvent('videoUrlUpdated', { 
+      detail: { url: cleanUrl } 
+    }));
+    
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'adminDemoVideoUrl',
+      newValue: cleanUrl,
+      oldValue: localStorage.getItem('adminDemoVideoUrl'),
+      storageArea: localStorage
+    }));
+    
+    toast({
+      title: "Video URL Saved Successfully",
+      description: "The demo video URL has been saved and is now live on the Watch Demo page.",
+    });
+    
+    console.log('IntegrationsPanel: Events dispatched for video URL update');
   };
 
   const handleChatBotToggle = (enabled: boolean) => {
@@ -140,33 +175,6 @@ const IntegrationsPanel = () => {
     });
   };
 
-  const handleVideoSave = () => {
-    if (!settings.demoVideoUrl.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid video URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Save to localStorage immediately
-    const cleanUrl = settings.demoVideoUrl.trim();
-    localStorage.setItem('adminDemoVideoUrl', cleanUrl);
-    
-    // Dispatch custom event to notify Watch Demo page immediately
-    window.dispatchEvent(new CustomEvent('videoUrlUpdated', { 
-      detail: { url: cleanUrl } 
-    }));
-    
-    toast({
-      title: "Video Link Saved Successfully",
-      description: "The demo video URL has been saved and is now live on the Watch Demo page.",
-    });
-    
-    console.log('Video URL saved and event dispatched:', cleanUrl);
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -174,8 +182,12 @@ const IntegrationsPanel = () => {
         <p className="text-gray-600">Manage your platform integrations and external services</p>
       </div>
 
-      <Tabs defaultValue="chatbot" className="space-y-6">
+      <Tabs defaultValue="demo-video" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="demo-video" className="flex items-center gap-2">
+            <Video className="w-4 h-4" />
+            Demo Video
+          </TabsTrigger>
           <TabsTrigger value="chatbot" className="flex items-center gap-2">
             <MessageCircle className="w-4 h-4" />
             Odeneho Chat Bot
@@ -184,11 +196,69 @@ const IntegrationsPanel = () => {
             <Mail className="w-4 h-4" />
             Brevo Newsletter
           </TabsTrigger>
-          <TabsTrigger value="demo-video" className="flex items-center gap-2">
-            <Video className="w-4 h-4" />
-            Demo Video
-          </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="demo-video">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5 text-red-600" />
+                Demo Video Management
+              </CardTitle>
+              <CardDescription>
+                Configure the video URL that will be displayed on the public Watch Demo page
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="video-url">Video URL</Label>
+                  <p className="text-sm text-gray-600 mb-2">
+                    Paste any video URL (YouTube, Vimeo, direct MP4, etc.)
+                  </p>
+                  <Input
+                    id="video-url"
+                    type="url"
+                    placeholder="https://www.amnewsworld.com/wp-content/uploads/2025/07/amniva-1.mp4"
+                    value={settings.demoVideoUrl}
+                    onChange={(e) => updateSetting('demoVideoUrl', e.target.value)}
+                  />
+                </div>
+                
+                <Button onClick={handleVideoSave} className="w-full" size="lg">
+                  <Video className="w-4 h-4 mr-2" />
+                  Save Video URL
+                </Button>
+              </div>
+
+              {settings.demoVideoUrl && (
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">Current Demo Video URL</h3>
+                  <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                    <p className="text-sm text-green-600 font-medium">✅ Active URL:</p>
+                    <p className="font-mono text-sm break-all text-green-800 mt-1">{settings.demoVideoUrl}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-blue-900">Supported Video Types</p>
+                    <div className="text-sm text-blue-700 mt-2 space-y-1">
+                      <p>✅ Direct video files (.mp4, .mov, .webm, .avi)</p>
+                      <p>✅ YouTube links (any format)</p>
+                      <p>✅ Vimeo links</p>
+                      <p>✅ Google Drive video links</p>
+                      <p>✅ Dropbox video links</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="chatbot">
           <Card>
@@ -406,67 +476,6 @@ const IntegrationsPanel = () => {
                   <Mail className="w-4 h-4 mr-2" />
                   View All Campaigns
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="demo-video">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="w-5 h-5 text-red-600" />
-                Demo Video Management
-              </CardTitle>
-              <CardDescription>
-                Configure the video URL that will be displayed on the public Watch Demo page
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="video-url">Video URL</Label>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Enter any direct video URL (e.g., .mp4, .mov, .webm files)
-                  </p>
-                  <Input
-                    id="video-url"
-                    type="url"
-                    placeholder="https://example.com/video.mp4"
-                    value={settings.demoVideoUrl}
-                    onChange={(e) => updateSetting('demoVideoUrl', e.target.value)}
-                  />
-                </div>
-                
-                <Button onClick={handleVideoSave} className="w-full">
-                  <Video className="w-4 h-4 mr-2" />
-                  Save Video URL
-                </Button>
-              </div>
-
-              {settings.demoVideoUrl && (
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Current Demo Video URL</h3>
-                  <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Active URL:</p>
-                    <p className="font-mono text-sm break-all text-blue-600">{settings.demoVideoUrl}</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-blue-900">Video URL Requirements</p>
-                    <div className="text-sm text-blue-700 mt-2 space-y-1">
-                      <p>✅ Direct video file URLs (.mp4, .mov, .webm, .avi)</p>
-                      <p>✅ CDN hosted videos</p>
-                      <p>✅ Any publicly accessible video URL</p>
-                      <p className="text-amber-700 mt-2">⚠️ Make sure the video URL is publicly accessible</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </CardContent>
           </Card>

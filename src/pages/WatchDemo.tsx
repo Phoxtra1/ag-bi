@@ -11,16 +11,54 @@ const WatchDemo = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
 
+  const processVideoUrl = (url: string): string => {
+    if (!url) return '';
+    
+    console.log('WatchDemo: Processing video URL:', url);
+    
+    // Handle YouTube URLs
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      let videoId = '';
+      
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split('?')[0];
+      } else if (url.includes('watch?v=')) {
+        videoId = url.split('watch?v=')[1].split('&')[0];
+      } else if (url.includes('embed/')) {
+        videoId = url.split('embed/')[1].split('?')[0];
+      }
+      
+      if (videoId) {
+        return `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`;
+      }
+    }
+    
+    // Handle Vimeo URLs
+    if (url.includes('vimeo.com')) {
+      const videoId = url.split('/').pop()?.split('?')[0];
+      if (videoId && !isNaN(Number(videoId))) {
+        return `https://player.vimeo.com/video/${videoId}`;
+      }
+    }
+    
+    // Return direct URLs as-is for iframe
+    return url;
+  };
+
   const loadVideoUrl = () => {
     console.log('WatchDemo: Loading video URL from localStorage');
     
     const savedUrl = localStorage.getItem('adminDemoVideoUrl');
-    console.log('WatchDemo: Retrieved URL:', savedUrl);
+    console.log('WatchDemo: Retrieved raw URL from localStorage:', savedUrl);
     
     if (savedUrl && savedUrl.trim()) {
-      setVideoUrl(savedUrl.trim());
+      const processedUrl = processVideoUrl(savedUrl.trim());
+      console.log('WatchDemo: Processed URL:', processedUrl);
+      
+      setVideoUrl(processedUrl);
       setVideoError(false);
     } else {
+      console.log('WatchDemo: No video URL found in localStorage');
       setVideoUrl('');
       setVideoError(false);
     }
@@ -32,15 +70,15 @@ const WatchDemo = () => {
     // Load immediately
     loadVideoUrl();
 
-    // Listen for storage changes to update in real-time when admin changes the URL
+    // Listen for storage changes
     const handleStorageChange = (e: StorageEvent) => {
+      console.log('WatchDemo: Storage change detected:', e.key, e.newValue);
       if (e.key === 'adminDemoVideoUrl') {
-        console.log('WatchDemo: Video URL updated via storage event:', e.newValue);
         loadVideoUrl();
       }
     };
 
-    // Listen for custom events from same tab (when admin panel updates)
+    // Listen for custom events
     const handleCustomUpdate = (e: CustomEvent) => {
       console.log('WatchDemo: Custom update event received:', e.detail);
       loadVideoUrl();
@@ -49,19 +87,28 @@ const WatchDemo = () => {
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('videoUrlUpdated', handleCustomUpdate as EventListener);
 
+    // Also listen for focus events to refresh when returning to tab
+    const handleFocus = () => {
+      console.log('WatchDemo: Page focused, refreshing video URL');
+      loadVideoUrl();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('videoUrlUpdated', handleCustomUpdate as EventListener);
+      window.removeEventListener('focus', handleFocus);
     };
   }, []);
 
   const handleVideoError = () => {
-    console.error('Video failed to load:', videoUrl);
+    console.error('WatchDemo: Video failed to load:', videoUrl);
     setVideoError(true);
   };
 
   const handleVideoLoad = () => {
-    console.log('Video loaded successfully:', videoUrl);
+    console.log('WatchDemo: Video loaded successfully:', videoUrl);
     setVideoError(false);
   };
 
@@ -114,6 +161,7 @@ const WatchDemo = () => {
                     onError={handleVideoError}
                     onLoad={handleVideoLoad}
                     className="w-full h-full"
+                    title="Amniva Demo Video"
                   />
                 </div>
               ) : videoError ? (
@@ -124,11 +172,11 @@ const WatchDemo = () => {
                       Video Loading Failed
                     </h3>
                     <p className="text-red-600 mb-4">
-                      The configured video URL could not be loaded. Please check the video URL in the Admin Panel.
+                      The video URL could not be loaded. Please check the video configuration in the Admin Panel.
                     </p>
-                    <p className="text-sm text-red-500 bg-red-100 p-3 rounded-lg">
-                      Current URL: {videoUrl}
-                    </p>
+                    <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left">
+                      <p className="font-medium">Current URL: {videoUrl || 'None'}</p>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -142,7 +190,7 @@ const WatchDemo = () => {
                       Please configure a video URL in the Admin Panel to display the demo video.
                     </p>
                     <p className="text-sm text-gray-400">
-                      Admin: Go to Admin Panel {'>'}  Settings {'>'}  Integrations {'>'}  Demo Video
+                      Admin: Go to Admin Panel → Settings → Integrations → Demo Video
                     </p>
                   </div>
                 </div>
