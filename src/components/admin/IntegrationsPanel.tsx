@@ -65,6 +65,10 @@ const IntegrationsPanel = () => {
   // Save settings to localStorage whenever settings change
   useEffect(() => {
     localStorage.setItem('integrationSettings', JSON.stringify(settings));
+    // Also save the video URL separately for immediate access
+    if (settings.demoVideoUrl) {
+      localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl);
+    }
   }, [settings]);
 
   const updateSetting = (key: keyof IntegrationSettings, value: any) => {
@@ -146,18 +150,21 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    // Save to localStorage
-    localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl.trim());
+    // Save to localStorage immediately
+    const cleanUrl = settings.demoVideoUrl.trim();
+    localStorage.setItem('adminDemoVideoUrl', cleanUrl);
     
-    // Dispatch custom event to notify Watch Demo page
-    window.dispatchEvent(new CustomEvent('videoUrlUpdated'));
+    // Dispatch custom event to notify Watch Demo page immediately
+    window.dispatchEvent(new CustomEvent('videoUrlUpdated', { 
+      detail: { url: cleanUrl } 
+    }));
     
     toast({
-      title: "Video Link Updated Successfully",
-      description: "The demo video has been updated and will be displayed on the public page immediately.",
+      title: "Video Link Saved Successfully",
+      description: "The demo video URL has been saved and is now live on the Watch Demo page.",
     });
     
-    console.log('Video URL saved and event dispatched:', settings.demoVideoUrl.trim());
+    console.log('Video URL saved and event dispatched:', cleanUrl);
   };
 
   return (
@@ -412,7 +419,7 @@ const IntegrationsPanel = () => {
                 Demo Video Management
               </CardTitle>
               <CardDescription>
-                Manage the demo video displayed on the public Watch Demo page
+                Configure the video URL that will be displayed on the public Watch Demo page
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -420,12 +427,12 @@ const IntegrationsPanel = () => {
                 <div>
                   <Label htmlFor="video-url">Video URL</Label>
                   <p className="text-sm text-gray-600 mb-2">
-                    Enter a direct link to your video file or Google Drive/Dropbox sharing link
+                    Enter any direct video URL (e.g., .mp4, .mov, .webm files)
                   </p>
                   <Input
                     id="video-url"
                     type="url"
-                    placeholder="https://drive.google.com/file/d/your-file-id/view or direct video URL"
+                    placeholder="https://example.com/video.mp4"
                     value={settings.demoVideoUrl}
                     onChange={(e) => updateSetting('demoVideoUrl', e.target.value)}
                   />
@@ -433,16 +440,16 @@ const IntegrationsPanel = () => {
                 
                 <Button onClick={handleVideoSave} className="w-full">
                   <Video className="w-4 h-4 mr-2" />
-                  Save Video Link
+                  Save Video URL
                 </Button>
               </div>
 
               {settings.demoVideoUrl && (
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">Current Demo Video</h3>
+                  <h3 className="text-lg font-semibold">Current Demo Video URL</h3>
                   <div className="p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600">Currently configured URL:</p>
-                    <p className="font-mono text-sm break-all">{settings.demoVideoUrl}</p>
+                    <p className="text-sm text-gray-600">Active URL:</p>
+                    <p className="font-mono text-sm break-all text-blue-600">{settings.demoVideoUrl}</p>
                   </div>
                 </div>
               )}
@@ -452,30 +459,11 @@ const IntegrationsPanel = () => {
                   <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
                   <div>
                     <p className="font-medium text-blue-900">Video URL Requirements</p>
-                    <div className="text-sm text-blue-700 mt-2 space-y-2">
-                      <div>
-                        <p className="font-medium text-green-700">✅ Supported:</p>
-                        <ul className="list-disc list-inside ml-2">
-                          <li>Google Drive sharing links (will be auto-converted)</li>
-                          <li>Dropbox sharing links (will be auto-converted)</li>
-                          <li>Direct video files (.mp4, .mov, .webm, .avi)</li>
-                          <li>CDN video URLs</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <p className="font-medium text-red-700">❌ Not supported:</p>
-                        <ul className="list-disc list-inside ml-2">
-                          <li>YouTube links</li>
-                          <li>Vimeo links</li>
-                          <li>Private/password-protected videos</li>
-                        </ul>
-                      </div>
-                      <div className="mt-3 p-2 bg-yellow-100 rounded text-yellow-800">
-                        <p className="text-xs">
-                          <strong>Tip:</strong> For Google Drive, make sure the file is set to "Anyone with the link can view". 
-                          The system will automatically convert sharing links to direct download URLs.
-                        </p>
-                      </div>
+                    <div className="text-sm text-blue-700 mt-2 space-y-1">
+                      <p>✅ Direct video file URLs (.mp4, .mov, .webm, .avi)</p>
+                      <p>✅ CDN hosted videos</p>
+                      <p>✅ Any publicly accessible video URL</p>
+                      <p className="text-amber-700 mt-2">⚠️ Make sure the video URL is publicly accessible</p>
                     </div>
                   </div>
                 </div>
