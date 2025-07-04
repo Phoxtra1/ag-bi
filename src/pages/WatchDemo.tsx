@@ -134,7 +134,7 @@ const WatchDemo = () => {
                       Please check back later or contact us for more information.
                     </p>
                     <p className="text-sm text-gray-400">
-                      Admin: Configure video URL in Admin Panel > Integrations > Demo Video
+                      Admin: Configure video URL in Admin Panel {'>'} Integrations {'>'} Demo Video
                     </p>
                   </div>
                 </div>

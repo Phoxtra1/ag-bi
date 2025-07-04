@@ -246,7 +246,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                   No Demo Video Available
                 </h3>
                 <p className="text-gray-500">
-                  Please configure a video URL in the admin panel under Integrations > Demo Video.
+                  Please configure a video URL in the admin panel under Integrations {'>'}  Demo Video.
                 </p>
               </div>
             </div>
