@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -147,23 +146,18 @@ const IntegrationsPanel = () => {
       return;
     }
 
-    // Validate URL format
-    if (settings.demoVideoUrl.includes('youtu.be') || 
-        settings.demoVideoUrl.includes('youtube.com/watch') || 
-        settings.demoVideoUrl.includes('vimeo.com/')) {
-      toast({
-        title: "Unsupported Video Format",
-        description: "YouTube and Vimeo links are not supported. Please use direct video file URLs or Google Drive/Dropbox links.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl);
+    // Save to localStorage
+    localStorage.setItem('adminDemoVideoUrl', settings.demoVideoUrl.trim());
+    
+    // Dispatch custom event to notify Watch Demo page
+    window.dispatchEvent(new CustomEvent('videoUrlUpdated'));
+    
     toast({
       title: "Video Link Updated Successfully",
-      description: "The demo video has been updated and will be displayed on the public page.",
+      description: "The demo video has been updated and will be displayed on the public page immediately.",
     });
+    
+    console.log('Video URL saved and event dispatched:', settings.demoVideoUrl.trim());
   };
 
   return (

@@ -9,31 +9,65 @@ import { Play, Video, ArrowRight, CheckCircle, Loader2 } from 'lucide-react';
 const WatchDemo = () => {
   const [videoUrl, setVideoUrl] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const loadVideoUrl = () => {
-      const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-      console.log('WatchDemo: Loading video URL:', savedUrl);
-      setVideoUrl(savedUrl);
+      console.log('WatchDemo: Loading video URL from localStorage');
+      
+      // Always fetch fresh data from localStorage
+      const savedUrl = localStorage.getItem('adminDemoVideoUrl');
+      console.log('WatchDemo: Retrieved URL:', savedUrl);
+      
+      if (savedUrl && savedUrl.trim()) {
+        setVideoUrl(savedUrl.trim());
+        setVideoError(false);
+      } else {
+        setVideoUrl('');
+        setVideoError(false); // Not an error, just no URL configured
+      }
+      
       setIsLoading(false);
     };
 
+    // Load immediately
     loadVideoUrl();
 
-    // Listen for storage changes to update in real-time
+    // Listen for storage changes to update in real-time when admin changes the URL
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'adminDemoVideoUrl') {
-        console.log('WatchDemo: Video URL updated:', e.newValue);
-        setVideoUrl(e.newValue || '');
+        console.log('WatchDemo: Video URL updated via storage event:', e.newValue);
+        if (e.newValue && e.newValue.trim()) {
+          setVideoUrl(e.newValue.trim());
+          setVideoError(false);
+        } else {
+          setVideoUrl('');
+          setVideoError(false);
+        }
       }
     };
 
+    // Listen for storage changes from other tabs/windows
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events from same tab (when admin panel updates)
+    const handleCustomUpdate = () => {
+      console.log('WatchDemo: Custom update event received');
+      loadVideoUrl();
+    };
+    
+    window.addEventListener('videoUrlUpdated', handleCustomUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('videoUrlUpdated', handleCustomUpdate);
+    };
   }, []);
 
   const processVideoUrl = (url: string) => {
-    if (!url) return null;
+    if (!url || !url.trim()) return null;
+    
+    console.log('Processing video URL:', url);
     
     // Handle YouTube URLs
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -42,9 +76,15 @@ const WatchDemo = () => {
         videoId = url.split('youtu.be/')[1].split('?')[0];
       } else if (url.includes('watch?v=')) {
         videoId = url.split('watch?v=')[1].split('&')[0];
+      } else if (url.includes('embed/')) {
+        videoId = url.split('embed/')[1].split('?')[0];
       }
+      
       if (videoId) {
-        return `https://www.youtube.com/embed/${videoId}`;
+        return {
+          url: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`,
+          type: 'iframe'
+        };
       }
     }
     
@@ -52,15 +92,59 @@ const WatchDemo = () => {
     if (url.includes('vimeo.com')) {
       const videoId = url.split('/').pop()?.split('?')[0];
       if (videoId && !isNaN(Number(videoId))) {
-        return `https://player.vimeo.com/video/${videoId}`;
+        return {
+          url: `https://player.vimeo.com/video/${videoId}?autoplay=1`,
+          type: 'iframe'
+        };
       }
     }
     
-    return url;
+    // Handle Google Drive links
+    if (url.includes('drive.google.com')) {
+      let fileId = '';
+      
+      if (url.includes('/file/d/')) {
+        const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+        if (match) fileId = match[1];
+      } else if (url.includes('id=')) {
+        const match = url.match(/id=([a-zA-Z0-9-_]+)/);
+        if (match) fileId = match[1];
+      }
+      
+      if (fileId) {
+        return {
+          url: `https://drive.google.com/uc?export=download&id=${fileId}`,
+          type: 'video'
+        };
+      }
+    }
+    
+    // Handle Dropbox links
+    if (url.includes('dropbox.com')) {
+      let processedUrl = url;
+      if (url.includes('dl=0')) {
+        processedUrl = url.replace('dl=0', 'dl=1');
+      } else if (!url.includes('dl=1')) {
+        processedUrl = url + (url.includes('?') ? '&dl=1' : '?dl=1');
+      }
+      return { url: processedUrl, type: 'video' };
+    }
+    
+    // Return direct URLs as video
+    return { url: url, type: 'video' };
   };
 
-  const processedUrl = processVideoUrl(videoUrl);
-  const isEmbedVideo = videoUrl && (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') || videoUrl.includes('vimeo.com'));
+  const processedVideo = processVideoUrl(videoUrl);
+
+  const handleVideoError = () => {
+    console.error('Video failed to load:', processedVideo?.url);
+    setVideoError(true);
+  };
+
+  const handleVideoLoad = () => {
+    console.log('Video loaded successfully:', processedVideo?.url);
+    setVideoError(false);
+  };
 
   if (isLoading) {
     return (
@@ -100,38 +184,59 @@ const WatchDemo = () => {
         <div className="max-w-4xl mx-auto mb-12">
           <Card className="overflow-hidden shadow-2xl">
             <CardContent className="p-0">
-              {processedUrl ? (
+              {processedVideo && !videoError ? (
                 <div className="aspect-video">
-                  {isEmbedVideo ? (
+                  {processedVideo.type === 'iframe' ? (
                     <iframe
-                      src={processedUrl}
+                      src={processedVideo.url}
                       className="w-full h-full"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
+                      onError={handleVideoError}
+                      onLoad={handleVideoLoad}
                     ></iframe>
                   ) : (
                     <video
                       controls
+                      autoPlay
                       className="w-full h-full object-cover"
-                      poster="/placeholder.svg"
+                      onError={handleVideoError}
+                      onLoadedData={handleVideoLoad}
+                      key={processedVideo.url}
                     >
-                      <source src={processedUrl} type="video/mp4" />
-                      <source src={processedUrl} type="video/mov" />
-                      <source src={processedUrl} type="video/webm" />
+                      <source src={processedVideo.url} type="video/mp4" />
+                      <source src={processedVideo.url} type="video/mov" />
+                      <source src={processedVideo.url} type="video/webm" />
+                      <source src={processedVideo.url} type="video/avi" />
                       Your browser does not support the video tag.
                     </video>
                   )}
+                </div>
+              ) : videoError ? (
+                <div className="aspect-video bg-red-50 flex items-center justify-center border-2 border-red-200">
+                  <div className="text-center p-8">
+                    <Video className="h-16 w-16 mx-auto mb-4 text-red-500" />
+                    <h3 className="text-xl font-semibold text-red-700 mb-2">
+                      Video Loading Failed
+                    </h3>
+                    <p className="text-red-600 mb-4">
+                      The configured video URL could not be loaded. Please check the video format and URL validity.
+                    </p>
+                    <p className="text-sm text-red-500 bg-red-100 p-3 rounded-lg">
+                      Current URL: {videoUrl}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
                   <div className="text-center p-8">
                     <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                     <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                      Demo video currently unavailable
+                      No Video URL Configured
                     </h3>
                     <p className="text-gray-500 mb-4">
-                      Please check back later or contact us for more information.
+                      Please configure a video URL in the admin panel to display the demo video.
                     </p>
                     <p className="text-sm text-gray-400">
                       Admin: Configure video URL in Admin Panel {'>'} Integrations {'>'} Demo Video
