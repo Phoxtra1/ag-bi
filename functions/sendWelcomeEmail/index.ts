@@ -1,23 +1,32 @@
-import { Client, Users, Mail } from "node-appwrite";
+import fetch from 'node-fetch';
+import 'dotenv/config';
 
-export default async ({ req, res, log, error }: any) => {
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT)
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY);
+const { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY } = process.env;
 
-  const users = new Users(client);
-
+async function main() {
   try {
-    const payload = JSON.parse(req.body);
-    const email = payload.email;
+    // Mocked data – replace with actual payload
+    const email = 'newuser@example.com';
 
-    // Custom logic to send email (you can integrate 3rd party email services if needed)
-    log(`Welcome email sent to: ${email}`);
-    
-    return res.json({ success: true, message: "Welcome email sent" });
-  } catch (err) {
-    error(err);
-    return res.json({ success: false, error: err.message });
+    const response = await fetch(`${APPWRITE_ENDPOINT}/v1/functions`, {
+      method: 'POST',
+      headers: {
+        'X-Appwrite-Project': APPWRITE_PROJECT_ID!,
+        'X-Appwrite-Key': APPWRITE_API_KEY!,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        subject: "Welcome to Amneva!",
+        content: "Thank you for joining us. Explore and enjoy our platform!",
+        to: email
+      })
+    });
+
+    if (!response.ok) throw new Error(`Failed: ${response.statusText}`);
+    console.log("Welcome email sent successfully.");
+  } catch (error) {
+    console.error("Welcome email failed:", error);
   }
-};
+}
+
+main();
