@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Video, ExternalLink } from 'lucide-react';
+import { Video, ExternalLink, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface VideoPlayerModalProps {
@@ -19,7 +19,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const detectVideoType = (url: string): { processedUrl: string; type: 'youtube' | 'vimeo' | 'direct' | 'unsupported' } => {
     if (!url) return { processedUrl: '', type: 'unsupported' };
     
-    console.log('Detecting video type for URL:', url);
+    console.log('VideoPlayerModal: Detecting video type for URL:', url);
     
     // Handle YouTube URLs
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -97,13 +97,13 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   };
 
   const loadVideoUrl = () => {
-    console.log('Loading video URL from localStorage');
+    console.log('VideoPlayerModal: Loading video URL from localStorage');
     
     const savedUrl = localStorage.getItem('adminDemoVideoUrl');
-    console.log('Retrieved video URL:', savedUrl);
+    console.log('VideoPlayerModal: Retrieved video URL:', savedUrl);
     
     if (!savedUrl || !savedUrl.trim()) {
-      console.log('No video URL found');
+      console.log('VideoPlayerModal: No video URL found');
       setVideoUrl('');
       setProcessedUrl('');
       setVideoError(false);
@@ -120,7 +120,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
     setVideoError(false);
     setIsLoading(false);
     
-    console.log('Video processed:', { processedUrl, type });
+    console.log('VideoPlayerModal: Video processed:', { processedUrl, type });
   };
 
   useEffect(() => {
@@ -131,35 +131,56 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       // Listen for storage changes
       const handleStorageChange = (e: StorageEvent) => {
         if (e.key === 'adminDemoVideoUrl') {
-          console.log('Video URL updated via storage event');
+          console.log('VideoPlayerModal: Storage change detected, reloading video');
           loadVideoUrl();
         }
       };
 
       // Listen for custom events
       const handleCustomUpdate = () => {
-        console.log('Video URL updated via custom event');
+        console.log('VideoPlayerModal: Custom event detected, reloading video');
+        loadVideoUrl();
+      };
+
+      // Listen for focus events (when returning to tab)
+      const handleFocus = () => {
+        console.log('VideoPlayerModal: Window focused, checking for video updates');
         loadVideoUrl();
       };
 
       window.addEventListener('storage', handleStorageChange);
       window.addEventListener('videoUrlUpdated', handleCustomUpdate);
+      window.addEventListener('focus', handleFocus);
+
+      // Poll for updates every 10 seconds when modal is open
+      const interval = setInterval(() => {
+        console.log('VideoPlayerModal: Polling for video URL updates');
+        loadVideoUrl();
+      }, 10000);
 
       return () => {
         window.removeEventListener('storage', handleStorageChange);
         window.removeEventListener('videoUrlUpdated', handleCustomUpdate);
+        window.removeEventListener('focus', handleFocus);
+        clearInterval(interval);
       };
     }
   }, [isOpen]);
 
   const handleVideoError = () => {
-    console.error('Video failed to load:', processedUrl);
+    console.error('VideoPlayerModal: Video failed to load:', processedUrl);
     setVideoError(true);
   };
 
   const handleVideoLoad = () => {
-    console.log('Video loaded successfully');
+    console.log('VideoPlayerModal: Video loaded successfully');
     setVideoError(false);
+  };
+
+  const refreshVideo = () => {
+    console.log('VideoPlayerModal: Manual refresh triggered');
+    setIsLoading(true);
+    loadVideoUrl();
   };
 
   const openVideoInNewTab = () => {
@@ -176,6 +197,10 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
             <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600 text-lg font-medium">Video unavailable</p>
             <p className="text-gray-500 text-sm mt-2">The video could not be loaded</p>
+            <Button onClick={refreshVideo} variant="outline" size="sm" className="mt-4">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
           </div>
         </div>
       );
@@ -192,6 +217,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
           onError={handleVideoError}
           onLoad={handleVideoLoad}
           title="Demo Video"
+          key={processedUrl}
         />
       );
     } else {
@@ -220,13 +246,21 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl w-full max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-4">
-          <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-            <Video className="w-6 h-6 text-blue-600" />
-            Watch How Amniva Works
-          </DialogTitle>
-          <p className="text-gray-600">
-            See our Real-time Media Intelligence Tool in action.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle className="flex items-center gap-2 text-xl font-bold">
+                <Video className="w-6 h-6 text-blue-600" />
+                Watch How Amniva Works
+              </DialogTitle>
+              <p className="text-gray-600">
+                See our Real-time Media Intelligence Tool in action.
+              </p>
+            </div>
+            <Button onClick={refreshVideo} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </DialogHeader>
         
         <div className="px-6 pb-6">
@@ -243,7 +277,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                 {renderVideoPlayer()}
               </div>
               {processedUrl && !videoError && (
-                <div className="flex justify-center">
+                <div className="flex justify-center gap-2">
                   <Button 
                     variant="outline" 
                     onClick={openVideoInNewTab}
@@ -251,6 +285,14 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                   >
                     <ExternalLink className="w-4 h-4" />
                     Open in New Tab
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={refreshVideo}
+                    className="flex items-center gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Refresh Video
                   </Button>
                 </div>
               )}
@@ -260,11 +302,18 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
               <div className="text-center p-8">
                 <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  No demo video available
+                  No demo video configured
                 </h3>
-                <p className="text-gray-500">
-                  Please configure a video URL in the Admin Panel under Settings → Integrations → Demo Video.
+                <p className="text-gray-500 mb-4">
+                  Set a video URL in the Admin Panel to display the demo video here.
                 </p>
+                <p className="text-sm text-gray-400 mb-4">
+                  Admin: Go to Admin Panel → Settings → Integrations → Demo Video
+                </p>
+                <Button onClick={refreshVideo} variant="outline">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Check Again
+                </Button>
               </div>
             </div>
           )}

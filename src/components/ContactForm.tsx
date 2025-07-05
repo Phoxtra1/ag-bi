@@ -31,8 +31,10 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
     setIsSubmitting(true);
     
     try {
-      // Store contact submission
+      // Get existing contacts from localStorage
       const existingContacts = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+      
+      // Create new contact submission
       const newContact = {
         ...data,
         timestamp: new Date().toISOString(),
@@ -40,10 +42,19 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
         status: 'new'
       };
       
+      // Add to existing contacts
       existingContacts.push(newContact);
+      
+      // Save back to localStorage
       localStorage.setItem('contactSubmissions', JSON.stringify(existingContacts));
+      
+      // Trigger storage event for real-time updates
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'contactSubmissions',
+        newValue: JSON.stringify(existingContacts)
+      }));
 
-      console.log('Contact form submitted:', data);
+      console.log('Contact form submitted successfully:', newContact);
       
       setIsSubmitted(true);
       form.reset();
@@ -58,7 +69,7 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
       }
       
     } catch (error) {
-      console.error('Contact form error:', error);
+      console.error('Contact form submission error:', error);
       toast({
         title: "Submission Failed",
         description: "Please try again later.",

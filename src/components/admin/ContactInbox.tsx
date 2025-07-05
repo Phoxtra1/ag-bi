@@ -13,7 +13,8 @@ import {
   Eye, 
   Clock,
   User,
-  MessageSquare
+  MessageSquare,
+  RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -37,16 +38,50 @@ const ContactInbox = () => {
 
   useEffect(() => {
     loadMessages();
+
+    // Listen for storage changes (real-time updates)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'contactSubmissions') {
+        console.log('ContactInbox: Storage change detected, reloading messages');
+        loadMessages();
+      }
+    };
+
+    // Listen for custom events
+    const handleCustomUpdate = () => {
+      console.log('ContactInbox: Custom event detected, reloading messages');
+      loadMessages();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('contactUpdated', handleCustomUpdate);
+
+    // Poll for updates every 5 seconds
+    const interval = setInterval(loadMessages, 5000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('contactUpdated', handleCustomUpdate);
+      clearInterval(interval);
+    };
   }, []);
 
   const loadMessages = () => {
     try {
       const stored = localStorage.getItem('contactSubmissions');
+      console.log('ContactInbox: Loading messages from localStorage:', stored);
+      
       if (stored) {
-        setMessages(JSON.parse(stored));
+        const parsedMessages = JSON.parse(stored);
+        console.log('ContactInbox: Parsed messages:', parsedMessages);
+        setMessages(parsedMessages);
+      } else {
+        console.log('ContactInbox: No messages found in localStorage');
+        setMessages([]);
       }
     } catch (error) {
-      console.error('Failed to load contact messages:', error);
+      console.error('ContactInbox: Failed to load contact messages:', error);
+      setMessages([]);
     } finally {
       setIsLoading(false);
     }
@@ -59,6 +94,9 @@ const ContactInbox = () => {
     setMessages(updated);
     localStorage.setItem('contactSubmissions', JSON.stringify(updated));
     
+    // Trigger update event
+    window.dispatchEvent(new CustomEvent('contactUpdated'));
+    
     toast({
       title: "Message marked as read",
       description: "Contact message has been marked as read.",
@@ -69,6 +107,9 @@ const ContactInbox = () => {
     const updated = messages.filter(msg => msg.id !== id);
     setMessages(updated);
     localStorage.setItem('contactSubmissions', JSON.stringify(updated));
+    
+    // Trigger update event
+    window.dispatchEvent(new CustomEvent('contactUpdated'));
     
     toast({
       title: "Message deleted",
@@ -124,16 +165,24 @@ const ContactInbox = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="w-6 h-6 text-blue-600" />
-            Contact Inbox
-            {unreadCount > 0 && (
-              <Badge className="bg-red-500 text-white ml-2">{unreadCount}</Badge>
-            )}
-          </CardTitle>
-          <CardDescription>
-            Manage contact form submissions and user inquiries
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="w-6 h-6 text-blue-600" />
+                Contact Inbox
+                {unreadCount > 0 && (
+                  <Badge className="bg-red-500 text-white ml-2">{unreadCount}</Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Manage contact form submissions and user inquiries ({messages.length} total)
+              </CardDescription>
+            </div>
+            <Button onClick={loadMessages} variant="outline" size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -151,7 +200,12 @@ const ContactInbox = () => {
               {filteredMessages.length === 0 ? (
                 <div className="text-center py-8">
                   <Mail className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                  <p className="text-gray-600">No messages found</p>
+                  <p className="text-gray-600">
+                    {messages.length === 0 ? 'No contact messages yet' : 'No messages in this category'}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Messages will appear here when users submit the contact form
+                  </p>
                 </div>
               ) : (
                 <Table>

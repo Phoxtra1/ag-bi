@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Video, ArrowRight, Loader2 } from 'lucide-react';
+import { Video, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 
 const WatchDemo = () => {
   const [videoUrl, setVideoUrl] = useState('');
@@ -114,10 +114,17 @@ const WatchDemo = () => {
     window.addEventListener('videoUrlUpdated', handleCustomUpdate);
     window.addEventListener('focus', handleFocus);
 
+    // Poll for updates every 15 seconds
+    const interval = setInterval(() => {
+      console.log('WatchDemo: Polling for video URL updates');
+      loadVideoUrl();
+    }, 15000);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('videoUrlUpdated', handleCustomUpdate);
       window.removeEventListener('focus', handleFocus);
+      clearInterval(interval);
     };
   }, []);
 
@@ -131,6 +138,12 @@ const WatchDemo = () => {
     setVideoError(false);
   };
 
+  const refreshVideo = () => {
+    console.log('WatchDemo: Manual refresh triggered');
+    setIsLoading(true);
+    loadVideoUrl();
+  };
+
   const renderVideoPlayer = () => {
     if (videoError) {
       return (
@@ -139,6 +152,10 @@ const WatchDemo = () => {
             <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600 text-lg font-medium">Video unavailable</p>
             <p className="text-gray-500 text-sm mt-2">The video could not be loaded</p>
+            <Button onClick={refreshVideo} variant="outline" size="sm" className="mt-4">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Try Again
+            </Button>
           </div>
         </div>
       );
@@ -157,6 +174,7 @@ const WatchDemo = () => {
           onLoad={handleVideoLoad}
           className="w-full h-full rounded-lg"
           title="Amniva Demo Video"
+          key={processedUrl}
         />
       );
     } else {
@@ -220,22 +238,31 @@ const WatchDemo = () => {
           <Card className="overflow-hidden shadow-2xl">
             <CardContent className="p-0">
               {processedUrl ? (
-                <div className="aspect-video">
+                <div className="aspect-video relative">
                   {renderVideoPlayer()}
+                  <div className="absolute top-4 right-4">
+                    <Button onClick={refreshVideo} variant="outline" size="sm">
+                      <RefreshCw className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <div className="aspect-video bg-gray-100 flex items-center justify-center">
                   <div className="text-center p-8">
                     <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                     <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                      No demo video available
+                      No demo video configured
                     </h3>
                     <p className="text-gray-500 mb-4">
-                      Please configure a video URL in the Admin Panel to display the demo video.
+                      The admin needs to configure a video URL to display the demo video.
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-400 mb-4">
                       Admin: Go to Admin Panel → Settings → Integrations → Demo Video
                     </p>
+                    <Button onClick={refreshVideo} variant="outline">
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Check for Video
+                    </Button>
                   </div>
                 </div>
               )}
