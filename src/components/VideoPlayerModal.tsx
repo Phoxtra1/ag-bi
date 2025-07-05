@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Video, AlertCircle, ExternalLink, Play } from 'lucide-react';
+import { Video, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface VideoPlayerModalProps {
@@ -14,13 +14,12 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [videoError, setVideoError] = useState(false);
   const [processedUrl, setProcessedUrl] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [videoType, setVideoType] = useState<'youtube' | 'vimeo' | 'direct' | 'unsupported'>('direct');
 
-  const processVideoUrl = (url: string): { processedUrl: string; type: 'youtube' | 'vimeo' | 'direct' | 'unsupported' } => {
+  const detectVideoType = (url: string): { processedUrl: string; type: 'youtube' | 'vimeo' | 'direct' | 'unsupported' } => {
     if (!url) return { processedUrl: '', type: 'unsupported' };
     
-    console.log('Processing URL:', url);
+    console.log('Detecting video type for URL:', url);
     
     // Handle YouTube URLs
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -36,7 +35,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       
       if (videoId) {
         return { 
-          processedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`, 
+          processedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&controls=1`, 
           type: 'youtube' 
         };
       }
@@ -47,13 +46,13 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       const videoId = url.split('/').pop()?.split('?')[0];
       if (videoId && !isNaN(Number(videoId))) {
         return { 
-          processedUrl: `https://player.vimeo.com/video/${videoId}?autoplay=1`, 
+          processedUrl: `https://player.vimeo.com/video/${videoId}?controls=1`, 
           type: 'vimeo' 
         };
       }
     }
     
-    // Handle Google Drive links - convert to direct download
+    // Handle Google Drive links
     if (url.includes('drive.google.com')) {
       let fileId = '';
       
@@ -84,54 +83,83 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
       return { processedUrl: processedDropboxUrl, type: 'direct' };
     }
     
-    // Handle OneDrive links
-    if (url.includes('onedrive.live.com') || url.includes('1drv.ms')) {
-      if (url.includes('?')) {
-        const directUrl = url.replace('?', '/download?');
-        return { processedUrl: directUrl, type: 'direct' };
-      }
+    // Check if it's a direct video file
+    const videoExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv'];
+    const hasVideoExtension = videoExtensions.some(ext => 
+      url.toLowerCase().includes(ext.toLowerCase())
+    );
+    
+    if (hasVideoExtension || url.startsWith('http')) {
+      return { processedUrl: url, type: 'direct' };
     }
     
-    // Return direct URLs as-is
     return { processedUrl: url, type: 'direct' };
+  };
+
+  const loadVideoUrl = () => {
+    console.log('Loading video URL from localStorage');
+    
+    const savedUrl = localStorage.getItem('adminDemoVideoUrl');
+    console.log('Retrieved video URL:', savedUrl);
+    
+    if (!savedUrl || !savedUrl.trim()) {
+      console.log('No video URL found');
+      setVideoUrl('');
+      setProcessedUrl('');
+      setVideoError(false);
+      setIsLoading(false);
+      return;
+    }
+    
+    const cleanUrl = savedUrl.trim();
+    setVideoUrl(cleanUrl);
+    
+    const { processedUrl, type } = detectVideoType(cleanUrl);
+    setProcessedUrl(processedUrl);
+    setVideoType(type);
+    setVideoError(false);
+    setIsLoading(false);
+    
+    console.log('Video processed:', { processedUrl, type });
   };
 
   useEffect(() => {
     if (isOpen) {
       setIsLoading(true);
-      setVideoError(false);
-      setErrorMessage('');
-      
-      const savedUrl = localStorage.getItem('adminDemoVideoUrl') || '';
-      console.log('Loading video URL from localStorage:', savedUrl);
-      
-      if (!savedUrl) {
-        setIsLoading(false);
-        setVideoError(true);
-        setErrorMessage('No video URL configured in Admin Panel');
-        return;
-      }
-      
-      setVideoUrl(savedUrl);
-      const { processedUrl, type } = processVideoUrl(savedUrl);
-      setProcessedUrl(processedUrl);
-      setVideoType(type);
-      setIsLoading(false);
-      
-      console.log('Video processed:', { processedUrl, type });
+      loadVideoUrl();
+
+      // Listen for storage changes
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === 'adminDemoVideoUrl') {
+          console.log('Video URL updated via storage event');
+          loadVideoUrl();
+        }
+      };
+
+      // Listen for custom events
+      const handleCustomUpdate = () => {
+        console.log('Video URL updated via custom event');
+        loadVideoUrl();
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+      window.addEventListener('videoUrlUpdated', handleCustomUpdate);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('videoUrlUpdated', handleCustomUpdate);
+      };
     }
   }, [isOpen]);
 
-  const handleVideoError = (e: any) => {
-    console.error('Video failed to load:', processedUrl, e);
+  const handleVideoError = () => {
+    console.error('Video failed to load:', processedUrl);
     setVideoError(true);
-    setErrorMessage('Video failed to load. Please check the URL or try a different format.');
   };
 
   const handleVideoLoad = () => {
-    console.log('Video loaded successfully:', processedUrl);
+    console.log('Video loaded successfully');
     setVideoError(false);
-    setErrorMessage('');
   };
 
   const openVideoInNewTab = () => {
@@ -141,34 +169,46 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
   };
 
   const renderVideoPlayer = () => {
+    if (videoError) {
+      return (
+        <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+          <div className="text-center p-8">
+            <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-600 text-lg font-medium">Video unavailable</p>
+            <p className="text-gray-500 text-sm mt-2">The video could not be loaded</p>
+          </div>
+        </div>
+      );
+    }
+
     if (videoType === 'youtube' || videoType === 'vimeo') {
       return (
         <iframe
           src={processedUrl}
-          className="w-full h-full"
+          className="w-full h-full rounded-lg"
           frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           onError={handleVideoError}
           onLoad={handleVideoLoad}
-        ></iframe>
+          title="Demo Video"
+        />
       );
     } else {
       return (
         <video
           controls
-          autoPlay
           preload="metadata"
-          className="w-full h-full object-contain"
+          className="w-full h-full rounded-lg object-contain bg-black"
           onError={handleVideoError}
           onLoadedData={handleVideoLoad}
           onCanPlay={handleVideoLoad}
-          crossOrigin="anonymous"
+          controlsList="nodownload"
           key={processedUrl}
         >
           <source src={processedUrl} type="video/mp4" />
-          <source src={processedUrl} type="video/mov" />
           <source src={processedUrl} type="video/webm" />
+          <source src={processedUrl} type="video/mov" />
           <source src={processedUrl} type="video/avi" />
           Your browser does not support the video tag.
         </video>
@@ -178,7 +218,7 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-auto p-0">
+      <DialogContent className="max-w-5xl w-full max-h-[90vh] p-0">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Video className="w-6 h-6 text-blue-600" />
@@ -197,56 +237,33 @@ const VideoPlayerModal = ({ isOpen, onClose }: VideoPlayerModalProps) => {
                 <p className="text-gray-600">Loading video...</p>
               </div>
             </div>
-          ) : processedUrl && !videoError ? (
+          ) : processedUrl ? (
             <div className="space-y-4">
               <div className="aspect-video rounded-lg overflow-hidden bg-black">
                 {renderVideoPlayer()}
               </div>
-              <div className="flex justify-center">
-                <Button 
-                  variant="outline" 
-                  onClick={openVideoInNewTab}
-                  className="flex items-center gap-2"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Open in New Tab
-                </Button>
-              </div>
-            </div>
-          ) : videoError ? (
-            <div className="aspect-video bg-red-50 rounded-lg flex items-center justify-center border-2 border-red-200">
-              <div className="text-center p-8">
-                <AlertCircle className="h-16 w-16 mx-auto mb-4 text-red-500" />
-                <h3 className="text-xl font-semibold text-red-700 mb-2">
-                  Video Loading Failed
-                </h3>
-                <p className="text-red-600 mb-4">
-                  {errorMessage}
-                </p>
-                <div className="text-sm text-red-500 bg-red-100 p-3 rounded-lg text-left mb-4">
-                  <p className="font-medium mb-2">Current URL: {videoUrl}</p>
-                  <p className="font-medium mb-2">Processed URL: {processedUrl}</p>
-                  <p className="font-medium mb-2">Video Type: {videoType}</p>
+              {processedUrl && !videoError && (
+                <div className="flex justify-center">
+                  <Button 
+                    variant="outline" 
+                    onClick={openVideoInNewTab}
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open in New Tab
+                  </Button>
                 </div>
-                <Button 
-                  variant="outline" 
-                  onClick={openVideoInNewTab}
-                  className="flex items-center gap-2"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Try Opening Direct Link
-                </Button>
-              </div>
+              )}
             </div>
           ) : (
             <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
               <div className="text-center p-8">
                 <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                  No Demo Video Available
+                  No demo video available
                 </h3>
                 <p className="text-gray-500">
-                  Please configure a video URL in the admin panel under Integrations {'>'}  Demo Video.
+                  Please configure a video URL in the Admin Panel under Settings → Integrations → Demo Video.
                 </p>
               </div>
             </div>
