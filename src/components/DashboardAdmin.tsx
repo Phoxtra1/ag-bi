@@ -1,83 +1,125 @@
+// components/DashboardAdmin.tsx
 import React, { useEffect, useState } from "react";
-import { databases } from "../lib/appwrite";
-import { Query } from "appwrite";
+import { databases, storage, databaseId, predictionCollectionId, bucketId } from "@/lib/appwrite"; // adjust path if needed
+import { ID, Permission, Role } from "appwrite";
+
+interface Prediction {
+  $id: string;
+  title: string;
+  description: string;
+  submittedBy: string;
+  submittedAt: string;
+  upload?: string; // file ID from storage
+  status?: string;
+}
 
 const DashboardAdmin = () => {
-  const [predictions, setPredictions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const DATABASE_ID = "amniva-db03";
-  const COLLECTION_ID = "predictions-ava";
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchAllPredictions = async () => {
-      try {
-        const predictionData = await databases.listDocuments(
-          DATABASE_ID,
-          COLLECTION_ID,
-          [Query.orderDesc("$createdAt")]
-        );
-        setPredictions(predictionData.documents);
-      } catch (err) {
-        console.error("Failed to load predictions:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllPredictions();
+    fetchPredictions();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading all predictions...</p>;
+  const fetchPredictions = async () => {
+    setLoading(true);
+    try {
+      const response = await databases.listDocuments(databaseId, predictionCollectionId);
+      setPredictions(response.documents);
+    } catch (error) {
+      console.error("Error fetching predictions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      await databases.updateDocument(databaseId, predictionCollectionId, id, {
+        status,
+      });
+      fetchPredictions();
+    } catch (error) {
+      console.error(`Error updating status to ${status}:`, error);
+    }
+  };
+
+  const deletePrediction = async (id: string) => {
+    try {
+      await databases.deleteDocument(databaseId, predictionCollectionId, id);
+      fetchPredictions();
+    } catch (error) {
+      console.error("Error deleting prediction:", error);
+    }
+  };
+
+  const getFilePreviewUrl = (fileId: string) => {
+    return storage.getFileView(bucketId, fileId).href;
+  };
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">Admin – All Predictions</h2>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-4">Admin Dashboard</h2>
 
-      {predictions.length === 0 ? (
-        <p className="text-gray-600 text-center">No predictions submitted yet.</p>
+      {loading ? (
+        <p>Loading predictions...</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full border text-sm text-left text-gray-700">
-            <thead className="bg-gray-100 uppercase">
-              <tr>
-                <th className="px-4 py-2 border">#</th>
-                <th className="px-4 py-2 border">Title</th>
-                <th className="px-4 py-2 border">Description</th>
-                <th className="px-4 py-2 border">Submitted By</th>
-                <th className="px-4 py-2 border">Asset Link</th>
-                <th className="px-4 py-2 border">Uploaded</th>
-                <th className="px-4 py-2 border">Submitted At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {predictions.map((prediction, index) => (
-                <tr key={prediction.$id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-4 py-2 border">{index + 1}</td>
-                  <td className="px-4 py-2 border">{prediction.title}</td>
-                  <td className="px-4 py-2 border">{prediction.description?.slice(0, 50)}</td>
-                  <td className="px-4 py-2 border">{prediction.submittedBy}</td>
-                  <td className="px-4 py-2 border">
+        <table className="min-w-full bg-white shadow rounded-lg overflow-hidden">
+          <thead className="bg-gray-100 text-gray-700">
+            <tr>
+              <th className="px-4 py-2">Title</th>
+              <th className="px-4 py-2">Submitted By</th>
+              <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Evidence</th>
+              <th className="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {predictions.map((prediction) => (
+              <tr key={prediction.$id} className="border-t text-center">
+                <td className="px-4 py-2">{prediction.title}</td>
+                <td className="px-4 py-2">{prediction.submittedBy}</td>
+                <td className="px-4 py-2">{new Date(prediction.submittedAt).toLocaleDateString()}</td>
+                <td className="px-4 py-2 capitalize">{prediction.status || "pending"}</td>
+                <td className="px-4 py-2">
+                  {prediction.upload ? (
                     <a
-                      href={prediction.assetLink}
-                      className="text-blue-600 hover:underline"
+                      href={getFilePreviewUrl(prediction.upload)}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
                     >
-                      View
+                      View File
                     </a>
-                  </td>
-                  <td className="px-4 py-2 border">
-                    {prediction.upload ? "✓" : "—"}
-                  </td>
-                  <td className="px-4 py-2 border">
-                    {new Date(prediction.submittedAt || prediction.$createdAt).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    "No File"
+                  )}
+                </td>
+                <td className="px-4 py-2 space-x-2">
+                  <button
+                    onClick={() => updateStatus(prediction.$id, "verified")}
+                    className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                  >
+                    Verify
+                  </button>
+                  <button
+                    onClick={() => updateStatus(prediction.$id, "rejected")}
+                    className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                  >
+                    Reject
+                  </button>
+                  <button
+                    onClick={() => deletePrediction(prediction.$id)}
+                    className="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
