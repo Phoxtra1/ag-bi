@@ -1,40 +1,32 @@
-name: Deploy Cloud Functions to Upright
+name: Deploy Appwrite Functions
+
 on:
   push:
-    paths:
-      - 'functions/**'
-      - '.github/workflows/deploy-function.yml'
     branches:
       - main
+    paths:
+      - 'functions/**'
+
 jobs:
   deploy-functions:
     runs-on: ubuntu-latest
-    env:
-      PROJECT_ID: ${{ secrets.UPRIGHT_PROJECT_ID }}
-      ENDPOINT: ${{ secrets.UPRIGHT_API_ENDPOINT }}
-      API_KEY: ${{ secrets.UPRIGHT_API_KEY }}
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js 22.x
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: 18
 
-      - name: Install Appwrite CLI
-        run: npm install -g appwrite
-
-      - name: Deploy Functions
+      - name: Deploy Appwrite Functions using CLI
         run: |
-          cd functions
-          for dir in */ ; do
-            cd "$dir"
-            echo "Deploying function in $dir"
-            appwrite functions deploy \
-              --projectId "$PROJECT_ID" \
-              --endpoint "$ENDPOINT" \
-              --key "$API_KEY"
-            cd ..
-          done
+          npm install -g appwrite-cli
+          cd functions/sendWelcomeEmail
+          npm install
+          appwrite functions deploy --functionId ${{ secrets.FUNCTION_ID_SEND_WELCOME }} --projectId ${{ secrets.APPWRITE_PROJECT_ID }} --key ${{ secrets.APPWRITE_API_KEY }}
+          
+          cd ../notifyAdmin
+          npm install
+          appwrite functions deploy --functionId ${{ secrets.FUNCTION_ID_NOTIFY_ADMIN }} --projectId ${{ secrets.APPWRITE_PROJECT_ID }} --key ${{ secrets.APPWRITE_API_KEY }}
