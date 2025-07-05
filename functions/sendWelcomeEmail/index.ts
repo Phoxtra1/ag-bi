@@ -6,7 +6,7 @@ const { APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY } = process.env
 async function main() {
   try {
     // Mocked data – replace with actual payload
-    const email = 'newuser@example.com';
+    const email = 'amnewsworld1@proton.me';
 
     const response = await fetch(`${APPWRITE_ENDPOINT}/v1/functions`, {
       method: 'POST',
@@ -16,7 +16,7 @@ async function main() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        subject: "Welcome to Amneva!",
+        subject: "Welcome to Amniva!",
         content: "Thank you for joining us. Explore and enjoy our platform!",
         to: email
       })
