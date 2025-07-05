@@ -22,7 +22,10 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  Monitor
+  Monitor,
+  Mail,
+  FileText,
+  Inbox
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -32,6 +35,8 @@ import SystemSettings from '@/components/admin/SystemSettings';
 import ContentOversight from '@/components/admin/ContentOversight';
 import AdminInvitation from '@/components/admin/AdminInvitation';
 import SystemStatus from '@/components/admin/SystemStatus';
+import ContentSubmissions from '@/components/admin/ContentSubmissions';
+import ContactInbox from '@/components/admin/ContactInbox';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -55,11 +60,30 @@ const AdminDashboard = () => {
     }
   };
 
+  // Get notification counts
+  const getNotificationCounts = () => {
+    try {
+      const contentSubmissions = JSON.parse(localStorage.getItem('contentSubmissions') || '[]');
+      const contactMessages = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
+      
+      return {
+        contentPending: contentSubmissions.filter((s: any) => s.status === 'pending').length,
+        contactUnread: contactMessages.filter((m: any) => m.status === 'new').length
+      };
+    } catch {
+      return { contentPending: 0, contactUnread: 0 };
+    }
+  };
+
+  const notifications = getNotificationCounts();
+
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'status', label: 'System Status', icon: Monitor },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
+    { id: 'content-inbox', label: 'Content Inbox', icon: FileText, badge: notifications.contentPending },
+    { id: 'contact-inbox', label: 'Contact Inbox', icon: Mail, badge: notifications.contactUnread },
     { id: 'financials', label: 'Financials', icon: DollarSign },
     { id: 'api', label: 'API Access', icon: Settings },
     { id: 'content', label: 'Content', icon: Shield },
@@ -91,14 +115,19 @@ const AdminDashboard = () => {
                   <button
                     key={item.id}
                     onClick={() => setActiveTab(item.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
+                    className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
                       activeTab === item.id
                         ? 'bg-[#1D4ED8] text-white'
                         : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <Icon size={20} />
-                    {item.label}
+                    <div className="flex items-center gap-3">
+                      <Icon size={20} />
+                      {item.label}
+                    </div>
+                    {item.badge && item.badge > 0 && (
+                      <Badge className="bg-red-500 text-white text-xs">{item.badge}</Badge>
+                    )}
                   </button>
                 );
               })}
@@ -121,6 +150,24 @@ const AdminDashboard = () => {
                 <span className="text-gray-600">API Active</span>
                 <span className="font-semibold text-blue-600">{realTimeStats.activeApiSubscriptions}</span>
               </div>
+              {(notifications.contentPending > 0 || notifications.contactUnread > 0) && (
+                <>
+                  <Separator className="my-2" />
+                  <div className="text-xs text-gray-500 mb-2">Notifications</div>
+                  {notifications.contentPending > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Content Pending</span>
+                      <Badge className="bg-orange-500 text-white">{notifications.contentPending}</Badge>
+                    </div>
+                  )}
+                  {notifications.contactUnread > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Unread Messages</span>
+                      <Badge className="bg-red-500 text-white">{notifications.contactUnread}</Badge>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -141,6 +188,8 @@ const AdminDashboard = () => {
           {activeTab === 'status' && <SystemStatus />}
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'admins' && <AdminInvitation />}
+          {activeTab === 'content-inbox' && <ContentSubmissions />}
+          {activeTab === 'contact-inbox' && <ContactInbox />}
           {activeTab === 'financials' && <FinancialReports stats={realTimeStats} />}
           {activeTab === 'api' && <ApiManagement />}
           {activeTab === 'content' && <ContentOversight />}
