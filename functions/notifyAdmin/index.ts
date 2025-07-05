@@ -1,22 +1,34 @@
-import { Client, Databases, Users, ID } from "node-appwrite";
+import fetch from 'node-fetch';
+import 'dotenv/config';
 
-export default async ({ req, res, log, error }: any) => {
-  const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT)
-    .setProject(process.env.APPWRITE_FUNCTION_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY);
+const { ADMIN_EMAIL, APPWRITE_ENDPOINT, APPWRITE_PROJECT_ID, APPWRITE_API_KEY } = process.env;
 
-  const users = new Users(client);
-  const databases = new Databases(client);
-
+async function main() {
   try {
-    // example: send notification to admin
-    log("New user or event triggered admin notification");
+    // Replace this with actual data passed to the function if needed
+    const body = {
+      message: "A new prediction or contact message has been submitted.",
+    };
 
-    // Logic here...
-    return res.json({ success: true, message: "Admin notified" });
-  } catch (err) {
-    error(err);
-    return res.json({ success: false, error: err.message });
+    const response = await fetch(`${APPWRITE_ENDPOINT}/v1/functions`, {
+      method: 'POST',
+      headers: {
+        'X-Appwrite-Project': APPWRITE_PROJECT_ID!,
+        'X-Appwrite-Key': APPWRITE_API_KEY!,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        subject: "New Notification",
+        content: body.message,
+        to: ADMIN_EMAIL
+      })
+    });
+
+    if (!response.ok) throw new Error(`Failed: ${response.statusText}`);
+    console.log("Admin notified successfully.");
+  } catch (error) {
+    console.error("Notification failed:", error);
   }
-};
+}
+
+main();
