@@ -38,7 +38,7 @@ const DashboardUser = () => {
         [Query.equal("submittedBy", user.email)]
       );
 
-      setPredictions(response.documents as Prediction[]);
+      setPredictions(response.documents as unknown as Prediction[]);
     } catch (error) {
       console.error("Error fetching user predictions:", error);
     } finally {

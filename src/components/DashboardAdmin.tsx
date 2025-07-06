@@ -30,7 +30,7 @@ const DashboardAdmin = () => {
     setLoading(true);
     try {
       const response = await databases.listDocuments(DATABASE_ID, PREDICTIONS_COLLECTION_ID);
-      setPredictions(response.documents as Prediction[]);
+      setPredictions(response.documents as unknown as Prediction[]);
     } catch (error) {
       console.error("Error fetching predictions:", error);
     } finally {
