@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminDataSync from "@/components/admin/AdminDataSync";
 import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
@@ -32,6 +33,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <AdminDataSync />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -53,7 +55,6 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/newsletter" element={<Newsletter />} />
           <Route path="/watch-demo" element={<WatchDemo />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
