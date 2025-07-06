@@ -1,4 +1,3 @@
-// auth.ts
 
 import { Client, Account, ID } from 'appwrite';
 
@@ -22,7 +21,7 @@ export const registerUser = async (email: string, password: string, name: string
 // LOGIN user
 export const loginUser = async (email: string, password: string) => {
   try {
-    const session = await account.createEmailSession(email, password);
+    const session = await account.createEmailPasswordSession(email, password);
     return session;
   } catch (error) {
     throw error;

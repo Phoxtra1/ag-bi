@@ -1,7 +1,9 @@
-// components/DashboardAdmin.tsx
+
 import React, { useEffect, useState } from "react";
-import { databases, storage, databaseId, predictionCollectionId, bucketId } from "@/lib/appwrite"; // adjust path if needed
-import { ID, Permission, Role } from "appwrite";
+import { databases, storage } from "@/lib/appwrite";
+import { DATABASE_ID, PREDICTIONS_COLLECTION_ID, VERIFICATION_BUCKET_ID } from "@/lib/database";
+import { getCurrentUser } from "@/lib/auth";
+import { Models } from "appwrite";
 
 interface Prediction {
   $id: string;
@@ -9,8 +11,11 @@ interface Prediction {
   description: string;
   submittedBy: string;
   submittedAt: string;
-  upload?: string; // file ID from storage
+  upload?: string;
   status?: string;
+  name: string;
+  email: string;
+  prompt: string;
 }
 
 const DashboardAdmin = () => {
@@ -24,8 +29,8 @@ const DashboardAdmin = () => {
   const fetchPredictions = async () => {
     setLoading(true);
     try {
-      const response = await databases.listDocuments(databaseId, predictionCollectionId);
-      setPredictions(response.documents);
+      const response = await databases.listDocuments(DATABASE_ID, PREDICTIONS_COLLECTION_ID);
+      setPredictions(response.documents as Prediction[]);
     } catch (error) {
       console.error("Error fetching predictions:", error);
     } finally {
@@ -35,7 +40,7 @@ const DashboardAdmin = () => {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      await databases.updateDocument(databaseId, predictionCollectionId, id, {
+      await databases.updateDocument(DATABASE_ID, PREDICTIONS_COLLECTION_ID, id, {
         status,
       });
       fetchPredictions();
@@ -46,7 +51,7 @@ const DashboardAdmin = () => {
 
   const deletePrediction = async (id: string) => {
     try {
-      await databases.deleteDocument(databaseId, predictionCollectionId, id);
+      await databases.deleteDocument(DATABASE_ID, PREDICTIONS_COLLECTION_ID, id);
       fetchPredictions();
     } catch (error) {
       console.error("Error deleting prediction:", error);
@@ -54,7 +59,7 @@ const DashboardAdmin = () => {
   };
 
   const getFilePreviewUrl = (fileId: string) => {
-    return storage.getFileView(bucketId, fileId).href;
+    return storage.getFileView(VERIFICATION_BUCKET_ID, fileId);
   };
 
   return (
@@ -78,14 +83,14 @@ const DashboardAdmin = () => {
           <tbody>
             {predictions.map((prediction) => (
               <tr key={prediction.$id} className="border-t text-center">
-                <td className="px-4 py-2">{prediction.title}</td>
-                <td className="px-4 py-2">{prediction.submittedBy}</td>
+                <td className="px-4 py-2">{prediction.title || prediction.prompt?.substring(0, 50) + '...'}</td>
+                <td className="px-4 py-2">{prediction.submittedBy || prediction.email}</td>
                 <td className="px-4 py-2">{new Date(prediction.submittedAt).toLocaleDateString()}</td>
                 <td className="px-4 py-2 capitalize">{prediction.status || "pending"}</td>
                 <td className="px-4 py-2">
                   {prediction.upload ? (
                     <a
-                      href={getFilePreviewUrl(prediction.upload)}
+                      href={getFilePreviewUrl(prediction.upload).toString()}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 underline"

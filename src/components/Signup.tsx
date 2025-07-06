@@ -1,6 +1,7 @@
-// pages/Signup.tsx
+
 import { useForm } from "react-hook-form";
-import { account, ID } from "@/lib/appwrite";
+import { account } from "@/lib/appwrite";
+import { ID } from "appwrite";
 import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
@@ -10,9 +11,9 @@ export default function Signup() {
   const onSubmit = async (data: any) => {
     try {
       await account.create(ID.unique(), data.email, data.password, data.name);
-      await account.createEmailSession(data.email, data.password);
+      await account.createEmailPasswordSession(data.email, data.password);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       alert("Signup failed: " + error.message);
     }
   };

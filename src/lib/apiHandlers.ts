@@ -7,9 +7,9 @@ import { ID } from 'appwrite';
 export const handleSignup = async (name: string, email: string, password: string) => {
   try {
     const user = await account.create(ID.unique(), email, password, name);
-    await account.createEmailSession(email, password);
+    await account.createEmailPasswordSession(email, password);
     return { success: true, user };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
     return { success: false, error: error.message };
   }
@@ -17,9 +17,9 @@ export const handleSignup = async (name: string, email: string, password: string
 
 export const handleLogin = async (email: string, password: string) => {
   try {
-    const session = await account.createEmailSession(email, password);
+    const session = await account.createEmailPasswordSession(email, password);
     return { success: true, session };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
     return { success: false, error: error.message };
   }
@@ -29,7 +29,7 @@ export const handleLogout = async () => {
   try {
     await account.deleteSession('current');
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Logout error:', error);
     return { success: false, error: error.message };
   }
@@ -59,7 +59,7 @@ export const handleContactSubmission = async (data: {
       }
     );
     return { success: true, document: response };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Contact submission error:', error);
     return { success: false, error: error.message };
   }

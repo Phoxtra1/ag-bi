@@ -1,4 +1,4 @@
-// pages/Login.tsx
+
 import { useForm } from "react-hook-form";
 import { account } from "@/lib/appwrite";
 import { useNavigate } from "react-router-dom";
@@ -9,9 +9,9 @@ export default function Login() {
 
   const onSubmit = async (data: any) => {
     try {
-      await account.createEmailSession(data.email, data.password);
+      await account.createEmailPasswordSession(data.email, data.password);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       alert("Login failed: " + error.message);
     }
   };

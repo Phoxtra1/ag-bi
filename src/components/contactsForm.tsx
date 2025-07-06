@@ -1,6 +1,6 @@
-// lib/uploadDocument.ts
-import { storage } from './appwrite';
-import { ID, InputFile } from 'appwrite';
+
+import { storage } from '@/lib/appwrite';
+import { ID } from 'appwrite';
 
 /**
  * Uploads a document (PDF/image/etc.) to Appwrite Storage
@@ -10,17 +10,17 @@ import { ID, InputFile } from 'appwrite';
 export const uploadDocument = async (file: File) => {
   try {
     const response = await storage.createFile(
-      'verification_ava', // ✅ Your corrected bucket ID
+      'verification-ava', // ✅ Your corrected bucket ID
       ID.unique(),
-      InputFile.fromFile(file)
+      file
     );
 
-    const previewUrl = storage.getFilePreview('verification_ava', response.$id);
+    const previewUrl = storage.getFilePreview('verification-ava', response.$id);
 
     return {
       fileId: response.$id,
       name: response.name,
-      previewUrl: previewUrl.href,
+      previewUrl: previewUrl.toString(),
     };
   } catch (error) {
     console.error('❌ Upload failed:', error);

@@ -1,7 +1,7 @@
 
 import { storage } from './appwrite';
 import { VERIFICATION_BUCKET_ID } from './database';
-import { ID, InputFile } from 'appwrite';
+import { ID } from 'appwrite';
 
 /**
  * Uploads a document (PDF/image/etc.) to Appwrite Storage
@@ -13,7 +13,7 @@ export const uploadDocument = async (file: File) => {
     const response = await storage.createFile(
       VERIFICATION_BUCKET_ID,
       ID.unique(),
-      InputFile.fromFile(file)
+      file
     );
 
     const previewUrl = storage.getFilePreview(VERIFICATION_BUCKET_ID, response.$id);
@@ -21,7 +21,7 @@ export const uploadDocument = async (file: File) => {
     return {
       fileId: response.$id,
       name: response.name,
-      previewUrl: previewUrl.href,
+      previewUrl: previewUrl.toString(),
     };
   } catch (error) {
     console.error('❌ Upload failed:', error);
