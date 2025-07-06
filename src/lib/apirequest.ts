@@ -1,4 +1,4 @@
-// src/lib/apirequests.ts
+
 import { databases } from "./appwrite";
 import { ID } from "appwrite";
 import { DATABASE_ID, PREDICTIONS_COLLECTION_ID } from "./database";
@@ -13,7 +13,10 @@ export async function createPrediction(name: string, email: string, subject: str
         name,
         email,
         subject,
-        details
+        details,
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        submittedBy: email
       }
     );
 

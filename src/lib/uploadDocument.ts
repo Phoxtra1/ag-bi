@@ -1,5 +1,6 @@
-// lib/uploadDocument.ts
+
 import { storage } from './appwrite';
+import { VERIFICATION_BUCKET_ID } from './database';
 import { ID, InputFile } from 'appwrite';
 
 /**
@@ -10,12 +11,12 @@ import { ID, InputFile } from 'appwrite';
 export const uploadDocument = async (file: File) => {
   try {
     const response = await storage.createFile(
-      'verification_ava', // ✅ Your corrected bucket ID
+      VERIFICATION_BUCKET_ID,
       ID.unique(),
       InputFile.fromFile(file)
     );
 
-    const previewUrl = storage.getFilePreview('verification_ava', response.$id);
+    const previewUrl = storage.getFilePreview(VERIFICATION_BUCKET_ID, response.$id);
 
     return {
       fileId: response.$id,

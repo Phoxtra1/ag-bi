@@ -1,4 +1,4 @@
-// lib/contacts.ts
+
 import { databases } from './appwrite';
 import { DATABASE_ID, CONTACTS_COLLECTION_ID } from './database';
 import { ID } from 'appwrite';
@@ -7,6 +7,8 @@ import { ID } from 'appwrite';
 export interface ContactFormData {
   fullName: string;
   email: string;
+  subject: string;
+  category: string;
   message: string;
 }
 
@@ -20,7 +22,11 @@ export async function createContact(data: ContactFormData) {
       {
         fullName: data.fullName,
         email: data.email,
+        subject: data.subject,
+        category: data.category,
         message: data.message,
+        status: 'new',
+        timestamp: new Date().toISOString()
       }
     );
     return response;
@@ -30,7 +36,7 @@ export async function createContact(data: ContactFormData) {
   }
 }
 
-// Optionally fetch all contacts
+// Fetch all contacts
 export async function listContacts() {
   try {
     const response = await databases.listDocuments(
@@ -40,6 +46,36 @@ export async function listContacts() {
     return response.documents;
   } catch (error) {
     console.error('Error fetching contacts:', error);
+    throw error;
+  }
+}
+
+// Update contact status
+export async function updateContactStatus(contactId: string, status: 'new' | 'read') {
+  try {
+    const response = await databases.updateDocument(
+      DATABASE_ID,
+      CONTACTS_COLLECTION_ID,
+      contactId,
+      { status }
+    );
+    return response;
+  } catch (error) {
+    console.error('Error updating contact status:', error);
+    throw error;
+  }
+}
+
+// Delete contact
+export async function deleteContact(contactId: string) {
+  try {
+    await databases.deleteDocument(
+      DATABASE_ID,
+      CONTACTS_COLLECTION_ID,
+      contactId
+    );
+  } catch (error) {
+    console.error('Error deleting contact:', error);
     throw error;
   }
 }
