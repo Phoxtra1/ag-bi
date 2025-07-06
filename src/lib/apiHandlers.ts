@@ -1,54 +1,154 @@
-// pages/Signup.tsx
-import { useForm } from "react-hook-form";
-import { account, ID } from "@/lib/appwrite";
-import { useNavigate } from "react-router-dom";
 
-export default function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
-  const navigate = useNavigate();
+import { account, databases } from './appwrite';
+import { DATABASE_ID, CONTACTS_COLLECTION_ID, PREDICTIONS_COLLECTION_ID, NEWSLETTERS_COLLECTION_ID, API_REQUESTS_COLLECTION_ID } from './database';
+import { ID } from 'appwrite';
 
-  const onSubmit = async (data: any) => {
-    try {
-      await account.create(ID.unique(), data.email, data.password, data.name);
-      await account.createEmailSession(data.email, data.password);
-      navigate("/dashboard");
-    } catch (error) {
-      alert("Signup failed: " + error.message);
-    }
-  };
+// Authentication handlers
+export const handleSignup = async (name: string, email: string, password: string) => {
+  try {
+    const user = await account.create(ID.unique(), email, password, name);
+    await account.createEmailSession(email, password);
+    return { success: true, user };
+  } catch (error) {
+    console.error('Signup error:', error);
+    return { success: false, error: error.message };
+  }
+};
 
-  return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
-      <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Full Name"
-          {...register("name", { required: true })}
-          className="w-full p-2 border rounded"
-        />
-        {errors.name && <span className="text-red-500">Name is required</span>}
+export const handleLogin = async (email: string, password: string) => {
+  try {
+    const session = await account.createEmailSession(email, password);
+    return { success: true, session };
+  } catch (error) {
+    console.error('Login error:', error);
+    return { success: false, error: error.message };
+  }
+};
 
-        <input
-          type="email"
-          placeholder="Email"
-          {...register("email", { required: true })}
-          className="w-full p-2 border rounded"
-        />
-        {errors.email && <span className="text-red-500">Email is required</span>}
+export const handleLogout = async () => {
+  try {
+    await account.deleteSession('current');
+    return { success: true };
+  } catch (error) {
+    console.error('Logout error:', error);
+    return { success: false, error: error.message };
+  }
+};
 
-        <input
-          type="password"
-          placeholder="Password"
-          {...register("password", { required: true })}
-          className="w-full p-2 border rounded"
-        />
-        {errors.password && <span className="text-red-500">Password is required</span>}
+// Contact form handler
+export const handleContactSubmission = async (data: {
+  fullName: string;
+  email: string;
+  subject: string;
+  category: string;
+  message: string;
+}) => {
+  try {
+    const response = await databases.createDocument(
+      DATABASE_ID,
+      CONTACTS_COLLECTION_ID,
+      ID.unique(),
+      {
+        fullName: data.fullName,
+        email: data.email,
+        subject: data.subject,
+        category: data.category,
+        message: data.message,
+        status: 'new',
+        timestamp: new Date().toISOString()
+      }
+    );
+    return { success: true, document: response };
+  } catch (error) {
+    console.error('Contact submission error:', error);
+    return { success: false, error: error.message };
+  }
+};
 
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
-          Create Account
-        </button>
-      </form>
-    </div>
-  );
-}
+// Prediction form handler
+export const handlePredictionSubmission = async (data: {
+  name: string;
+  email: string;
+  prompt: string;
+  title?: string;
+  description?: string;
+}) => {
+  try {
+    const response = await databases.createDocument(
+      DATABASE_ID,
+      PREDICTIONS_COLLECTION_ID,
+      ID.unique(),
+      {
+        name: data.name,
+        email: data.email,
+        prompt: data.prompt,
+        title: data.title || '',
+        description: data.description || '',
+        status: 'pending',
+        submittedAt: new Date().toISOString(),
+        submittedBy: data.email
+      }
+    );
+    return { success: true, document: response };
+  } catch (error) {
+    console.error('Prediction submission error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Newsletter subscription handler
+export const handleNewsletterSubscription = async (data: {
+  email: string;
+  fullName?: string;
+}) => {
+  try {
+    const response = await databases.createDocument(
+      DATABASE_ID,
+      NEWSLETTERS_COLLECTION_ID,
+      ID.unique(),
+      {
+        email: data.email,
+        fullName: data.fullName || '',
+        subscriptionDate: new Date().toISOString(),
+        status: 'active'
+      }
+    );
+    return { success: true, document: response };
+  } catch (error) {
+    console.error('Newsletter subscription error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// API access request handler
+export const handleApiAccessRequest = async (data: {
+  fullName: string;
+  email: string;
+  organizationName: string;
+  sector: string;
+  intendedUse: string;
+  verificationDocument?: string;
+}) => {
+  try {
+    const response = await databases.createDocument(
+      DATABASE_ID,
+      API_REQUESTS_COLLECTION_ID,
+      ID.unique(),
+      {
+        fullName: data.fullName,
+        email: data.email,
+        organizationName: data.organizationName,
+        sector: data.sector,
+        intendedUse: data.intendedUse,
+        verificationDocument: data.verificationDocument || '',
+        status: 'pending',
+        internalNotes: '',
+        submissionDate: new Date().toISOString()
+      }
+    );
+    return { success: true, document: response };
+  } catch (error) {
+    console.error('API access request error:', error);
+    return { success: false, error: error.message };
+  }
+};
