@@ -18,7 +18,7 @@ const Pricing = () => {
       'Trending news previews',
       'Basic civic content',
       'Limited verification features',
-      'Explore Amnova platform',
+      'Explore Amniva platform',
       'Basic community access'
     ],
     buttonText: 'Get Started Free',
@@ -61,7 +61,7 @@ const Pricing = () => {
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
             Whether you're a curious reader, an investigative journalist, a civic advocate, or an institution — 
-            Amnova empowers you with tools that matter.
+            Amniva empowers you with tools that matter.
           </p>
         </div>
 

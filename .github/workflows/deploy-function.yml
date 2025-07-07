@@ -5,37 +5,48 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '18'
+          cache: 'npm'
 
-      - name: Deploy Appwrite Function - Login
+      - name: Install Appwrite CLI
+        run: npm install -g appwrite-cli
+
+      - name: Configure Appwrite CLI
         run: |
-          npx appwrite client \
+          appwrite client \
             --endpoint ${{ secrets.APPWRITE_ENDPOINT }} \
-            --project ${{ secrets.APPWRITE_PROJECT_ID }} \
-            --key ${{ secrets.APPWRITE_API_KEY }}
+            --project-id ${{ secrets.APPWRITE_PROJECT_ID }} \
+            --self-signed false
 
-          npx appwrite functions createDeployment \
-            --functionId ${{ secrets.LOGIN_FUNCTION_ID }} \
-            --entrypoint "login.ts" \
-            --code "./functions/auth" \
-            --activate true
-
-      - name: Deploy Appwrite Function - Register
+      - name: Deploy Login Function
         run: |
-          npx appwrite functions createDeployment \
-            --functionId ${{ secrets.REGISTER_FUNCTION_ID }} \
-            --entrypoint "register.ts" \
-            --code "./functions/auth" \
-            --activate true
+          appwrite functions createDeployment \
+            --function-id ${{ secrets.LOGIN_FUNCTION_ID }} \
+            --code ./functions/auth \
+            --activate true \
+            --entrypoint login.js
+        env:
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
+
+      - name: Deploy Register Function  
+        run: |
+          appwrite functions createDeployment \
+            --function-id ${{ secrets.REGISTER_FUNCTION_ID }} \
+            --code ./functions/auth \
+            --activate true \
+            --entrypoint register.js
+        env:
+          APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}

@@ -7,12 +7,17 @@ import LivePredictionPanel from '@/components/dashboard/LivePredictionPanel';
 import ReportsSubmissions from '@/components/dashboard/ReportsSubmissions';
 import AccountManagement from '@/components/dashboard/AccountManagement';
 import ApiAccessSection from '@/components/dashboard/ApiAccessSection';
+import ApiAccessGuard from '@/components/auth/ApiAccessGuard';
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // Mock user data - this would come from authentication context
+  const userPlan = 'free'; // or 'elite' or 'institutional'
+  const isOrganizationVerified = false;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,7 +57,12 @@ const UserDashboard = () => {
           </TabsContent>
 
           <TabsContent value="api" className="mt-6">
-            <ApiAccessSection />
+            <ApiAccessGuard 
+              userPlan={userPlan}
+              isOrganizationVerified={isOrganizationVerified}
+            >
+              <ApiAccessSection />
+            </ApiAccessGuard>
           </TabsContent>
 
           <TabsContent value="account" className="mt-6">

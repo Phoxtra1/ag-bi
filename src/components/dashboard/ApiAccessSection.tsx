@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 const ApiAccessSection = () => {
-  const [apiKey, setApiKey] = useState('sk-amnova-1234567890abcdef...');
+  const [apiKey, setApiKey] = useState('sk-amniva-1234567890abcdef...');
   const [isKeyVisible, setIsKeyVisible] = useState(false);
 
   // Mock user subscription status
@@ -31,7 +31,7 @@ const ApiAccessSection = () => {
   };
 
   const generateNewKey = () => {
-    const newKey = 'sk-amnova-' + Math.random().toString(36).substring(2, 15);
+    const newKey = 'sk-amniva-' + Math.random().toString(36).substring(2, 15);
     setApiKey(newKey);
     alert('New API key generated!');
   };
@@ -45,7 +45,7 @@ const ApiAccessSection = () => {
             API Access
           </CardTitle>
           <CardDescription>
-            Access Amnova's powerful API for institutional use
+            Access Amniva's powerful API for institutional use
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -161,7 +161,7 @@ const ApiAccessSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 border rounded-lg">
                   <h3 className="font-semibold mb-2">Quick Start Guide</h3>
-                  <p className="text-sm text-gray-600 mb-3">Get started with Amnova API in minutes</p>
+                  <p className="text-sm text-gray-600 mb-3">Get started with Amniva API in minutes</p>
                   <Button variant="outline" size="sm">View Guide</Button>
                 </div>
                 <div className="p-4 border rounded-lg">
@@ -184,7 +184,7 @@ const ApiAccessSection = () => {
               <div className="bg-gray-900 text-white p-4 rounded-lg">
                 <h4 className="font-semibold mb-2">Example Request:</h4>
                 <code className="text-sm">
-                  curl -X GET "https://api.amnova.com/v1/predictions" \<br/>
+                  curl -X GET "https://api.amniva.com/v1/predictions" \<br/>
                   &nbsp;&nbsp;-H "Authorization: Bearer {apiKey}" \<br/>
                   &nbsp;&nbsp;-H "Content-Type: application/json"
                 </code>
