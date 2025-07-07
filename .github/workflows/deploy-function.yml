@@ -4,13 +4,10 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'functions/**'
 
 jobs:
-  deploy-functions:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -20,13 +17,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Deploy Appwrite Functions using CLI
+      - name: Install Appwrite CLI
+        run: npm install -g appwrite
+
+      - name: Deploy login function
         run: |
-          npm install -g appwrite-cli
-          cd functions/sendWelcomeEmail
-          npm install
-          appwrite functions deploy --functionId ${{ secrets.FUNCTION_ID_SEND_WELCOME }} --projectId ${{ secrets.APPWRITE_PROJECT_ID }} --key ${{ secrets.APPWRITE_API_KEY }}
-          
-          cd ../notifyAdmin
-          npm install
-          appwrite functions deploy --functionId ${{ secrets.FUNCTION_ID_NOTIFY_ADMIN }} --projectId ${{ secrets.APPWRITE_PROJECT_ID }} --key ${{ secrets.APPWRITE_API_KEY }}
+          appwrite client --endpoint ${{ secrets.APPWRITE_ENDPOINT }} --project ${{ secrets.APPWRITE_PROJECT_ID }} --key ${{ secrets.APPWRITE_API_KEY }}
+          appwrite functions createDeployment --functionId "login" --entrypoint "index.ts" --code "./functions/login" --activate true
