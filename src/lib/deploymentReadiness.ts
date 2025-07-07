@@ -101,23 +101,13 @@ export const performDeploymentChecks = async (): Promise<DeploymentCheck[]> => {
     });
   }
 
-  // 5. Functions
-  try {
-    const functionsList = await functions.list();
-    for (const [name, id] of Object.entries(FUNC_IDS)) {
-      const functionExists = functionsList.functions.some((func: any) => func.$id === id);
-      checks.push({
-        name: `Function: ${name}`,
-        status: functionExists ? 'pass' : 'warning',
-        message: functionExists ? 'Function accessible' : 'Function not found (may not be deployed)',
-        critical: false
-      });
-    }
-  } catch (error) {
+  // 5. Functions - Note: Client SDK has limited function access
+  // Functions are typically managed via server SDK or console
+  for (const [name, id] of Object.entries(FUNC_IDS)) {
     checks.push({
-      name: 'Functions',
+      name: `Function: ${name}`,
       status: 'warning',
-      message: 'Unable to test functions',
+      message: 'Function deployment status cannot be verified from client (check Appwrite console)',
       critical: false
     });
   }
