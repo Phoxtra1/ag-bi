@@ -1,0 +1,9 @@
+
+{
+  "name": "auth-functions",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "appwrite": "^18.1.1"
+  }
+}

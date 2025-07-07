@@ -1,3 +1,4 @@
+
 name: Deploy Appwrite Functions
 
 on:
@@ -16,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22.0
+          node-version: 18
 
       - name: Deploy Appwrite Function - Login
         run: |
@@ -26,7 +27,15 @@ jobs:
             --key ${{ secrets.APPWRITE_API_KEY }}
 
           npx appwrite functions createDeployment \
-            --functionId ${{ secrets.FUNCTION_ID }} \
-            --entrypoint "index.ts" \
-            --code "./functions/login" \
+            --functionId ${{ secrets.LOGIN_FUNCTION_ID }} \
+            --entrypoint "login.ts" \
+            --code "./functions/auth" \
+            --activate true
+
+      - name: Deploy Appwrite Function - Register
+        run: |
+          npx appwrite functions createDeployment \
+            --functionId ${{ secrets.REGISTER_FUNCTION_ID }} \
+            --entrypoint "register.ts" \
+            --code "./functions/auth" \
             --activate true

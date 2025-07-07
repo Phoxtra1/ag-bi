@@ -1,17 +1,24 @@
 
-import { account } from '@/src/lib/appwrite';
-import { ID } from 'appwrite';
+import { Client, Account, ID } from 'appwrite';
 
-export async function POST(req: Request) {
+// Initialize Appwrite client for server-side function
+const client = new Client()
+  .setEndpoint(process.env.APPWRITE_ENDPOINT || 'https://nyc.cloud.appwrite.io/v1')
+  .setProject(process.env.APPWRITE_PROJECT_ID || 'amniva-ri03')
+  .setKey(process.env.APPWRITE_API_KEY || '');
+
+const account = new Account(client);
+
+export default async ({ req, res }: { req: any; res: any }) => {
   try {
-    const body = await req.json();
-    const { email, password, name } = body;
+    if (req.method !== 'POST') {
+      return res.json({ error: 'Method not allowed' }, 405);
+    }
+
+    const { email, password, name } = JSON.parse(req.body || '{}');
 
     if (!email || !password || !name) {
-      return new Response(
-        JSON.stringify({ error: 'Email, password, and name are required' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
+      return res.json({ error: 'Email, password, and name are required' }, 400);
     }
 
     const user = await account.create(ID.unique(), email, password, name);
@@ -19,15 +26,9 @@ export async function POST(req: Request) {
     // Auto-login after registration
     const session = await account.createEmailPasswordSession(email, password);
     
-    return new Response(
-      JSON.stringify({ success: true, user, session }),
-      { status: 201, headers: { 'Content-Type': 'application/json' } }
-    );
+    return res.json({ success: true, user, session }, 201);
   } catch (error: any) {
     console.error('Registration function error:', error);
-    return new Response(
-      JSON.stringify({ error: error.message || 'Registration failed' }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
-    );
+    return res.json({ error: error.message || 'Registration failed' }, 400);
   }
-}
+};
