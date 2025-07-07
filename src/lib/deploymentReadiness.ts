@@ -47,7 +47,7 @@ export const performDeploymentChecks = async (): Promise<DeploymentCheck[]> => {
   try {
     for (const [name, id] of Object.entries(COLLECTIONS)) {
       try {
-        await databases.listDocuments(APPWRITE_CONFIG.databaseId, id, [], 1);
+        await databases.listDocuments(APPWRITE_CONFIG.databaseId, id);
         checks.push({
           name: `Collection: ${name}`,
           status: 'pass',
@@ -76,7 +76,7 @@ export const performDeploymentChecks = async (): Promise<DeploymentCheck[]> => {
   try {
     for (const [name, id] of Object.entries(BUCKETS)) {
       try {
-        await storage.listFiles(id, [], 1);
+        await storage.listFiles(id);
         checks.push({
           name: `Bucket: ${name}`,
           status: 'pass',
@@ -103,23 +103,15 @@ export const performDeploymentChecks = async (): Promise<DeploymentCheck[]> => {
 
   // 5. Functions
   try {
+    const functionsList = await functions.list();
     for (const [name, id] of Object.entries(FUNC_IDS)) {
-      try {
-        await functions.get(id);
-        checks.push({
-          name: `Function: ${name}`,
-          status: 'pass',
-          message: 'Function accessible',
-          critical: false
-        });
-      } catch (error) {
-        checks.push({
-          name: `Function: ${name}`,
-          status: 'warning',
-          message: 'Function not accessible (may not be deployed)',
-          critical: false
-        });
-      }
+      const functionExists = functionsList.functions.some((func: any) => func.$id === id);
+      checks.push({
+        name: `Function: ${name}`,
+        status: functionExists ? 'pass' : 'warning',
+        message: functionExists ? 'Function accessible' : 'Function not found (may not be deployed)',
+        critical: false
+      });
     }
   } catch (error) {
     checks.push({
