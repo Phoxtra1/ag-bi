@@ -1,12 +1,16 @@
 
 import { Client, Account, Databases, Storage, Functions } from "appwrite";
 
-// Initialize the Appwrite client
+// Initialize the Appwrite client with environment variables for deployment
 const client = new Client();
 
+// Use environment variables for production deployment
+const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT || "https://nyc.cloud.appwrite.io/v1";
+const APPWRITE_PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID || "amniva-ri03";
+
 client
-  .setEndpoint("https://nyc.cloud.appwrite.io/v1") // API Endpoint
-  .setProject("amniva-ri03");                      // Project ID
+  .setEndpoint(APPWRITE_ENDPOINT)
+  .setProject(APPWRITE_PROJECT_ID);
 
 // Export core services
 export const account = new Account(client);
@@ -28,3 +32,15 @@ export {
   VERIFICATION_BUCKET_ID,
   CONTENT_BUCKET_ID
 } from './database';
+
+// Add connection test for deployment
+export const testConnection = async () => {
+  try {
+    await account.get();
+    console.log('✅ Appwrite connection successful');
+    return true;
+  } catch (error) {
+    console.warn('⚠️ Appwrite connection test failed (user not authenticated)');
+    return false;
+  }
+};

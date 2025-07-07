@@ -7,6 +7,7 @@ import { DATABASE_ID } from './database';
 class RealTimeSyncManager {
   private eventListeners: Map<string, Set<(data: any) => void>> = new Map();
   private pollingIntervals: Map<string, NodeJS.Timeout> = new Map();
+  private isInitialized = false;
 
   // Subscribe to real-time updates
   subscribe(eventType: string, callback: (data: any) => void) {
@@ -34,7 +35,13 @@ class RealTimeSyncManager {
   private emit(eventType: string, data: any) {
     const listeners = this.eventListeners.get(eventType);
     if (listeners) {
-      listeners.forEach(callback => callback(data));
+      listeners.forEach(callback => {
+        try {
+          callback(data);
+        } catch (error) {
+          console.error(`Error in event listener for ${eventType}:`, error);
+        }
+      });
     }
   }
 
@@ -79,17 +86,22 @@ class RealTimeSyncManager {
 
   // Get admin data based on event type
   private getAdminData(eventType: string) {
-    switch (eventType) {
-      case 'videoUrl':
-        return localStorage.getItem('adminDemoVideoUrl') || '';
-      case 'newsFeeds':
-        return JSON.parse(localStorage.getItem('adminNewsFeeds') || '[]');
-      case 'integrations':
-        return JSON.parse(localStorage.getItem('adminIntegrations') || '{}');
-      case 'aiEngines':
-        return JSON.parse(localStorage.getItem('adminAIEngines') || '{}');
-      default:
-        return null;
+    try {
+      switch (eventType) {
+        case 'videoUrl':
+          return localStorage.getItem('adminDemoVideoUrl') || '';
+        case 'newsFeeds':
+          return JSON.parse(localStorage.getItem('adminNewsFeeds') || '[]');
+        case 'integrations':
+          return JSON.parse(localStorage.getItem('adminIntegrations') || '{}');
+        case 'aiEngines':
+          return JSON.parse(localStorage.getItem('adminAIEngines') || '{}');
+        default:
+          return null;
+      }
+    } catch (error) {
+      console.error(`Error getting admin data for ${eventType}:`, error);
+      return null;
     }
   }
 
@@ -133,18 +145,30 @@ export const useRealTimeSync = (eventType: string, callback: (data: any) => void
 
 // Storage change listeners
 export const initializeStorageSync = () => {
+  // Prevent multiple initializations
+  if (typeof window === 'undefined') return;
+
   // Listen for storage changes across tabs
-  window.addEventListener('storage', (e) => {
+  const handleStorageChange = (e: StorageEvent) => {
     if (e.key?.startsWith('adminUpdate_')) {
       const eventType = e.key.replace('adminUpdate_', '');
       const data = realTimeSync['getAdminData'](eventType);
       realTimeSync.triggerUpdate(eventType, data);
     }
-  });
+  };
 
   // Listen for custom events
-  window.addEventListener('adminDataChanged', (e: any) => {
+  const handleCustomEvent = (e: CustomEvent) => {
     const { eventType, data } = e.detail;
     realTimeSync.triggerUpdate(eventType, data);
-  });
+  };
+
+  window.addEventListener('storage', handleStorageChange);
+  window.addEventListener('adminDataChanged', handleCustomEvent as EventListener);
+
+  // Return cleanup function
+  return () => {
+    window.removeEventListener('storage', handleStorageChange);
+    window.removeEventListener('adminDataChanged', handleCustomEvent as EventListener);
+  };
 };

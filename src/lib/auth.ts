@@ -1,49 +1,86 @@
 
-import { Client, Account, ID } from 'appwrite';
+import { account } from './appwrite';
+import { ID } from 'appwrite';
 
-// Appwrite config
-const client = new Client()
-  .setEndpoint('https://nyc.cloud.appwrite.io/v1') // API endpoint
-  .setProject('amniva-ri03'); // Project ID
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-const account = new Account(client);
+export interface RegisterCredentials {
+  email: string;
+  password: string;
+  name: string;
+}
 
-// REGISTER user
-export const registerUser = async (email: string, password: string, name: string) => {
+export const loginUser = async (credentials: LoginCredentials) => {
   try {
-    const response = await account.create(ID.unique(), email, password, name);
-    return response;
-  } catch (error) {
-    throw error;
+    const session = await account.createEmailPasswordSession(
+      credentials.email,
+      credentials.password
+    );
+    
+    return {
+      success: true,
+      data: session,
+      status: 200
+    };
+  } catch (error: any) {
+    console.error('Login error:', error);
+    return {
+      success: false,
+      data: { error: error.message || 'Login failed' },
+      status: 400
+    };
   }
 };
 
-// LOGIN user
-export const loginUser = async (email: string, password: string) => {
+export const registerUser = async (credentials: RegisterCredentials) => {
   try {
-    const session = await account.createEmailPasswordSession(email, password);
-    return session;
-  } catch (error) {
-    throw error;
+    const user = await account.create(
+      ID.unique(),
+      credentials.email,
+      credentials.password,
+      credentials.name
+    );
+    
+    // Auto-login after registration
+    const session = await account.createEmailPasswordSession(
+      credentials.email,
+      credentials.password
+    );
+    
+    return {
+      success: true,
+      data: { user, session },
+      status: 201
+    };
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    return {
+      success: false,
+      data: { error: error.message || 'Registration failed' },
+      status: 400
+    };
   }
 };
 
-// GET current session/user
 export const getCurrentUser = async () => {
   try {
     const user = await account.get();
     return user;
   } catch (error) {
-    throw error;
+    console.error('Get current user error:', error);
+    return null;
   }
 };
 
-// LOGOUT user
 export const logoutUser = async () => {
   try {
     await account.deleteSession('current');
-    return true;
-  } catch (error) {
-    throw error;
+    return { success: true };
+  } catch (error: any) {
+    console.error('Logout error:', error);
+    return { success: false, error: error.message };
   }
 };
