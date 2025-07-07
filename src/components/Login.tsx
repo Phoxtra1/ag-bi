@@ -65,7 +65,7 @@ export default function Login() {
       // Auto-login after registration
       await account.createEmailPasswordSession(data.email, data.password);
       
-      // Here you would typically save the user type and organization info to your database
+      // Store user type and organization info (would typically go to database)
       console.log('User registration data:', {
         name: data.name,
         email: data.email,
@@ -85,7 +85,7 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Amniva</CardTitle>
-          <CardDescription>Welcome back! Please sign in to your account</CardDescription>
+          <CardDescription>Welcome! Please sign in or create your account</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'login' | 'register')}>
@@ -248,8 +248,8 @@ export default function Login() {
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <p className="text-sm text-blue-800">
-                        <strong>Note:</strong> Organization accounts require verification to access API features. 
-                        You'll need to apply for institutional access separately.
+                        <strong>Note:</strong> Organization accounts may be eligible for API access. 
+                        You can apply for institutional access after registration.
                       </p>
                     </div>
                   </>
