@@ -78,7 +78,7 @@ const ApiOrganizations = () => {
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Institutional Access to Amnova's API
+            Institutional Access to Amniva's API
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
             Get real-time data, insights, and predictive intelligence via secure API endpoints designed for enterprise-grade applications.
@@ -270,7 +270,7 @@ const ApiOrganizations = () => {
                     onChange={handleInputChange}
                     required
                     rows={4}
-                    placeholder="Describe how you plan to use Amnova's API services..."
+                    placeholder="Describe how you plan to use Amniva's API services..."
                   />
                 </div>
 
