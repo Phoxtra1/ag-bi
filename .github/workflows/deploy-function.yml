@@ -18,17 +18,14 @@ jobs:
         with:
           node-version: 22.0
 
-      - name: Install Appwrite CLI
-        run: npm install -g appwrite
-
       - name: Deploy Appwrite Function - Login
         run: |
-          appwrite client \
+          npx appwrite client \
             --endpoint ${{ secrets.APPWRITE_ENDPOINT }} \
             --project ${{ secrets.APPWRITE_PROJECT_ID }} \
             --key ${{ secrets.APPWRITE_API_KEY }}
 
-          appwrite functions createDeployment \
+          npx appwrite functions createDeployment \
             --functionId ${{ secrets.FUNCTION_ID }} \
             --entrypoint "index.ts" \
             --code "./functions/login" \
