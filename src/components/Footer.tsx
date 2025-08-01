@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, MessageSquare } from 'lucide-react';
@@ -65,7 +66,7 @@ const Footer = () => {
       <div className="fixed bottom-4 right-4 z-50">
         <Link to="/help">
         <button className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors">
-          <span className="sr-only">Odeneho Support</span>
+          <span className="sr-only">Odeneho</span>
           <MessageSquare className="h-6 w-6" />
         </button>
         </Link>

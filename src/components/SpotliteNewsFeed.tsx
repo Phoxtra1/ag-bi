@@ -62,7 +62,7 @@ const SpotliteNewsFeed: React.FC = () => {
               id: `spotlite-${index}`,
               title: title.length > 80 ? title.substring(0, 80) + '...' : title,
               url: fullUrl,
-              image: fullImageUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop&auto=format`,
+              image: fullImageUrl || this.getUniqueNewsImage(index),
               timestamp: timeEl?.getAttribute('datetime') || new Date().toISOString(),
               source: 'Spotlite',
               excerpt: excerptEl?.textContent?.trim().substring(0, 120) + '...' || ''
@@ -73,14 +73,14 @@ const SpotliteNewsFeed: React.FC = () => {
         console.log('Direct fetch failed, using fallback news');
       }
       
-      // If no articles found or fetch failed, use sample data with images
+      // If no articles found or fetch failed, use sample data with unique images
       if (newsData.length === 0) {
         newsData = [
           {
             id: 'spotlite-1',
             title: 'Global Climate Summit Reaches Historic Agreement',
             url: 'https://www.amnewsworld.com/spotlite/climate-summit-agreement',
-            image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop&auto=format',
+            image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop&auto=format&q=80',
             source: 'Spotlite',
             timestamp: new Date().toISOString(),
             excerpt: 'World leaders unite on ambitious climate targets for 2030, marking a pivotal moment in global environmental policy...'
@@ -89,7 +89,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-2',
             title: 'Tech Innovation Drives Economic Growth in Q4',
             url: 'https://www.amnewsworld.com/spotlite/tech-innovation-growth',
-            image: 'https://images.unsplash.com/photo-1518186233392-c232efbf2373?w=400&h=200&fit=crop&auto=format',
+            image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=200&fit=crop&auto=format&q=80',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 3600000).toISOString(),
             excerpt: 'Technology sector shows unprecedented growth rates, with AI and renewable energy leading the charge...'
@@ -98,7 +98,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-3',
             title: 'Healthcare Breakthrough: New Treatment Shows Promise',
             url: 'https://www.amnewsworld.com/spotlite/healthcare-breakthrough',
-            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&auto=format',
+            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&auto=format&q=80',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 7200000).toISOString(),
             excerpt: 'Revolutionary medical treatment enters final trials, offering hope for millions of patients worldwide...'
@@ -107,7 +107,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-4',
             title: 'Education Reform Initiative Launches Globally',
             url: 'https://www.amnewsworld.com/spotlite/education-reform',
-            image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=200&fit=crop&auto=format',
+            image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop&auto=format&q=80',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 10800000).toISOString(),
             excerpt: 'New educational framework aims to transform learning experiences across continents...'
@@ -116,7 +116,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-5',
             title: 'Space Exploration Milestone Achieved',
             url: 'https://www.amnewsworld.com/spotlite/space-milestone',
-            image: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=200&fit=crop&auto=format',
+            image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=200&fit=crop&auto=format&q=80',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 14400000).toISOString(),
             excerpt: 'Historic space mission marks new era of exploration, pushing boundaries of human achievement...'
@@ -131,6 +131,19 @@ const SpotliteNewsFeed: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getUniqueNewsImage = (index: number): string => {
+    const images = [
+      'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1498050108023-4542c06a5843?w=400&h=200&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=200&fit=crop&auto=format&q=80'
+    ];
+    return images[index % images.length];
   };
 
   useEffect(() => {
@@ -203,25 +216,23 @@ const SpotliteNewsFeed: React.FC = () => {
           ]}
         >
           <CarouselContent>
-            {news.map((item) => (
+            {news.map((item, index) => (
               <CarouselItem key={item.id}>
                 <div
                   className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => window.open(item.url, '_blank')}
                 >
-                  {item.image && (
-                    <div className="relative h-32 overflow-hidden">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop&auto=format';
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="relative h-32 overflow-hidden">
+                    <img
+                      src={item.image || getUniqueNewsImage(index)}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = getUniqueNewsImage(index);
+                      }}
+                    />
+                  </div>
                   
                   <div className="p-3">
                     <div className="flex justify-between items-start gap-2 mb-2">
