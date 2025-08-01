@@ -1,4 +1,3 @@
-
 // src/router.tsx
 import { createBrowserRouter } from "react-router-dom";
 
@@ -8,21 +7,12 @@ import Dashboard from "@/components/DashboardUser";
 import Contact from "@/components/ContactForm";
 import ApiRequest from "@/components/ApiRequestForm";
 import Prediction from "@/components/PredictionForm";
-import Newsletter from "@/components/NewsletterForm";
-
-// Import pages
-import Index from "@/pages/Index";
-import About from "@/pages/About";
-import Pricing from "@/pages/Pricing";
-import Help from "@/pages/Help";
-import VerifyInfo from "@/pages/VerifyInfo";
-import ApiOrganizations from "@/pages/ApiOrganizations";
-import Predictions from "@/pages/Predictions";
+import Newsletter from "@/components/NewsletterForm"; // if you have it
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Index />,
+    element: <Login />,
   },
   {
     path: "/login",
@@ -45,36 +35,12 @@ const router = createBrowserRouter([
     element: <ApiRequest />,
   },
   {
-    path: "/api-organizations",
-    element: <ApiOrganizations />,
-  },
-  {
     path: "/prediction",
     element: <Prediction />,
   },
   {
-    path: "/predictions",
-    element: <Predictions />,
-  },
-  {
     path: "/newsletter",
     element: <Newsletter />,
-  },
-  {
-    path: "/about",
-    element: <About />,
-  },
-  {
-    path: "/pricing",
-    element: <Pricing />,
-  },
-  {
-    path: "/help",
-    element: <Help />,
-  },
-  {
-    path: "/verify",
-    element: <VerifyInfo />,
   },
 ]);
 

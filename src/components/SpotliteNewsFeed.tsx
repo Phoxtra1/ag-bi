@@ -5,8 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { ExternalLink, Clock, RefreshCw } from 'lucide-react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
 
 interface NewsItem {
   id: string;
@@ -42,30 +40,28 @@ const SpotliteNewsFeed: React.FC = () => {
         const doc = parser.parseFromString(htmlText, 'text/html');
         
         // Try to extract articles from common news website structures
-        const articles = doc.querySelectorAll('article, .post, .news-item, .story, .entry');
+        const articles = doc.querySelectorAll('article, .post, .news-item, .story');
         
         articles.forEach((article, index) => {
-          const titleEl = article.querySelector('h1, h2, h3, .title, .headline, .entry-title');
+          const titleEl = article.querySelector('h1, h2, h3, .title, .headline');
           const linkEl = article.querySelector('a[href]');
           const imageEl = article.querySelector('img');
-          const excerptEl = article.querySelector('.excerpt, .summary, p, .entry-content p');
-          const timeEl = article.querySelector('time, .date, .timestamp, .published');
+          const excerptEl = article.querySelector('.excerpt, .summary, p');
+          const timeEl = article.querySelector('time, .date, .timestamp');
           
           if (titleEl && linkEl) {
             const title = titleEl.textContent?.trim() || '';
             const url = linkEl.getAttribute('href') || '';
             const fullUrl = url.startsWith('http') ? url : `https://www.amnewsworld.com${url}`;
-            const imageSrc = imageEl?.getAttribute('src') || imageEl?.getAttribute('data-src');
-            const fullImageUrl = imageSrc?.startsWith('http') ? imageSrc : (imageSrc ? `https://www.amnewsworld.com${imageSrc}` : '');
             
             newsData.push({
               id: `spotlite-${index}`,
-              title: title.length > 80 ? title.substring(0, 80) + '...' : title,
+              title,
               url: fullUrl,
-              image: fullImageUrl || this.getUniqueNewsImage(index),
+              image: imageEl?.getAttribute('src') || '',
               timestamp: timeEl?.getAttribute('datetime') || new Date().toISOString(),
               source: 'Spotlite',
-              excerpt: excerptEl?.textContent?.trim().substring(0, 120) + '...' || ''
+              excerpt: excerptEl?.textContent?.trim().substring(0, 150) || ''
             });
           }
         });
@@ -73,14 +69,14 @@ const SpotliteNewsFeed: React.FC = () => {
         console.log('Direct fetch failed, using fallback news');
       }
       
-      // If no articles found or fetch failed, use sample data with unique images
+      // If no articles found or fetch failed, use sample data representing Spotlite content
       if (newsData.length === 0) {
         newsData = [
           {
             id: 'spotlite-1',
             title: 'Global Climate Summit Reaches Historic Agreement',
             url: 'https://www.amnewsworld.com/spotlite/climate-summit-agreement',
-            image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop&auto=format&q=80',
+            image: 'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop',
             source: 'Spotlite',
             timestamp: new Date().toISOString(),
             excerpt: 'World leaders unite on ambitious climate targets for 2030, marking a pivotal moment in global environmental policy...'
@@ -89,7 +85,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-2',
             title: 'Tech Innovation Drives Economic Growth in Q4',
             url: 'https://www.amnewsworld.com/spotlite/tech-innovation-growth',
-            image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=200&fit=crop&auto=format&q=80',
+            image: 'https://images.unsplash.com/photo-1518186233392-c232efbf2373?w=400&h=200&fit=crop',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 3600000).toISOString(),
             excerpt: 'Technology sector shows unprecedented growth rates, with AI and renewable energy leading the charge...'
@@ -98,7 +94,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-3',
             title: 'Healthcare Breakthrough: New Treatment Shows Promise',
             url: 'https://www.amnewsworld.com/spotlite/healthcare-breakthrough',
-            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&auto=format&q=80',
+            image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 7200000).toISOString(),
             excerpt: 'Revolutionary medical treatment enters final trials, offering hope for millions of patients worldwide...'
@@ -107,7 +103,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-4',
             title: 'Education Reform Initiative Launches Globally',
             url: 'https://www.amnewsworld.com/spotlite/education-reform',
-            image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop&auto=format&q=80',
+            image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=200&fit=crop',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 10800000).toISOString(),
             excerpt: 'New educational framework aims to transform learning experiences across continents...'
@@ -116,7 +112,7 @@ const SpotliteNewsFeed: React.FC = () => {
             id: 'spotlite-5',
             title: 'Space Exploration Milestone Achieved',
             url: 'https://www.amnewsworld.com/spotlite/space-milestone',
-            image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=200&fit=crop&auto=format&q=80',
+            image: 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400&h=200&fit=crop',
             source: 'Spotlite',
             timestamp: new Date(Date.now() - 14400000).toISOString(),
             excerpt: 'Historic space mission marks new era of exploration, pushing boundaries of human achievement...'
@@ -131,19 +127,6 @@ const SpotliteNewsFeed: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getUniqueNewsImage = (index: number): string => {
-    const images = [
-      'https://images.unsplash.com/photo-1569163139394-de4e4f43e4e3?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1498050108023-4542c06a5843?w=400&h=200&fit=crop&auto=format&q=80',
-      'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=400&h=200&fit=crop&auto=format&q=80'
-    ];
-    return images[index % images.length];
   };
 
   useEffect(() => {
@@ -203,36 +186,27 @@ const SpotliteNewsFeed: React.FC = () => {
           ))}
         </div>
       ) : (
-        <Carousel 
-          className="w-full"
-          opts={{
-            align: "start",
-            loop: true,
-          }}
-          plugins={[
-            Autoplay({
-              delay: 5000,
-            }),
-          ]}
-        >
+        <Carousel className="w-full">
           <CarouselContent>
-            {news.map((item, index) => (
+            {news.map((item) => (
               <CarouselItem key={item.id}>
                 <div
                   className="bg-white rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                   onClick={() => window.open(item.url, '_blank')}
                 >
-                  <div className="relative h-32 overflow-hidden">
-                    <img
-                      src={item.image || getUniqueNewsImage(index)}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = getUniqueNewsImage(index);
-                      }}
-                    />
-                  </div>
+                  {item.image && (
+                    <div className="relative h-32 overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    </div>
+                  )}
                   
                   <div className="p-3">
                     <div className="flex justify-between items-start gap-2 mb-2">
@@ -243,7 +217,7 @@ const SpotliteNewsFeed: React.FC = () => {
                     </div>
                     
                     {item.excerpt && (
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-3">
                         {item.excerpt}
                       </p>
                     )}
