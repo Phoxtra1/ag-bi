@@ -2,6 +2,7 @@
 import React from 'react';
 import SpotliteNewsFeed from './SpotliteNewsFeed';
 import { Radio } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const RightWidget = () => {
   return (
@@ -35,17 +36,27 @@ const RightWidget = () => {
           </div>
           <div className="text-center">
             <p className="text-sm font-medium text-gray-900 mb-1">Now Playing</p>
-            <p className="text-xs text-gray-600 mb-3">AMNews World Radio - Live Stream</p>
+            <p className="text-xs text-gray-600 mb-3">AMNews Radio - Live Stream</p>
             <div className="flex items-center justify-center space-x-2">
               <div className="h-1 bg-red-200 rounded-full flex-1">
                 <div className="h-1 bg-red-500 rounded-full w-1/3 animate-pulse"></div>
               </div>
             </div>
           </div>
+          
+          {/* Audio Element */}
+          <audio 
+            controls 
+            autoPlay 
+            className="w-full mt-4"
+            src="https://stream.zeno.fm/m2wnv2cnyrhvv"
+          >
+            Your browser does not support the audio element.
+          </audio>
         </div>
         
         <p className="text-xs text-gray-500 mt-2">
-          Live radio streaming from AMNews World
+          Live radio streaming from AMNews
         </p>
       </div>
 
@@ -56,18 +67,24 @@ const RightWidget = () => {
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="space-y-3">
-          <button className="w-full text-left p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
-            <div className="text-sm font-medium text-blue-900">Submit Content</div>
-            <div className="text-xs text-blue-700">Share news or insights</div>
-          </button>
-          <button className="w-full text-left p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
-            <div className="text-sm font-medium text-green-900">Verify Information</div>
-            <div className="text-xs text-green-700">Check facts instantly</div>
-          </button>
-          <button className="w-full text-left p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
-            <div className="text-sm font-medium text-purple-900">Make Prediction</div>
-            <div className="text-xs text-purple-700">Share your forecast</div>
-          </button>
+          <Link to="/contact" className="block">
+            <button className="w-full text-left p-3 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+              <div className="text-sm font-medium text-blue-900">Submit Content</div>
+              <div className="text-xs text-blue-700">Share news or insights</div>
+            </button>
+          </Link>
+          <Link to="/verify" className="block">
+            <button className="w-full text-left p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+              <div className="text-sm font-medium text-green-900">Verify Information</div>
+              <div className="text-xs text-green-700">Check facts instantly</div>
+            </button>
+          </Link>
+          <Link to="/prediction" className="block">
+            <button className="w-full text-left p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+              <div className="text-sm font-medium text-purple-900">Make Prediction</div>
+              <div className="text-xs text-purple-700">Share your forecast</div>
+            </button>
+          </Link>
         </div>
       </div>
     </aside>
