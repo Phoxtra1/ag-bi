@@ -25,7 +25,7 @@ const RightWidget = () => {
         </div>
         
         {/* Radio Player Interface */}
-        <div className="bg-gradient-to-br from-red-50 to-blue-50 rounded-lg p-6">
+        <div className="bg-gradient-to-br from-red-50 to-blue-50 rounded-lg p-4">
           <div className="flex items-center justify-center mb-4">
             <div className="relative">
               <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
@@ -34,22 +34,17 @@ const RightWidget = () => {
               <div className="absolute inset-0 w-16 h-16 border-4 border-red-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
             </div>
           </div>
-          <div className="text-center">
+          <div className="text-center mb-3">
             <p className="text-sm font-medium text-gray-900 mb-1">Now Playing</p>
-            <p className="text-xs text-gray-600 mb-3">AMNews Radio - Live Stream</p>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="h-1 bg-red-200 rounded-full flex-1">
-                <div className="h-1 bg-red-500 rounded-full w-1/3 animate-pulse"></div>
-              </div>
-            </div>
+            <p className="text-xs text-gray-600">AMNews Radio - Live Stream</p>
           </div>
           
-          {/* Audio Element */}
+          {/* Landscape Audio Player */}
           <audio 
             controls 
-            autoPlay 
-            className="w-full mt-4"
+            className="w-full h-10"
             src="https://stream.zeno.fm/m2wnv2cnyrhvv"
+            preload="none"
           >
             Your browser does not support the audio element.
           </audio>
@@ -79,7 +74,7 @@ const RightWidget = () => {
               <div className="text-xs text-green-700">Check facts instantly</div>
             </button>
           </Link>
-          <Link to="/prediction" className="block">
+          <Link to="/predictions" className="block">
             <button className="w-full text-left p-3 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
               <div className="text-sm font-medium text-purple-900">Make Prediction</div>
               <div className="text-xs text-purple-700">Share your forecast</div>
