@@ -1,12 +1,12 @@
 
 import React from 'react';
 import SpotliteNewsFeed from './SpotliteNewsFeed';
-import RealTimeVideoPlayer from './RealTimeVideoPlayer';
+import { Radio } from 'lucide-react';
 
 const RightWidget = () => {
   return (
     <aside className="w-full lg:w-80 space-y-6">
-      {/* AMNews Live Section */}
+      {/* AMNews Live Radio Section */}
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
         <div className="flex items-center gap-3 mb-4">
           <img 
@@ -18,15 +18,34 @@ const RightWidget = () => {
             <h3 className="text-lg font-bold text-gray-900">AMNews Live</h3>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Live Streaming</span>
+              <span className="text-sm text-gray-600">Live Radio</span>
             </div>
           </div>
         </div>
         
-        <RealTimeVideoPlayer />
+        {/* Radio Player Interface */}
+        <div className="bg-gradient-to-br from-red-50 to-blue-50 rounded-lg p-6">
+          <div className="flex items-center justify-center mb-4">
+            <div className="relative">
+              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                <Radio className="h-8 w-8 text-white" />
+              </div>
+              <div className="absolute inset-0 w-16 h-16 border-4 border-red-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+            </div>
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-medium text-gray-900 mb-1">Now Playing</p>
+            <p className="text-xs text-gray-600 mb-3">AMNews World Radio - Live Stream</p>
+            <div className="flex items-center justify-center space-x-2">
+              <div className="h-1 bg-red-200 rounded-full flex-1">
+                <div className="h-1 bg-red-500 rounded-full w-1/3 animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <p className="text-xs text-gray-500 mt-2">
-          Real-time updates and live coverage from AMNews World
+          Live radio streaming from AMNews World
         </p>
       </div>
 
