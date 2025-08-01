@@ -5,11 +5,12 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Pricing = () => {
   const freePlan = {
     name: 'Free Plan',
-    price: 'CAD $0',
+    price: '€0',
     period: '/month',
     description: 'Get started with core access to trending insights, verified news previews, and civic snapshots — at no cost.',
     whyUpgrade: 'Great for casual users, but limited access to deeper prediction tools and reporting features.',
@@ -100,9 +101,11 @@ const Pricing = () => {
                 </CardContent>
                 
                 <CardFooter>
-                  <Button className="w-full" variant="outline">
-                    {freePlan.buttonText}
-                  </Button>
+                  <Link to="/login" className="w-full">
+                    <Button className="w-full" variant="outline">
+                      {freePlan.buttonText}
+                    </Button>
+                  </Link>
                 </CardFooter>
               </Card>
             </div>

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminDataSync from "@/components/admin/AdminDataSync";
+import Login from "@/components/Login";
 import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
@@ -37,6 +38,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/verify" element={<VerifyInfo />} />
           <Route path="/trending" element={<Trending />} />
           <Route path="/predictions" element={<Predictions />} />

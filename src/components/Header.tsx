@@ -58,11 +58,13 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Action Buttons - Dashboard button removed */}
+          {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white">
-              Get Started
-            </Button>
+            <Link to="/login">
+              <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white">
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
 
