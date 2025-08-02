@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const platformLinks = [
@@ -24,7 +25,7 @@ const Footer = () => {
   ];
 
   const connectLinks = [
-    { name: 'Register', href: '/signup' },
+    { name: 'Register', href: '/login' },
     { name: 'Newsletter', href: '/newsletter' },
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Service', href: '/terms' }
@@ -40,13 +41,13 @@ const Footer = () => {
             <ul className="space-y-3">
               {platformLinks.map((link) => (
                 <li key={link.name}>
-                  <a 
-                    href={link.href}
+                  <Link 
+                    to={link.href}
                     className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
                   >
                     <span className="text-[#F59E0B]">🔸</span>
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -58,13 +59,13 @@ const Footer = () => {
             <ul className="space-y-3">
               {resourceLinks.map((link) => (
                 <li key={link.name}>
-                  <a 
-                    href={link.href}
+                  <Link 
+                    to={link.href}
                     className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
                   >
                     <span className="text-[#F59E0B]">🔸</span>
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -76,13 +77,13 @@ const Footer = () => {
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.name}>
-                  <a 
-                    href={link.href}
+                  <Link 
+                    to={link.href}
                     className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
                   >
                     <span className="text-[#F59E0B]">🔸</span>
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -94,13 +95,13 @@ const Footer = () => {
             <ul className="space-y-3">
               {connectLinks.map((link) => (
                 <li key={link.name}>
-                  <a 
-                    href={link.href}
+                  <Link 
+                    to={link.href}
                     className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
                   >
                     <span className="text-[#F59E0B]">🔸</span>
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
