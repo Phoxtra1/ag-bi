@@ -301,7 +301,7 @@ const SpotliteNewsFeed: React.FC = () => {
           className="text-xs text-blue-600 p-0"
           onClick={() => window.open('https://www.amnewsworld.com/spotlite/', '_blank')}
         >
-          View all stories on AMNews World →
+          View all stories on Spotlite →
         </Button>
       </div>
     </Card>

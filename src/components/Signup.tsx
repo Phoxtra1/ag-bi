@@ -16,7 +16,7 @@ export default function Signup() {
       <div className="text-center">
         <h2 className="text-2xl font-semibold mb-4">Redirecting to registration...</h2>
         <Button onClick={() => navigate("/login")}>
-          Go to Login/Register
+          Go to Login and Register
         </Button>
       </div>
     </div>
