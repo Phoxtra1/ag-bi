@@ -24,7 +24,7 @@ const Footer = () => {
   ];
 
   const connectLinks = [
-    { name: 'Register', href: '/register' },
+    { name: 'Register', href: '/signup' },
     { name: 'Newsletter', href: '/newsletter' },
     { name: 'Privacy Policy', href: '/privacy' },
     { name: 'Terms of Service', href: '/terms' }

@@ -12,7 +12,7 @@ const Pricing = () => {
     name: 'Free Plan',
     price: '€0',
     period: '/month',
-    description: 'Get started with core access to trending insights, verified news previews, and civic snapshots — at no cost.',
+    description: 'Get started with core access to trending insights, verified news previews, and civic snapshots at no cost.',
     whyUpgrade: 'Great for casual users, but limited access to deeper prediction tools and reporting features.',
     icon: '🟢',
     features: [
@@ -28,7 +28,7 @@ const Pricing = () => {
   };
 
   const whyPayReasons = [
-    'Gain real-time access to verified, AI-filtered trends',
+    'Gain real time access to verified, AI filtered trends',
     'Use prediction tools that forecast political shifts, weather, and social behavior',
     'Unlock interactive dashboards with submission, feedback, and civic participation features',
     'Get early alerts for upcoming events, opportunities, or risks',
@@ -61,7 +61,7 @@ const Pricing = () => {
             Choose the Right Plan for You
           </h1>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Whether you're a curious reader, an investigative journalist, a civic advocate, or an institution — 
+            Whether you're a curious reader, an investigative journalist, a civic advocate, or an institution 
             Amniva empowers you with tools that matter.
           </p>
         </div>
@@ -101,7 +101,7 @@ const Pricing = () => {
                 </CardContent>
                 
                 <CardFooter>
-                  <Link to="/login" className="w-full">
+                  <Link to="/signup" className="w-full">
                     <Button className="w-full" variant="outline">
                       {freePlan.buttonText}
                     </Button>
@@ -150,9 +150,11 @@ const Pricing = () => {
             Need help choosing a plan? Contact us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Contact Support
-            </Button>
+            <Link to="/help">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                Contact Support
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
               View All Features
             </Button>

@@ -24,31 +24,31 @@ const RightWidget = () => {
           </div>
         </div>
         
-        {/* Radio Player Interface */}
-        <div className="bg-gradient-to-br from-red-50 to-blue-50 rounded-lg p-6">
-          <div className="flex items-center justify-center mb-4">
+        {/* Radio Player Interface - Landscape format */}
+        <div className="bg-gradient-to-br from-red-50 to-blue-50 rounded-lg p-4">
+          <div className="flex items-center gap-4 mb-4">
             <div className="relative">
-              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-                <Radio className="h-8 w-8 text-white" />
+              <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                <Radio className="h-6 w-6 text-white" />
               </div>
-              <div className="absolute inset-0 w-16 h-16 border-4 border-red-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
+              <div className="absolute inset-0 w-12 h-12 border-4 border-red-200 rounded-full animate-spin" style={{ animationDuration: '3s' }}></div>
             </div>
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-900 mb-1">Now Playing</p>
-            <p className="text-xs text-gray-600 mb-3">AMNews Radio - Live Stream</p>
-            <div className="flex items-center justify-center space-x-2">
-              <div className="h-1 bg-red-200 rounded-full flex-1">
-                <div className="h-1 bg-red-500 rounded-full w-1/3 animate-pulse"></div>
-              </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900 mb-1">Now Playing</p>
+              <p className="text-xs text-gray-600">AMNews Radio - Live Stream</p>
             </div>
           </div>
           
-          {/* Audio Element */}
+          <div className="flex items-center justify-center space-x-2 mb-3">
+            <div className="h-1 bg-red-200 rounded-full flex-1">
+              <div className="h-1 bg-red-500 rounded-full w-1/3 animate-pulse"></div>
+            </div>
+          </div>
+          
+          {/* Audio Element - No autoplay */}
           <audio 
             controls 
-            autoPlay 
-            className="w-full mt-4"
+            className="w-full"
             src="https://stream.zeno.fm/m2wnv2cnyrhvv"
           >
             Your browser does not support the audio element.
