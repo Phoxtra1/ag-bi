@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Building, 
   Shield, 
@@ -29,6 +30,7 @@ const ApiOrganizations = () => {
     useCase: '',
     document: null as File | null
   });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -43,8 +45,17 @@ const ApiOrganizations = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('API Access Request:', formData);
-    // Here you would typically send the data to your backend
     alert('API access request submitted! We will review and contact you within 2-3 business days.');
+    setIsDialogOpen(false);
+    setFormData({
+      organizationName: '',
+      organizationEmail: '',
+      website: '',
+      country: '',
+      sector: '',
+      useCase: '',
+      document: null
+    });
   };
 
   const features = [
@@ -83,9 +94,128 @@ const ApiOrganizations = () => {
             Get real-time data, insights, and predictive intelligence via secure API endpoints designed for enterprise-grade applications.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              Apply for API Access
-            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+                  Apply for API Access
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>API Access Application</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Organization Name *
+                      </label>
+                      <Input
+                        name="organizationName"
+                        value={formData.organizationName}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter your organization name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Organization Email *
+                      </label>
+                      <Input
+                        type="email"
+                        name="organizationEmail"
+                        value={formData.organizationEmail}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="contact@organization.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Website *
+                      </label>
+                      <Input
+                        type="url"
+                        name="website"
+                        value={formData.website}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="https://www.organization.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Country *
+                      </label>
+                      <Input
+                        name="country"
+                        value={formData.country}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="Enter your country"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sector *
+                    </label>
+                    <select
+                      name="sector"
+                      value={formData.sector}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">Select your sector</option>
+                      <option value="media">Media & Broadcasting</option>
+                      <option value="government">Government Agency</option>
+                      <option value="academic">Academic & Research</option>
+                      <option value="civic">Civic Institution</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Intended Use Case *
+                    </label>
+                    <Textarea
+                      name="useCase"
+                      value={formData.useCase}
+                      onChange={handleInputChange}
+                      required
+                      rows={4}
+                      placeholder="Describe how you plan to use Amniva's API services..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Verification Document *
+                    </label>
+                    <Input
+                      type="file"
+                      onChange={handleFileChange}
+                      accept=".pdf,.doc,.docx"
+                      required
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                      Upload Certificate of Incorporation, Academic License, or Media License
+                    </p>
+                  </div>
+
+                  <Button type="submit" size="lg" className="w-full">
+                    Submit API Access Request
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
             <Button size="lg" variant="outline">
               View Documentation
             </Button>
@@ -167,131 +297,6 @@ const ApiOrganizations = () => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Registration Form */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Registration & Verification</h2>
-          <Card className="max-w-4xl mx-auto">
-            <CardHeader>
-              <CardTitle>API Access Application</CardTitle>
-              <CardDescription>
-                Complete this form to request institutional API access. Our team will verify your organization and contact you within 2-3 business days.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Organization Name *
-                    </label>
-                    <Input
-                      name="organizationName"
-                      value={formData.organizationName}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter your organization name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Organization Email *
-                    </label>
-                    <Input
-                      type="email"
-                      name="organizationEmail"
-                      value={formData.organizationEmail}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="contact@organization.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Website *
-                    </label>
-                    <Input
-                      type="url"
-                      name="website"
-                      value={formData.website}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="https://www.organization.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Country *
-                    </label>
-                    <Input
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter your country"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sector *
-                  </label>
-                  <select
-                    name="sector"
-                    value={formData.sector}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="">Select your sector</option>
-                    <option value="media">Media & Broadcasting</option>
-                    <option value="government">Government Agency</option>
-                    <option value="academic">Academic & Research</option>
-                    <option value="civic">Civic Institution</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Intended Use Case *
-                  </label>
-                  <Textarea
-                    name="useCase"
-                    value={formData.useCase}
-                    onChange={handleInputChange}
-                    required
-                    rows={4}
-                    placeholder="Describe how you plan to use Amniva's API services..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Verification Document *
-                  </label>
-                  <Input
-                    type="file"
-                    onChange={handleFileChange}
-                    accept=".pdf,.doc,.docx"
-                    required
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Upload Certificate of Incorporation, Academic License, or Media License
-                  </p>
-                </div>
-
-                <Button type="submit" size="lg" className="w-full">
-                  Submit API Access Request
-                </Button>
-              </form>
             </CardContent>
           </Card>
         </div>
