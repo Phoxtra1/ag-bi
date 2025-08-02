@@ -1,3 +1,4 @@
+
 // src/router.tsx
 import { createBrowserRouter } from "react-router-dom";
 
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <Signup />,
+    element: <Login />,
   },
   {
     path: "/dashboard",

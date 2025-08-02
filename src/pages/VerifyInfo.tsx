@@ -346,7 +346,7 @@ const VerifyInfo = () => {
             <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium ml-1">
               Log In
             </a> 
-            to track or receive your result.
+            {" "}to track or receive your result.
           </p>
         </div>
       </div>

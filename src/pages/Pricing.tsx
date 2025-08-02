@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -150,7 +149,7 @@ const Pricing = () => {
             Need help choosing a plan? Contact us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/help">
+            <Link to="/login">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                 Contact Support
               </Button>
