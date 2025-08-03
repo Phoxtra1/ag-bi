@@ -2,206 +2,242 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { 
   HelpCircle, 
-  MessageCircle, 
+  MessageSquare, 
   FileText, 
-  Mail, 
-  Phone, 
-  ExternalLink,
-  Search,
-  Book,
-  Users
+  Video, 
+  Mail,
+  Phone,
+  Clock,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
 
 const HelpSupport = () => {
-  const faqItems = [
+  const supportOptions = [
     {
-      question: 'How do I upgrade my subscription plan?',
-      answer: 'You can upgrade your plan from the Account Management section or contact our support team.'
+      icon: MessageSquare,
+      title: 'Live Chat',
+      description: 'Get instant help from our support team',
+      availability: 'Available 24/7',
+      badge: 'Fastest',
+      action: 'Start Chat',
+      color: 'bg-green-100 text-green-800'
     },
     {
-      question: 'How accurate are the predictions?',
-      answer: 'Our AI models achieve 85-95% accuracy depending on the prediction type and data quality.'
+      icon: Mail,
+      title: 'Email Support',
+      description: 'Send us a detailed message about your issue',
+      availability: 'Response within 24 hours',
+      badge: 'Detailed',
+      action: 'Send Email',
+      color: 'bg-blue-100 text-blue-800'
     },
     {
-      question: 'Can I export my prediction data?',
-      answer: 'Yes, Pro and Elite users can export data in PDF, CSV, and JSON formats.'
+      icon: Phone,
+      title: 'Phone Support',
+      description: 'Speak directly with our technical experts',
+      availability: 'Mon-Fri, 9AM-6PM UTC',
+      badge: 'Premium',
+      action: 'Call Now',
+      color: 'bg-purple-100 text-purple-800'
     }
   ];
+
+  const helpResources = [
+    {
+      icon: FileText,
+      title: 'Documentation',
+      description: 'Comprehensive guides and API references',
+      items: ['Getting Started Guide', 'API Documentation', 'Best Practices', 'Troubleshooting']
+    },
+    {
+      icon: Video,
+      title: 'Video Tutorials',
+      description: 'Step-by-step video guides',
+      items: ['Platform Overview', 'API Integration', 'Advanced Features', 'Use Cases']
+    },
+    {
+      icon: HelpCircle,
+      title: 'FAQ',
+      description: 'Answers to commonly asked questions',
+      items: ['Account Setup', 'Billing Questions', 'Technical Issues', 'Feature Requests']
+    }
+  ];
+
+  const recentTickets = [
+    {
+      id: 'T-2024-001',
+      subject: 'API rate limit inquiry',
+      status: 'resolved',
+      date: '2024-01-15',
+      priority: 'medium'
+    },
+    {
+      id: 'T-2024-002',
+      subject: 'Billing discrepancy',
+      status: 'in-progress',
+      date: '2024-01-18',
+      priority: 'high'
+    },
+    {
+      id: 'T-2024-003',
+      subject: 'Feature request: Export data',
+      status: 'open',
+      date: '2024-01-20',
+      priority: 'low'
+    }
+  ];
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'resolved':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'in-progress':
+        return <Clock className="w-4 h-4 text-yellow-600" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Help & Support</h2>
-        <p className="text-gray-600">Get help with your Amnova account and features</p>
+        <p className="text-gray-600">Get the help you need, when you need it</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              Quick Support
-            </CardTitle>
-            <CardDescription>
-              Get immediate help with common questions
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start" variant="outline">
-              <MessageCircle className="w-4 h-4 mr-2" />
-              Live Chat Support
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <Mail className="w-4 h-4 mr-2" />
-              Email Support
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <Phone className="w-4 h-4 mr-2" />
-              Schedule a Call
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <Users className="w-4 h-4 mr-2" />
-              Community Forum
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Contact Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5" />
-              Contact Support
-            </CardTitle>
-            <CardDescription>
-              Send us a message and we'll get back to you
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-              <Input placeholder="Brief description of your issue" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-              <Textarea 
-                placeholder="Describe your issue in detail..."
-                rows={4}
-              />
-            </div>
-            <Button className="w-full">Send Message</Button>
-          </CardContent>
-        </Card>
-
-        {/* Documentation */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Book className="w-5 h-5" />
-              Documentation
-            </CardTitle>
-            <CardDescription>
-              Comprehensive guides and API documentation
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start" variant="outline">
-              <FileText className="w-4 h-4 mr-2" />
-              User Guide
-              <ExternalLink className="w-4 h-4 ml-auto" />
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <FileText className="w-4 h-4 mr-2" />
-              API Documentation
-              <ExternalLink className="w-4 h-4 ml-auto" />
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <FileText className="w-4 h-4 mr-2" />
-              Video Tutorials
-              <ExternalLink className="w-4 h-4 ml-auto" />
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <FileText className="w-4 h-4 mr-2" />
-              Best Practices
-              <ExternalLink className="w-4 h-4 ml-auto" />
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Search Knowledge Base */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="w-5 h-5" />
-              Search Knowledge Base
-            </CardTitle>
-            <CardDescription>
-              Find answers to common questions
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input placeholder="Search for help..." className="flex-1" />
-              <Button>
-                <Search className="w-4 h-4" />
-              </Button>
-            </div>
-            <p className="text-sm text-gray-600">
-              Try searching for: "API setup", "billing issues", "prediction accuracy"
-            </p>
-          </CardContent>
-        </Card>
+      {/* Contact Support Options */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {supportOptions.map((option, index) => (
+          <Card key={index} className="hover:shadow-lg transition-shadow">
+            <CardHeader className="text-center">
+              <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <option.icon className="w-6 h-6 text-blue-600" />
+              </div>
+              <CardTitle className="text-lg">{option.title}</CardTitle>
+              <Badge className={option.color}>{option.badge}</Badge>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <CardDescription>{option.description}</CardDescription>
+              <p className="text-sm text-gray-600">{option.availability}</p>
+              <Button className="w-full">{option.action}</Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* FAQ Section */}
+      {/* Help Resources */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {helpResources.map((resource, index) => (
+          <Card key={index}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <resource.icon className="w-5 h-5" />
+                {resource.title}
+              </CardTitle>
+              <CardDescription>{resource.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {resource.items.map((item, itemIndex) => (
+                  <li key={itemIndex} className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="w-4 h-4 text-green-500" />
+                    <button className="text-blue-600 hover:underline">{item}</button>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Recent Support Tickets */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <HelpCircle className="w-5 h-5" />
-            Frequently Asked Questions
-          </CardTitle>
+          <CardTitle>Recent Support Tickets</CardTitle>
+          <CardDescription>Track your support requests and their status</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {faqItems.map((faq, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <h4 className="font-medium text-gray-900 mb-2">{faq.question}</h4>
-                <p className="text-sm text-gray-600">{faq.answer}</p>
+            {recentTickets.map((ticket) => (
+              <div key={ticket.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center gap-4">
+                  {getStatusIcon(ticket.status)}
+                  <div>
+                    <h4 className="font-medium">{ticket.subject}</h4>
+                    <p className="text-sm text-gray-600">Ticket #{ticket.id} • {ticket.date}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge className={getPriorityColor(ticket.priority)}>
+                    {ticket.priority}
+                  </Badge>
+                  <Badge variant="outline" className="capitalize">
+                    {ticket.status}
+                  </Badge>
+                  <Button variant="ghost" size="sm">View</Button>
+                </div>
               </div>
             ))}
           </div>
-          <div className="mt-6">
+          
+          <div className="mt-4 pt-4 border-t">
             <Button variant="outline" className="w-full">
-              View All FAQs
+              View All Tickets
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Support Hours */}
+      {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Support Hours</CardTitle>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Common tasks and quick fixes</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4 className="font-medium mb-2">Live Chat & Email</h4>
-              <p className="text-sm text-gray-600">Monday - Friday: 9 AM - 6 PM EST</p>
-              <p className="text-sm text-gray-600">Saturday: 10 AM - 4 PM EST</p>
-              <p className="text-sm text-gray-600">Sunday: Closed</p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-2">Phone Support</h4>
-              <p className="text-sm text-gray-600">Monday - Friday: 9 AM - 5 PM EST</p>
-              <p className="text-sm text-gray-600">Emergency Support: 24/7</p>
-              <p className="text-sm text-gray-600">+1 (555) 123-4567</p>
-            </div>
+            <Button variant="outline" className="justify-start h-auto p-4">
+              <div className="text-left">
+                <p className="font-medium">Reset Password</p>
+                <p className="text-sm text-gray-600">Change your account password</p>
+              </div>
+            </Button>
+            
+            <Button variant="outline" className="justify-start h-auto p-4">
+              <div className="text-left">
+                <p className="font-medium">Download API Logs</p>
+                <p className="text-sm text-gray-600">Get your recent API usage logs</p>
+              </div>
+            </Button>
+            
+            <Button variant="outline" className="justify-start h-auto p-4">
+              <div className="text-left">
+                <p className="font-medium">Report a Bug</p>
+                <p className="text-sm text-gray-600">Let us know about any issues</p>
+              </div>
+            </Button>
+            
+            <Button variant="outline" className="justify-start h-auto p-4">
+              <div className="text-left">
+                <p className="font-medium">Request Feature</p>
+                <p className="text-sm text-gray-600">Suggest new features or improvements</p>
+              </div>
+            </Button>
           </div>
         </CardContent>
       </Card>

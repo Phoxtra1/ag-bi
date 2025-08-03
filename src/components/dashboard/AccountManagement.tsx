@@ -16,7 +16,8 @@ import {
   Shield, 
   Bell,
   CheckCircle,
-  Calendar
+  Calendar,
+  Download
 } from 'lucide-react';
 
 const AccountManagement = () => {
@@ -32,6 +33,8 @@ const AccountManagement = () => {
   const [predictionAlerts, setPredictionAlerts] = useState(true);
   const [billingNotifications, setBillingNotifications] = useState(true);
 
+  const [hasPaymentHistory, setHasPaymentHistory] = useState(false); // Mock state for payment history
+
   const currentPlan = {
     name: 'Pro Plan',
     price: '€15/month',
@@ -40,11 +43,11 @@ const AccountManagement = () => {
     features: ['Advanced Predictions', 'Priority Support', 'API Access (Limited)', 'Export Reports']
   };
 
-  const billingHistory = [
+  const billingHistory = hasPaymentHistory ? [
     { id: 1, date: '2024-01-15', amount: '€15.00', status: 'Paid', invoice: 'INV-001' },
     { id: 2, date: '2023-12-15', amount: '€15.00', status: 'Paid', invoice: 'INV-002' },
     { id: 3, date: '2023-11-15', amount: '€15.00', status: 'Paid', invoice: 'INV-003' }
-  ];
+  ] : [];
 
   const handlePasswordChange = () => {
     toast({
@@ -60,6 +63,20 @@ const AccountManagement = () => {
       description: "2FA has been enabled for your account.",
     });
     setShow2FADialog(false);
+  };
+
+  const handleSessionRevoke = (sessionName: string) => {
+    toast({
+      title: "Session Revoked",
+      description: `${sessionName} session has been revoked successfully.`,
+    });
+  };
+
+  const handleRevokeAllSessions = () => {
+    toast({
+      title: "All Sessions Revoked",
+      description: "All other sessions have been signed out successfully.",
+    });
   };
 
   const handleEmailNotificationSave = () => {
@@ -84,6 +101,13 @@ const AccountManagement = () => {
       description: "Your billing notification preferences have been saved.",
     });
     setShowBillingDialog(false);
+  };
+
+  const handleDownloadInvoice = (invoiceId: string) => {
+    toast({
+      title: "Invoice Download",
+      description: `Invoice ${invoiceId} is being prepared for download.`,
+    });
   };
 
   return (
@@ -270,10 +294,14 @@ const AccountManagement = () => {
                           <h4 className="font-medium">Mobile Device</h4>
                           <p className="text-sm text-gray-600">Safari on iPhone • 2 hours ago</p>
                         </div>
-                        <Button variant="outline" size="sm">Revoke</Button>
+                        <Button variant="outline" size="sm" onClick={() => handleSessionRevoke('Mobile Device')}>
+                          Revoke
+                        </Button>
                       </div>
                     </div>
-                    <Button variant="destructive" className="w-full">Sign Out All Other Sessions</Button>
+                    <Button variant="destructive" className="w-full" onClick={handleRevokeAllSessions}>
+                      Sign Out All Other Sessions
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -431,30 +459,42 @@ const AccountManagement = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {billingHistory.map((bill) => (
-              <div key={bill.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                  <div>
-                    <p className="font-medium">{bill.amount}</p>
-                    <p className="text-sm text-gray-600">{bill.date}</p>
+          {!hasPaymentHistory ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-4">No Payment</p>
+              <p className="text-sm text-gray-500">Your payment history will appear here once you make your first subscription payment.</p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3">
+                {billingHistory.map((bill) => (
+                  <div key={bill.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                      <div>
+                        <p className="font-medium">{bill.amount}</p>
+                        <p className="text-sm text-gray-600">{bill.date}</p>
+                      </div>
+                      <Badge className="bg-green-100 text-green-800">{bill.status}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">{bill.invoice}</span>
+                      <Button variant="ghost" size="sm" onClick={() => handleDownloadInvoice(bill.invoice)}>
+                        <Download className="w-4 h-4 mr-1" />
+                        Download
+                      </Button>
+                    </div>
                   </div>
-                  <Badge className="bg-green-100 text-green-800">{bill.status}</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">{bill.invoice}</span>
-                  <Button variant="ghost" size="sm">Download</Button>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          
-          <div className="mt-4 pt-4 border-t">
-            <Button variant="outline" className="w-full">
-              View All Transactions
-            </Button>
-          </div>
+              
+              <div className="mt-4 pt-4 border-t">
+                <Button variant="outline" className="w-full">
+                  View All Transactions
+                </Button>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
