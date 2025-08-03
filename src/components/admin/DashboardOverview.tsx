@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -37,36 +36,66 @@ interface DashboardOverviewProps {
 }
 
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
-  // Mock chart data
-  const userGrowthData = [
-    { month: 'Jan', users: 8500, signups: 340 },
-    { month: 'Feb', users: 9200, signups: 420 },
-    { month: 'Mar', users: 10100, signups: 380 },
-    { month: 'Apr', users: 10800, signups: 450 },
-    { month: 'May', users: 11500, signups: 520 },
-    { month: 'Jun', users: 12547, signups: 612 }
-  ];
+  const [chartData, setChartData] = useState({
+    userGrowthData: [
+      { month: 'Jan', users: 85, signups: 15 },
+      { month: 'Feb', users: 92, signups: 18 },
+      { month: 'Mar', users: 101, signups: 22 },
+      { month: 'Apr', users: 108, signups: 19 },
+      { month: 'May', users: 115, signups: 24 },
+      { month: 'Jun', users: stats.totalUsers, signups: stats.newSignupsToday }
+    ],
+    subscriptionData: [
+      { name: 'Free', value: 85, color: '#94A3B8' },
+      { name: 'Pro', value: 28, color: '#3B82F6' },
+      { name: 'Elite', value: 8, color: '#8B5CF6' },
+      { name: 'Institutional', value: 4, color: '#F59E0B' }
+    ],
+    revenueData: [
+      { day: 'Mon', revenue: 124 },
+      { day: 'Tue', revenue: 108 },
+      { day: 'Wed', revenue: 142 },
+      { day: 'Thu', revenue: 156 },
+      { day: 'Fri', revenue: 139 },
+      { day: 'Sat', revenue: 118 },
+      { day: 'Sun', revenue: Math.round(stats.currentEarnings.daily) }
+    ]
+  });
 
-  const subscriptionData = [
-    { name: 'Free', value: 8500, color: '#94A3B8' },
-    { name: 'Pro', value: 2800, color: '#3B82F6' },
-    { name: 'Elite', value: 890, color: '#8B5CF6' },
-    { name: 'Institutional', value: 357, color: '#F59E0B' }
-  ];
+  // Update chart data dynamically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChartData(prev => ({
+        ...prev,
+        userGrowthData: prev.userGrowthData.map((item, index) => 
+          index === prev.userGrowthData.length - 1 
+            ? { ...item, users: stats.totalUsers, signups: stats.newSignupsToday }
+            : item
+        ),
+        subscriptionData: prev.subscriptionData.map(tier => ({
+          ...tier,
+          value: tier.name === 'Free' 
+            ? Math.round(stats.totalUsers * 0.68) // 68% free users
+            : tier.name === 'Pro'
+            ? Math.round(stats.totalUsers * 0.23) // 23% pro users
+            : tier.name === 'Elite'
+            ? Math.round(stats.totalUsers * 0.06) // 6% elite users
+            : Math.round(stats.totalUsers * 0.03) // 3% institutional
+        })),
+        revenueData: prev.revenueData.map((item, index) =>
+          index === prev.revenueData.length - 1
+            ? { ...item, revenue: Math.round(stats.currentEarnings.daily) }
+            : item
+        )
+      }));
+    }, 30000); // Update every 30 seconds
 
-  const revenueData = [
-    { day: 'Mon', revenue: 2400 },
-    { day: 'Tue', revenue: 2100 },
-    { day: 'Wed', revenue: 2800 },
-    { day: 'Thu', revenue: 3200 },
-    { day: 'Fri', revenue: 2900 },
-    { day: 'Sat', revenue: 2600 },
-    { day: 'Sun', revenue: 2847 }
-  ];
+    return () => clearInterval(interval);
+  }, [stats]);
 
   return (
     <div className="space-y-6">
-      {/* Key Performance Indicators */}
+      {/* Key Performance Indicators - Updated with Euros */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border-l-4 border-l-blue-500">
           <CardHeader className="pb-2">
@@ -76,7 +105,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{stats.totalUsers.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className="bg-green-100 text-green-700">
                 <TrendingUp size={12} className="mr-1" />
@@ -127,9 +156,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">${stats.currentEarnings.daily.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-amber-600">€{stats.currentEarnings.daily.toFixed(2)}</div>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-gray-500">Monthly: ${stats.currentEarnings.monthly.toLocaleString()}</span>
+              <span className="text-sm text-gray-500">Monthly: €{stats.currentEarnings.monthly.toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
@@ -145,7 +174,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={userGrowthData}>
+              <AreaChart data={chartData.userGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -167,7 +196,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={subscriptionData}
+                  data={chartData.subscriptionData}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -175,7 +204,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
                   dataKey="value"
                   label={({ name, value }) => `${name}: ${value}`}
                 >
-                  {subscriptionData.map((entry, index) => (
+                  {chartData.subscriptionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -186,19 +215,19 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
         </Card>
       </div>
 
-      {/* Revenue Chart */}
+      {/* Revenue Chart - Updated with Euros */}
       <Card>
         <CardHeader>
           <CardTitle>Weekly Revenue Trend</CardTitle>
-          <CardDescription>Daily revenue for the current week</CardDescription>
+          <CardDescription>Daily revenue for the current week (€)</CardDescription>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={revenueData}>
+            <BarChart data={chartData.revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="day" />
               <YAxis />
-              <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+              <Tooltip formatter={(value) => [`€${value}`, 'Revenue']} />
               <Bar dataKey="revenue" fill="#F59E0B" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

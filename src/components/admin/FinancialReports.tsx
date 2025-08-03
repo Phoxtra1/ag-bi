@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,28 +24,53 @@ interface FinancialReportsProps {
 }
 
 const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
-  // Mock subscription revenue data
-  const subscriptionData = [
-    { tier: 'Free', revenue: 0, users: 8500 },
-    { tier: 'Pro', revenue: 84000, users: 2800 },
-    { tier: 'Elite', revenue: 178000, users: 890 },
-    { tier: 'Institutional', revenue: 535000, users: 357 }
-  ];
+  const [dynamicData, setDynamicData] = useState({
+    subscriptionData: [
+      { tier: 'Free', revenue: 0, users: 85 },
+      { tier: 'Pro', revenue: 2100, users: 28 },
+      { tier: 'Elite', revenue: 890, users: 8 },
+      { tier: 'Institutional', revenue: 1600, users: 4 }
+    ],
+    monthlyRevenue: [
+      { month: 'Jan', revenue: 1200 },
+      { month: 'Feb', revenue: 1580 },
+      { month: 'Mar', revenue: 1890 },
+      { month: 'Apr', revenue: 2340 },
+      { month: 'May', revenue: 2890 },
+      { month: 'Jun', revenue: 3245 }
+    ]
+  });
 
-  const monthlyRevenue = [
-    { month: 'Jan', revenue: 45000 },
-    { month: 'Feb', revenue: 52000 },
-    { month: 'Mar', revenue: 48000 },
-    { month: 'Apr', revenue: 61000 },
-    { month: 'May', revenue: 73000 },
-    { month: 'Jun', revenue: 85000 }
-  ];
+  // Update financial data dynamically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDynamicData(prev => ({
+        subscriptionData: prev.subscriptionData.map(tier => ({
+          ...tier,
+          revenue: tier.tier === 'Free' ? 0 : Math.max(0, 
+            tier.revenue + Math.floor(Math.random() * 100) - 30
+          ),
+          users: Math.max(tier.tier === 'Free' ? 80 : 0, 
+            tier.users + Math.floor(Math.random() * 3) - 1
+          )
+        })),
+        monthlyRevenue: prev.monthlyRevenue.map((month, index) => ({
+          ...month,
+          revenue: index < 5 ? month.revenue : Math.max(0, 
+            month.revenue + Math.floor(Math.random() * 200) - 100
+          )
+        }))
+      }));
+    }, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   const pieColors = ['#94A3B8', '#3B82F6', '#8B5CF6', '#F59E0B'];
 
   return (
     <div className="space-y-6">
-      {/* Revenue Overview Cards */}
+      {/* Revenue Overview Cards - Updated with Euros */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="border-l-4 border-l-green-500">
           <CardHeader className="pb-2">
@@ -56,11 +80,11 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">${stats.currentEarnings.daily.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">€{stats.currentEarnings.daily.toFixed(2)}</div>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="secondary" className="bg-green-100 text-green-700">
                 <TrendingUp size={12} className="mr-1" />
-                +12.5%
+                +8.2%
               </Badge>
             </div>
           </CardContent>
@@ -71,7 +95,7 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
             <CardTitle className="text-sm font-medium text-gray-600">Weekly Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">${stats.currentEarnings.weekly.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-blue-600">€{stats.currentEarnings.weekly.toFixed(2)}</div>
             <div className="text-sm text-gray-500">7-day total</div>
           </CardContent>
         </Card>
@@ -81,7 +105,7 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
             <CardTitle className="text-sm font-medium text-gray-600">Monthly Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-purple-600">${stats.currentEarnings.monthly.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-purple-600">€{stats.currentEarnings.monthly.toFixed(2)}</div>
             <div className="text-sm text-gray-500">Current month</div>
           </CardContent>
         </Card>
@@ -91,7 +115,7 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
             <CardTitle className="text-sm font-medium text-gray-600">Yearly Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-amber-600">${stats.currentEarnings.yearly.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-amber-600">€{stats.currentEarnings.yearly.toFixed(2)}</div>
             <div className="text-sm text-gray-500">YTD performance</div>
           </CardContent>
         </Card>
@@ -106,15 +130,15 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
               <BarChart3 size={20} />
               Monthly Revenue Trend
             </CardTitle>
-            <CardDescription>Revenue performance over the last 6 months</CardDescription>
+            <CardDescription>Revenue performance over the last 6 months (€)</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={monthlyRevenue}>
+              <BarChart data={dynamicData.monthlyRevenue}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                <Tooltip formatter={(value) => [`€${value}`, 'Revenue']} />
                 <Bar dataKey="revenue" fill="#10B981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -128,25 +152,25 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
               <PieChart size={20} />
               Revenue by Tier
             </CardTitle>
-            <CardDescription>Subscription tier breakdown</CardDescription>
+            <CardDescription>Subscription tier breakdown (€)</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <RechartsPieChart>
                 <Pie
-                  data={subscriptionData}
+                  data={dynamicData.subscriptionData}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
                   outerRadius={100}
                   dataKey="revenue"
-                  label={({ tier, revenue }) => `${tier}: $${revenue.toLocaleString()}`}
+                  label={({ tier, revenue }) => `${tier}: €${revenue}`}
                 >
-                  {subscriptionData.map((entry, index) => (
+                  {dynamicData.subscriptionData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={pieColors[index]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                <Tooltip formatter={(value) => [`€${value}`, 'Revenue']} />
               </RechartsPieChart>
             </ResponsiveContainer>
           </CardContent>

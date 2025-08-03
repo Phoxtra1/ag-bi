@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -41,25 +41,56 @@ import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
-
-  // Mock real-time data - in production, this would come from your backend
-  const realTimeStats = {
-    totalUsers: 12547,
-    individualUsers: 11892,
-    organizationUsers: 655,
-    newSignupsToday: 47,
-    weeklyGrowth: 312,
-    monthlyGrowth: 1240,
-    closedAccountsToday: 3,
-    closedAccountsWeekly: 18,
-    activeApiSubscriptions: 89,
+  const [realTimeStats, setRealTimeStats] = useState({
+    totalUsers: 124,
+    individualUsers: 118,
+    organizationUsers: 6,
+    newSignupsToday: 3,
+    weeklyGrowth: 12,
+    monthlyGrowth: 48,
+    closedAccountsToday: 0,
+    closedAccountsWeekly: 2,
+    activeApiSubscriptions: 4,
     currentEarnings: {
-      daily: 2847.50,
-      weekly: 18632.75,
-      monthly: 76543.20,
-      yearly: 892150.00
+      daily: 147.50,
+      weekly: 832.25,
+      monthly: 3245.80,
+      yearly: 28750.00
     }
-  };
+  });
+
+  // Update stats dynamically to simulate real platform growth
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRealTimeStats(prev => {
+        const shouldUpdate = Math.random() < 0.6; // 60% chance of update
+        if (!shouldUpdate) return prev;
+
+        // Realistic growth patterns for a startup
+        const userGrowth = Math.random() < 0.3 ? Math.floor(Math.random() * 3) : 0;
+        const apiGrowth = Math.random() < 0.1 ? 1 : 0;
+        const revenueVariation = (Math.random() - 0.5) * 20; // ±€20 daily variation
+
+        return {
+          ...prev,
+          totalUsers: prev.totalUsers + userGrowth,
+          individualUsers: prev.individualUsers + userGrowth,
+          newSignupsToday: Math.max(0, prev.newSignupsToday + (userGrowth > 0 ? userGrowth : -Math.floor(Math.random() * 2))),
+          weeklyGrowth: prev.weeklyGrowth + userGrowth,
+          monthlyGrowth: prev.monthlyGrowth + userGrowth,
+          activeApiSubscriptions: Math.max(0, prev.activeApiSubscriptions + apiGrowth),
+          currentEarnings: {
+            ...prev.currentEarnings,
+            daily: Math.max(0, prev.currentEarnings.daily + revenueVariation),
+            weekly: Math.max(0, prev.currentEarnings.weekly + revenueVariation * 0.2),
+            monthly: Math.max(0, prev.currentEarnings.monthly + revenueVariation * 0.1)
+          }
+        };
+      });
+    }, 45000); // Update every 45 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Get notification counts
   const getNotificationCounts = () => {
@@ -151,6 +182,10 @@ const AdminDashboard = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">API Active</span>
                 <span className="font-semibold text-blue-600">{realTimeStats.activeApiSubscriptions}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Daily Revenue</span>
+                <span className="font-semibold text-green-600">€{realTimeStats.currentEarnings.daily.toFixed(2)}</span>
               </div>
               {(notifications.contentPending > 0 || notifications.contactUnread > 0) && (
                 <>
