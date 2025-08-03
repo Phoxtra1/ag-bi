@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Link } from 'react-router-dom';
 import { 
   User, 
   CreditCard, 
@@ -19,16 +20,16 @@ import {
 const AccountManagement = () => {
   const currentPlan = {
     name: 'Pro Plan',
-    price: '$29/month',
+    price: '€15/month',
     renewalDate: '2024-02-15',
     status: 'Active',
     features: ['Advanced Predictions', 'Priority Support', 'API Access (Limited)', 'Export Reports']
   };
 
   const billingHistory = [
-    { id: 1, date: '2024-01-15', amount: '$29.00', status: 'Paid', invoice: 'INV-001' },
-    { id: 2, date: '2023-12-15', amount: '$29.00', status: 'Paid', invoice: 'INV-002' },
-    { id: 3, date: '2023-11-15', amount: '$29.00', status: 'Paid', invoice: 'INV-003' }
+    { id: 1, date: '2024-01-15', amount: '€15.00', status: 'Paid', invoice: 'INV-001' },
+    { id: 2, date: '2023-12-15', amount: '€15.00', status: 'Paid', invoice: 'INV-002' },
+    { id: 3, date: '2023-11-15', amount: '€15.00', status: 'Paid', invoice: 'INV-003' }
   ];
 
   return (
@@ -77,8 +78,9 @@ const AccountManagement = () => {
             </div>
             
             <div className="flex gap-2">
-              <Button className="flex-1">Upgrade Plan</Button>
-              <Button variant="outline">Change Plan</Button>
+              <Link to="/pricing" className="flex-1">
+                <Button className="w-full">Change Plan</Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

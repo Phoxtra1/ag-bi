@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -100,7 +101,7 @@ const Pricing = () => {
                 </CardContent>
                 
                 <CardFooter>
-                  <Link to="/signup" className="w-full">
+                  <Link to="/login" className="w-full">
                     <Button className="w-full" variant="outline">
                       {freePlan.buttonText}
                     </Button>
