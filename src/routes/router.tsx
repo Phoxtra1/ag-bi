@@ -10,6 +10,7 @@ import ApiRequest from "@/components/ApiRequestForm";
 import Prediction from "@/components/PredictionForm";
 import Newsletter from "@/components/NewsletterForm";
 import HelpCenter from "@/pages/HelpCenter";
+import NotFound from "@/pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
   {
     path: "/help-center",
     element: <HelpCenter />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
