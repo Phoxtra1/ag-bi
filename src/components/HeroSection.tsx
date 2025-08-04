@@ -1,10 +1,23 @@
+
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import { CheckCircle, Play, ArrowRight, Shield, Zap, Globe } from 'lucide-react';
+import { CheckCircle, Play, ArrowRight, Shield, Zap, Globe, ExternalLink } from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
 
 const HeroSection = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  const trustedOrganizations = [
+    { name: 'TrustLaw', url: 'https://www.trust.org/trustlaw/' },
+    { name: 'SJN', url: 'https://www.solutionsjournalism.org/' },
+    { name: 'Amnewsworld', url: 'https://www.amnewsworld.com/' },
+    { name: 'Project Shield', url: 'https://projectshield.google/landing' },
+    { name: 'Phoxtra', url: 'https://www.phoxtra.com/' }
+  ];
+
+  const handleStartFreeTrial = () => {
+    window.location.href = '/signup';
+  };
 
   return (
     <section id="home" className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white relative overflow-hidden">
@@ -57,6 +70,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
+                onClick={handleStartFreeTrial}
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -76,12 +90,19 @@ const HeroSection = () => {
             {/* Social Proof */}
             <div className="pt-8 border-t border-white/20">
               <p className="text-blue-200 text-sm mb-4">Trusted by leading organizations worldwide</p>
-              <div className="flex items-center space-x-8 opacity-60">
-                <div className="text-white font-semibold">Reuters</div>
-                <div className="text-white font-semibold">BBC</div>
-                <div className="text-white font-semibold">AP News</div>
-                <div className="text-white font-semibold">Amnewsworld</div>
-                <div className="text-white font-semibold">Guardian</div>
+              <div className="flex items-center flex-wrap gap-6 opacity-80">
+                {trustedOrganizations.map((org, index) => (
+                  <a
+                    key={index}
+                    href={org.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white font-semibold hover:text-blue-200 transition-colors flex items-center gap-1 group"
+                  >
+                    {org.name}
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                ))}
               </div>
             </div>
           </div>

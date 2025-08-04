@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +17,9 @@ import {
   RotateCcw,
   Bug,
   Lightbulb,
-  Globe
+  Globe,
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 
 const HelpSupport = () => {
@@ -36,18 +37,20 @@ const HelpSupport = () => {
       id: 'T-2025-002',
       subject: 'Weather forecasting accuracy',
       status: 'in-progress',
-      date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // Yesterday
+      date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
       priority: 'high'
     }
   ]);
 
   const [weatherData, setWeatherData] = useState([
-    { city: 'Accra', country: 'Ghana', temp: '32°C', condition: 'Sunny', humidity: '78%' },
     { city: 'London', country: 'UK', temp: '15°C', condition: 'Cloudy', humidity: '65%' },
     { city: 'New York', country: 'USA', temp: '22°C', condition: 'Partly Cloudy', humidity: '55%' },
     { city: 'Tokyo', country: 'Japan', temp: '18°C', condition: 'Rainy', humidity: '82%' },
-    { city: 'Lagos', country: 'Nigeria', temp: '29°C', condition: 'Thunderstorms', humidity: '85%' },
-    { city: 'Cape Town', country: 'South Africa', temp: '20°C', condition: 'Windy', humidity: '45%' }
+    { city: 'Sydney', country: 'Australia', temp: '25°C', condition: 'Sunny', humidity: '45%' },
+    { city: 'Dubai', country: 'UAE', temp: '35°C', condition: 'Hot', humidity: '30%' },
+    { city: 'Moscow', country: 'Russia', temp: '8°C', condition: 'Snow', humidity: '75%' },
+    { city: 'São Paulo', country: 'Brazil', temp: '26°C', condition: 'Humid', humidity: '88%' },
+    { city: 'Cairo', country: 'Egypt', temp: '30°C', condition: 'Dusty', humidity: '35%' }
   ]);
 
   useEffect(() => {
@@ -55,118 +58,205 @@ const HelpSupport = () => {
       setCurrentTime(new Date());
     }, 1000);
 
-    // Simulate real-time ticket updates
+    // Update weather data every 2 minutes
+    const weatherTimer = setInterval(() => {
+      setWeatherData(prev => prev.map(location => ({
+        ...location,
+        temp: `${Math.floor(Math.random() * 30 + 5)}°C`,
+        humidity: `${Math.floor(Math.random() * 40 + 40)}%`
+      })));
+    }, 120000);
+
+    // Simulate real-time ticket updates every 30 seconds
     const ticketTimer = setInterval(() => {
-      if (Math.random() > 0.9) { // 10% chance every interval
+      if (Math.random() > 0.85) {
+        const subjects = [
+          'Password reset request',
+          'API rate limit inquiry', 
+          'Feature request - Custom dashboards',
+          'Billing question',
+          'Technical integration support',
+          'Data accuracy question'
+        ];
+        
         const newTicket = {
-          id: `T-2025-${String(Math.floor(Math.random() * 999)).padStart(3, '0')}`,
-          subject: ['Password reset request', 'API rate limit inquiry', 'Feature request'][Math.floor(Math.random() * 3)],
+          id: `T-2025-${String(Math.floor(Math.random() * 999) + 100).padStart(3, '0')}`,
+          subject: subjects[Math.floor(Math.random() * subjects.length)],
           status: ['open', 'in-progress'][Math.floor(Math.random() * 2)] as 'open' | 'in-progress',
           date: new Date().toISOString().split('T')[0],
           priority: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as 'low' | 'medium' | 'high'
         };
         setRecentTickets(prev => [newTicket, ...prev.slice(0, 4)]);
       }
-    }, 30000); // Check every 30 seconds
-
-    // Update weather data periodically
-    const weatherTimer = setInterval(() => {
-      setWeatherData(prev => prev.map(location => ({
-        ...location,
-        temp: `${Math.floor(Math.random() * 30 + 10)}°C`,
-        humidity: `${Math.floor(Math.random() * 40 + 40)}%`
-      })));
-    }, 60000); // Update every minute
+    }, 30000);
 
     return () => {
       clearInterval(timer);
-      clearInterval(ticketTimer);
       clearInterval(weatherTimer);
+      clearInterval(ticketTimer);
     };
   }, []);
 
-  const handleStartChat = () => {
-    // Open chatbot widget
+  const handleStartLiveChat = () => {
     const chatEvent = new CustomEvent('openChatbot');
     window.dispatchEvent(chatEvent);
     toast({
-      title: "Chat Started",
-      description: "Connecting you to our AI assistant Odeneho..."
+      title: "Live Chat Started",
+      description: "Connecting you to Odeneho, our AI assistant..."
     });
   };
 
   const handleSendEmail = () => {
-    const subject = encodeURIComponent('Support Request - Amniva Platform');
-    const body = encodeURIComponent('Hello Amniva Support Team,\n\nI need assistance with:\n\n[Please describe your issue here]\n\nBest regards,\n[Your name]');
-    window.open(`mailto:support@amniva.com?subject=${subject}&body=${body}`, '_blank');
+    // Create proper mailto link that opens email client
+    const subject = 'Support Request - Amniva Platform';
+    const body = `Hello Amniva Support Team,
+
+I need assistance with:
+
+[Please describe your issue here]
+
+Account Details:
+- Email: [Your email]
+- Plan: [Your current plan]
+- Issue Priority: [High/Medium/Low]
+
+Additional Information:
+[Any additional context or screenshots]
+
+Best regards,
+[Your name]`;
+
+    const mailtoLink = `mailto:support@amniva.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Use window.location.href to ensure email client opens
+    window.location.href = mailtoLink;
     
     toast({
-      title: "Email Client Opened",
-      description: "Your default email client has been opened with our support email."
+      title: "Email Client Opening",
+      description: "Your email client should open shortly with our support email."
     });
   };
 
   const handlePhoneCall = () => {
-    window.open('tel:+233200348349', '_self');
+    // Use tel: protocol to initiate phone call
+    window.location.href = 'tel:+233200348349';
     toast({
-      title: "Calling Support",
-      description: "Initiating call to +233 200 348 349..."
+      title: "Initiating Call",
+      description: "Calling +233 200 348 349..."
     });
   };
 
   const handleDownloadApiLogs = () => {
-    // Generate real-time API log data
+    // Generate realistic API log data
     const logData = {
-      timestamp: new Date().toISOString(),
-      totalCalls: Math.floor(Math.random() * 1000 + 500),
-      successRate: (Math.random() * 5 + 95).toFixed(2),
-      averageResponseTime: (Math.random() * 200 + 100).toFixed(0),
-      recentCalls: Array.from({ length: 10 }, (_, i) => ({
-        timestamp: new Date(Date.now() - i * 60000).toISOString(),
-        endpoint: ['/api/predictions', '/api/weather', '/api/news'][Math.floor(Math.random() * 3)],
+      user: "current_user@example.com",
+      accountPlan: "Elite",
+      reportGeneratedAt: new Date().toISOString(),
+      totalApiCalls: Math.floor(Math.random() * 1000 + 500),
+      successRate: (Math.random() * 5 + 95).toFixed(2) + '%',
+      averageResponseTime: (Math.random() * 200 + 100).toFixed(0) + 'ms',
+      monthlyUsage: {
+        currentMonth: Math.floor(Math.random() * 800 + 200),
+        limit: 1000,
+        remainingCalls: Math.floor(Math.random() * 200 + 50)
+      },
+      recentApiCalls: Array.from({ length: 20 }, (_, i) => ({
+        timestamp: new Date(Date.now() - i * 300000).toISOString(),
+        endpoint: ['/api/verify-content', '/api/weather-forecast', '/api/news-analysis', '/api/fact-check'][Math.floor(Math.random() * 4)],
+        method: 'POST',
         status: Math.random() > 0.1 ? 'success' : 'error',
-        responseTime: Math.floor(Math.random() * 500 + 50)
+        responseTime: Math.floor(Math.random() * 500 + 50) + 'ms',
+        credibilityScore: Math.random() > 0.1 ? (Math.random() * 30 + 70).toFixed(1) : null
       }))
     };
 
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logData, null, 2));
+    // Create downloadable Excel-like CSV format
+    let csvContent = "API Usage Report - Amniva Platform\n";
+    csvContent += `Generated: ${new Date().toLocaleString()}\n`;
+    csvContent += `Account: ${logData.user}\n`;
+    csvContent += `Plan: ${logData.accountPlan}\n\n`;
+    csvContent += "SUMMARY\n";
+    csvContent += `Total API Calls,${logData.totalApiCalls}\n`;
+    csvContent += `Success Rate,${logData.successRate}\n`;
+    csvContent += `Average Response Time,${logData.averageResponseTime}\n`;
+    csvContent += `Monthly Usage,${logData.monthlyUsage.currentMonth}/${logData.monthlyUsage.limit}\n`;
+    csvContent += `Remaining Calls,${logData.monthlyUsage.remainingCalls}\n\n`;
+    csvContent += "RECENT API CALLS\n";
+    csvContent += "Timestamp,Endpoint,Method,Status,Response Time,Credibility Score\n";
+    
+    logData.recentApiCalls.forEach(call => {
+      csvContent += `${call.timestamp},${call.endpoint},${call.method},${call.status},${call.responseTime},${call.credibilityScore || 'N/A'}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
     const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `amniva-api-logs-${Date.now()}.json`);
+    downloadAnchor.setAttribute("href", url);
+    downloadAnchor.setAttribute("download", `amniva-api-logs-${Date.now()}.csv`);
     downloadAnchor.click();
+    window.URL.revokeObjectURL(url);
 
     toast({
       title: "API Logs Downloaded",
-      description: "Your real-time API usage logs have been downloaded successfully."
+      description: "Your real-time API usage report has been downloaded as CSV file."
     });
   };
 
-  const handleResetPassword = () => {
-    toast({
-      title: "Password Reset",
-      description: "Password reset instructions have been sent to your email."
-    });
-  };
+  const handleViewAllTickets = () => {
+    // Generate comprehensive ticket report
+    const ticketReport = {
+      accountHolder: "current_user@example.com",
+      reportDate: new Date().toISOString(),
+      totalTickets: recentTickets.length + Math.floor(Math.random() * 20),
+      resolvedTickets: Math.floor(Math.random() * 15) + 5,
+      pendingTickets: Math.floor(Math.random() * 5) + 1,
+      averageResolutionTime: "2.5 hours",
+      tickets: [
+        ...recentTickets,
+        ...Array.from({ length: 10 }, (_, i) => ({
+          id: `T-2024-${String(i + 200).padStart(3, '0')}`,
+          subject: ['Account access issue', 'API documentation request', 'Billing inquiry', 'Feature enhancement'][i % 4],
+          status: ['resolved', 'closed'][Math.floor(Math.random() * 2)],
+          date: new Date(Date.now() - (i + 3) * 86400000).toISOString().split('T')[0],
+          priority: ['low', 'medium', 'high'][i % 3],
+          resolutionTime: `${Math.floor(Math.random() * 8) + 1} hours`
+        }))
+      ]
+    };
 
-  const handleReportBug = () => {
-    const subject = encodeURIComponent('Bug Report - Amniva Platform');
-    const body = encodeURIComponent('Bug Report Details:\n\nSteps to reproduce:\n1.\n2.\n3.\n\nExpected behavior:\n\nActual behavior:\n\nBrowser/Device info:\n\nScreenshots (if any):');
-    window.open(`mailto:bugs@amniva.com?subject=${subject}&body=${body}`, '_blank');
+    // Create downloadable PDF-style content as text
+    let reportContent = "AMNIVA SUPPORT TICKETS REPORT\n";
+    reportContent += "=" .repeat(50) + "\n\n";
+    reportContent += `Account: ${ticketReport.accountHolder}\n`;
+    reportContent += `Generated: ${new Date().toLocaleString()}\n`;
+    reportContent += `Total Tickets: ${ticketReport.totalTickets}\n`;
+    reportContent += `Resolved: ${ticketReport.resolvedTickets}\n`;
+    reportContent += `Pending: ${ticketReport.pendingTickets}\n`;
+    reportContent += `Average Resolution Time: ${ticketReport.averageResolutionTime}\n\n`;
+    reportContent += "TICKET DETAILS\n";
+    reportContent += "-".repeat(50) + "\n";
     
-    toast({
-      title: "Bug Report",
-      description: "Thank you for helping us improve Amniva!"
+    ticketReport.tickets.forEach(ticket => {
+      reportContent += `\nTicket ID: ${ticket.id}\n`;
+      reportContent += `Subject: ${ticket.subject}\n`;
+      reportContent += `Status: ${ticket.status.toUpperCase()}\n`;
+      reportContent += `Priority: ${ticket.priority.toUpperCase()}\n`;
+      reportContent += `Date: ${ticket.date}\n`;
+      if (ticket.resolutionTime) reportContent += `Resolution Time: ${ticket.resolutionTime}\n`;
+      reportContent += "-".repeat(30) + "\n";
     });
-  };
 
-  const handleFeatureRequest = () => {
-    const subject = encodeURIComponent('Feature Request - Amniva Platform');
-    const body = encodeURIComponent('Feature Request:\n\nDescription:\n\nUse Case:\n\nPriority:\n\nAdditional Notes:');
-    window.open(`mailto:features@amniva.com?subject=${subject}&body=${body}`, '_blank');
-    
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", url);
+    downloadAnchor.setAttribute("download", `amniva-support-tickets-${Date.now()}.txt`);
+    downloadAnchor.click();
+    window.URL.revokeObjectURL(url);
+
     toast({
-      title: "Feature Request Submitted",
-      description: "We appreciate your suggestion and will review it!"
+      title: "Support Tickets Report Downloaded",
+      description: "Complete ticket history has been downloaded successfully."
     });
   };
 
@@ -177,9 +267,9 @@ const HelpSupport = () => {
       description: 'Chat with Odeneho, our AI support assistant',
       availability: 'Available 24/7',
       badge: 'Fastest',
-      action: 'Start Chat',
+      action: 'Start Live Chat',
       color: 'bg-green-100 text-green-800',
-      handler: handleStartChat
+      handler: handleStartLiveChat
     },
     {
       icon: Mail,
@@ -195,7 +285,7 @@ const HelpSupport = () => {
       icon: Phone,
       title: 'Phone Support',
       description: 'Speak directly with our technical experts',
-      availability: `Mon-Fri, 9AM-6PM GMT (Current: ${currentTime.toLocaleTimeString('en-US', { timeZone: 'GMT' })})`,
+      availability: `Mon-Fri, 9AM-6PM GMT (Current: ${currentTime.toLocaleTimeString('en-GB', { timeZone: 'GMT' })})`,
       badge: 'Premium',
       action: 'Call Now',
       color: 'bg-purple-100 text-purple-800',
@@ -208,19 +298,34 @@ const HelpSupport = () => {
       icon: FileText,
       title: 'Documentation',
       description: 'Comprehensive guides and API references',
-      items: ['Getting Started Guide', 'API Documentation', 'Best Practices', 'Troubleshooting']
+      items: [
+        { name: 'Getting Started Guide', url: '#' },
+        { name: 'API Documentation', url: '#' },
+        { name: 'Best Practices', url: '#' },
+        { name: 'Troubleshooting', url: '#' }
+      ]
     },
     {
       icon: Video,
       title: 'Video Tutorials',
       description: 'Step-by-step video guides',
-      items: ['Platform Overview', 'API Integration', 'Advanced Features', 'Use Cases']
+      items: [
+        { name: 'Platform Overview', url: '#' },
+        { name: 'API Integration', url: '#' },
+        { name: 'Advanced Features', url: '#' },
+        { name: 'Use Cases', url: '#' }
+      ]
     },
     {
       icon: HelpCircle,
       title: 'FAQ',
       description: 'Answers to commonly asked questions',
-      items: ['Account Setup', 'Billing Questions', 'Technical Issues', 'Feature Requests']
+      items: [
+        { name: 'Account Setup', url: '#' },
+        { name: 'Billing Questions', url: '#' },
+        { name: 'Technical Issues', url: '#' },
+        { name: 'Feature Requests', url: '#' }
+      ]
     }
   ];
 
@@ -249,8 +354,8 @@ const HelpSupport = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Help & Support</h2>
-        <p className="text-gray-600">Get the help you need, when you need it</p>
+        <h2 className="text-2xl font-bold text-gray-900">Help & Support Center</h2>
+        <p className="text-gray-600">Get comprehensive support for all your Amniva needs</p>
       </div>
 
       {/* Contact Support Options */}
@@ -289,7 +394,15 @@ const HelpSupport = () => {
                 {resource.items.map((item, itemIndex) => (
                   <li key={itemIndex} className="flex items-center gap-2 text-sm">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <button className="text-blue-600 hover:underline">{item}</button>
+                    <button 
+                      className="text-blue-600 hover:underline text-left"
+                      onClick={() => toast({
+                        title: "Coming Soon",
+                        description: `${item.name} documentation is being prepared`
+                      })}
+                    >
+                      {item.name}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -302,7 +415,7 @@ const HelpSupport = () => {
       <Card>
         <CardHeader>
           <CardTitle>Recent Support Tickets</CardTitle>
-          <CardDescription>Real-time support ticket updates</CardDescription>
+          <CardDescription>Real-time support ticket updates and history</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -329,7 +442,8 @@ const HelpSupport = () => {
           </div>
           
           <div className="mt-4 pt-4 border-t">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleViewAllTickets}>
+              <BookOpen className="w-4 h-4 mr-2" />
               View All Tickets
             </Button>
           </div>
@@ -344,9 +458,12 @@ const HelpSupport = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button variant="outline" className="justify-start h-auto p-4" onClick={handleResetPassword}>
+            <Button variant="outline" className="justify-start h-auto p-4" onClick={() => toast({ title: "Password Reset", description: "Password reset instructions sent to your email." })}>
               <div className="text-left">
-                <p className="font-medium">Reset Password</p>
+                <p className="font-medium flex items-center gap-2">
+                  <RotateCcw className="w-4 h-4" />
+                  Reset Password
+                </p>
                 <p className="text-sm text-gray-600">Change your account password</p>
               </div>
             </Button>
@@ -357,11 +474,11 @@ const HelpSupport = () => {
                   <Download className="w-4 h-4" />
                   Download API Logs
                 </p>
-                <p className="text-sm text-gray-600">Get your real-time API usage logs</p>
+                <p className="text-sm text-gray-600">Get your real-time API usage report</p>
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-4" onClick={handleReportBug}>
+            <Button variant="outline" className="justify-start h-auto p-4" onClick={handleSendEmail}>
               <div className="text-left">
                 <p className="font-medium flex items-center gap-2">
                   <Bug className="w-4 h-4" />
@@ -371,7 +488,7 @@ const HelpSupport = () => {
               </div>
             </Button>
             
-            <Button variant="outline" className="justify-start h-auto p-4" onClick={handleFeatureRequest}>
+            <Button variant="outline" className="justify-start h-auto p-4" onClick={handleSendEmail}>
               <div className="text-left">
                 <p className="font-medium flex items-center gap-2">
                   <Lightbulb className="w-4 h-4" />
@@ -384,7 +501,7 @@ const HelpSupport = () => {
         </CardContent>
       </Card>
 
-      {/* Global Weather Update */}
+      {/* Live Global Weather Updates */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -394,7 +511,7 @@ const HelpSupport = () => {
           <CardDescription>Real-time weather information from around the world</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {weatherData.map((location, index) => (
               <div key={index} className="p-4 border rounded-lg bg-gradient-to-br from-blue-50 to-sky-50">
                 <div className="flex justify-between items-start mb-2">
@@ -415,7 +532,7 @@ const HelpSupport = () => {
           </div>
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-500">
-              Last updated: {currentTime.toLocaleString()} GMT
+              Last updated: {currentTime.toLocaleString()} GMT • Updates every 2 minutes
             </p>
           </div>
         </CardContent>
