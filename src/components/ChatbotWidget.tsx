@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Send, X, Bot, User } from 'lucide-react';
+import { MessageCircle, Send, X, User } from 'lucide-react';
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -126,8 +126,12 @@ const ChatbotWidget = () => {
         <div className="bg-white rounded-lg shadow-2xl w-96 h-[500px] flex flex-col border border-gray-200">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-lg flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <Bot className="w-5 h-5" />
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                  alt="Odeneho AI" 
+                  className="w-full h-full rounded-full object-cover"
+                />
               </div>
               <div>
                 <h4 className="font-semibold">Odeneho - AI Assistant</h4>
@@ -152,7 +156,11 @@ const ChatbotWidget = () => {
               >
                 {message.sender === 'bot' && (
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="w-4 h-4 text-blue-600" />
+                    <img 
+                      src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                      alt="Odeneho AI" 
+                      className="w-full h-full rounded-full object-cover"
+                    />
                   </div>
                 )}
                 <div
@@ -175,7 +183,11 @@ const ChatbotWidget = () => {
             {isTyping && (
               <div className="flex gap-2 justify-start">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                  <Bot className="w-4 h-4 text-blue-600" />
+                  <img 
+                    src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                    alt="Odeneho AI" 
+                    className="w-full h-full rounded-full object-cover"
+                  />
                 </div>
                 <div className="bg-gray-100 text-gray-900 border p-3 rounded-lg rounded-bl-sm text-sm">
                   <div className="flex space-x-1">

@@ -8,7 +8,8 @@ import Dashboard from "@/components/DashboardUser";
 import Contact from "@/components/ContactForm";
 import ApiRequest from "@/components/ApiRequestForm";
 import Prediction from "@/components/PredictionForm";
-import Newsletter from "@/components/NewsletterForm"; // if you have it
+import Newsletter from "@/components/NewsletterForm";
+import HelpCenter from "@/pages/HelpCenter";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signup",
-    element: <Login />,
+    element: <Signup />,
   },
   {
     path: "/dashboard",
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
   {
     path: "/newsletter",
     element: <Newsletter />,
+  },
+  {
+    path: "/help-center",
+    element: <HelpCenter />,
   },
 ]);
 
