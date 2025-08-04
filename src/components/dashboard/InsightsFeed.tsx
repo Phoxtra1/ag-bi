@@ -159,6 +159,17 @@ const InsightsFeed = () => {
     return 'text-red-600 bg-red-100';
   };
 
+  const formatRelativeTime = (timestamp: string) => {
+    const now = new Date();
+    const date = new Date(timestamp);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
+
   const handleViewFullAnalytics = () => {
     // Generate realistic analytics data
     const analyticsData = {
@@ -282,7 +293,7 @@ const InsightsFeed = () => {
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {new Date(item.timestamp).toRelativeTimeString?.() || 'Just now'}
+                        {formatRelativeTime(item.timestamp)}
                       </span>
                       <span className="flex items-center gap-1">
                         <Eye className="w-3 h-3" />

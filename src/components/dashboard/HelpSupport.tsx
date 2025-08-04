@@ -22,16 +22,26 @@ import {
   ExternalLink
 } from 'lucide-react';
 
+interface SupportTicket {
+  id: string;
+  subject: string;
+  status: 'open' | 'in-progress' | 'resolved' | 'closed';
+  date: string;
+  priority: 'low' | 'medium' | 'high';
+  resolutionTime?: string;
+}
+
 const HelpSupport = () => {
   const { toast } = useToast();
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [recentTickets, setRecentTickets] = useState([
+  const [recentTickets, setRecentTickets] = useState<SupportTicket[]>([
     {
       id: 'T-2025-001',
       subject: 'API integration question',
       status: 'resolved',
       date: new Date().toISOString().split('T')[0],
-      priority: 'medium'
+      priority: 'medium',
+      resolutionTime: '2.5 hours'
     },
     {
       id: 'T-2025-002',
@@ -79,7 +89,7 @@ const HelpSupport = () => {
           'Data accuracy question'
         ];
         
-        const newTicket = {
+        const newTicket: SupportTicket = {
           id: `T-2025-${String(Math.floor(Math.random() * 999) + 100).padStart(3, '0')}`,
           subject: subjects[Math.floor(Math.random() * subjects.length)],
           status: ['open', 'in-progress'][Math.floor(Math.random() * 2)] as 'open' | 'in-progress',
@@ -107,7 +117,6 @@ const HelpSupport = () => {
   };
 
   const handleSendEmail = () => {
-    // Create proper mailto link that opens email client
     const subject = 'Support Request - Amniva Platform';
     const body = `Hello Amniva Support Team,
 
@@ -127,19 +136,16 @@ Best regards,
 [Your name]`;
 
     const mailtoLink = `mailto:support@amniva.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
-    // Use window.location.href to ensure email client opens
-    window.location.href = mailtoLink;
+    window.open(mailtoLink, '_blank');
     
     toast({
       title: "Email Client Opening",
-      description: "Your email client should open shortly with our support email."
+      description: "Your email client should open with our support email."
     });
   };
 
   const handlePhoneCall = () => {
-    // Use tel: protocol to initiate phone call
-    window.location.href = 'tel:+233200348349';
+    window.open('tel:+233200348349', '_blank');
     toast({
       title: "Initiating Call",
       description: "Calling +233 200 348 349..."
@@ -147,7 +153,6 @@ Best regards,
   };
 
   const handleDownloadApiLogs = () => {
-    // Generate realistic API log data
     const logData = {
       user: "current_user@example.com",
       accountPlan: "Elite",
@@ -170,7 +175,6 @@ Best regards,
       }))
     };
 
-    // Create downloadable Excel-like CSV format
     let csvContent = "API Usage Report - Amniva Platform\n";
     csvContent += `Generated: ${new Date().toLocaleString()}\n`;
     csvContent += `Account: ${logData.user}\n`;
@@ -203,7 +207,6 @@ Best regards,
   };
 
   const handleViewAllTickets = () => {
-    // Generate comprehensive ticket report
     const ticketReport = {
       accountHolder: "current_user@example.com",
       reportDate: new Date().toISOString(),
@@ -224,7 +227,6 @@ Best regards,
       ]
     };
 
-    // Create downloadable PDF-style content as text
     let reportContent = "AMNIVA SUPPORT TICKETS REPORT\n";
     reportContent += "=" .repeat(50) + "\n\n";
     reportContent += `Account: ${ticketReport.accountHolder}\n`;
