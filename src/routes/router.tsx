@@ -11,11 +11,12 @@ import Prediction from "@/components/PredictionForm";
 import Newsletter from "@/components/NewsletterForm";
 import HelpCenter from "@/pages/HelpCenter";
 import NotFound from "@/pages/NotFound";
+import Index from "@/pages/Index";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Login />,
+    element: <Index />,
   },
   {
     path: "/login",

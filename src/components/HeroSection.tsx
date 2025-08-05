@@ -16,6 +16,7 @@ const HeroSection = () => {
   ];
 
   const handleStartFreeTrial = () => {
+    // Use React Router navigation instead of direct href
     window.location.href = '/signup';
   };
 
