@@ -1,11 +1,13 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminDataSync from "@/components/admin/AdminDataSync";
+
+// Pages & Components
 import Login from "@/components/Login";
+import Signup from "@/components/Signup"; // ✅ Import Signup component
 import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
@@ -39,6 +41,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} /> {/* ✅ New Signup Route */}
           <Route path="/verify" element={<VerifyInfo />} />
           <Route path="/trending" element={<Trending />} />
           <Route path="/predictions" element={<Predictions />} />
