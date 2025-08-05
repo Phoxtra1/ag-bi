@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
@@ -7,7 +8,7 @@ const ChatbotWidget = () => {
   const [messages, setMessages] = useState([
     { 
       id: 1, 
-      text: "Akwaaba! I'm Odeneho, your AI assistant powered by advanced intelligence. I'm here to help you navigate Amniva's platform, answer questions about our services, and provide real-time insights. How can I assist you today?", 
+      text: "Hi! I'm Odeneho, your AI assistant. How can I help you today?", 
       sender: 'bot' 
     }
   ]);
@@ -134,7 +135,7 @@ const ChatbotWidget = () => {
               </div>
               <div>
                 <h4 className="font-semibold">Odeneho - AI Assistant</h4>
-                <p className="text-sm text-blue-100">Powered by Amniva Intelligence</p>
+                <p className="text-sm text-blue-100">Usually replies instantly</p>
               </div>
             </div>
             <Button 
@@ -226,7 +227,7 @@ const ChatbotWidget = () => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about Amniva..."
+                placeholder="Type a message..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 disabled={isTyping}
               />
@@ -239,9 +240,6 @@ const ChatbotWidget = () => {
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-500 text-center mt-2">
-              Powered by Amniva Intelligence • Available 24/7
-            </p>
           </div>
         </div>
       )}
