@@ -111,8 +111,8 @@ const HelpSupport = () => {
     const chatEvent = new CustomEvent('openChatbot');
     window.dispatchEvent(chatEvent);
     toast({
-      title: "Live Chat Started",
-      description: "Connecting you to Odeneho, our AI assistant..."
+      title: "Odeneho AI Assistant",
+      description: "Connecting you to Odeneho, your AI assistant..."
     });
   };
 
@@ -266,7 +266,7 @@ Best regards,
     {
       icon: MessageSquare,
       title: 'Live Chat',
-      description: 'Chat with Odeneho, our AI support assistant',
+      description: 'Chat with Odeneho, your AI assistant powered by advanced intelligence',
       availability: 'Available 24/7',
       badge: 'Fastest',
       action: 'Start Live Chat',
