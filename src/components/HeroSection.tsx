@@ -1,11 +1,12 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ Added for navigation
 import { Button } from './ui/button';
 import { CheckCircle, Play, ArrowRight, Shield, Zap, Globe, ExternalLink } from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
 
 const HeroSection = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const navigate = useNavigate(); // ✅ Added navigate hook
 
   const trustedOrganizations = [
     { name: 'TrustLaw', url: 'https://www.trust.org/trustlaw/' },
@@ -16,13 +17,11 @@ const HeroSection = () => {
   ];
 
   const handleStartFreeTrial = () => {
-    // Use React Router navigation instead of direct href
-    window.location.href = '/signup';
+    navigate('/signup'); // ✅ Replaced window.location.href
   };
 
   return (
     <section id="home" className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white relative overflow-hidden">
-      {/* Background Pattern */}
       <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent"></div>
       
@@ -71,7 +70,7 @@ const HeroSection = () => {
               <Button 
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
-                onClick={handleStartFreeTrial}
+                onClick={handleStartFreeTrial} // ✅ Linked to navigate()
               >
                 Start Free Trial
                 <ArrowRight className="ml-2 w-5 h-5" />
@@ -110,10 +109,8 @@ const HeroSection = () => {
 
           {/* Right Column - Visual Elements */}
           <div className="relative">
-            {/* Main Dashboard Mockup */}
             <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
               <div className="space-y-6">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-red-400 rounded-full"></div>
@@ -123,9 +120,7 @@ const HeroSection = () => {
                   <div className="text-white/60 text-sm">Amniva Dashboard</div>
                 </div>
                 
-                {/* Content Cards */}
                 <div className="space-y-4">
-                  {/* Verification Status */}
                   <div className="bg-green-500/20 rounded-lg p-4 border border-green-400/30">
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-green-400" />
@@ -136,7 +131,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                   
-                  {/* Analytics */}
                   <div className="bg-blue-500/20 rounded-lg p-4 border border-blue-400/30">
                     <div className="flex items-center justify-between">
                       <div>
@@ -147,7 +141,6 @@ const HeroSection = () => {
                     </div>
                   </div>
                   
-                  {/* Global Reach */}
                   <div className="bg-purple-500/20 rounded-lg p-4 border border-purple-400/30">
                     <div className="flex items-center justify-between">
                       <div>
@@ -161,7 +154,6 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Floating Elements */}
             <div className="absolute -top-6 -right-6 bg-yellow-400 rounded-full p-4 shadow-lg animate-bounce">
               <Shield className="w-6 h-6 text-yellow-900" />
             </div>
