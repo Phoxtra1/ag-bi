@@ -2,9 +2,22 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Phone, Mail, Clock, HelpCircle, BookOpen, Video, Users, Search, FileText } from 'lucide-react';
+import { MessageCircle, Phone, Mail, Clock, HelpCircle, BookOpen, Video, Users, Search, FileText } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const HelpSupport = () => {
+  const { toast } = useToast();
+
+  const handleStartLiveChat = () => {
+    // Dispatch custom event to open the Odeneho chatbot
+    window.dispatchEvent(new CustomEvent('openChatbot'));
+    
+    toast({
+      title: "Odeneho AI Assistant",
+      description: "Chat with our AI assistant for instant help and support.",
+    });
+  };
+
   const handleCallSupport = () => {
     window.open('tel:+233200348349', '_self');
   };
@@ -14,6 +27,14 @@ const HelpSupport = () => {
   };
 
   const supportOptions = [
+    {
+      title: "Live Chat with Odeneho",
+      description: "Get instant help from our AI assistant - available 24/7",
+      icon: MessageCircle,
+      action: handleStartLiveChat,
+      badge: "Instant",
+      color: "bg-green-50 border-green-200 hover:bg-green-100"
+    },
     {
       title: "Phone Support",
       description: "Speak directly with our support team",
@@ -81,7 +102,7 @@ const HelpSupport = () => {
   return (
     <div className="space-y-8">
       {/* Contact Support Options */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         {supportOptions.map((option, index) => {
           const IconComponent = option.icon;
           return (
@@ -102,7 +123,8 @@ const HelpSupport = () => {
                   className="w-full"
                   variant="default"
                 >
-                  {option.title === "Phone Support" ? "Call Now" : "Send Email"}
+                  {option.title === "Live Chat with Odeneho" ? "Start Live Chat" : 
+                   option.title === "Phone Support" ? "Call Now" : "Send Email"}
                 </Button>
               </CardContent>
             </Card>
@@ -184,6 +206,9 @@ const HelpSupport = () => {
               <Badge className="bg-green-100 text-green-800 border-green-200">
                 Currently Online
               </Badge>
+              <p className="text-xs text-gray-500 mt-1">
+                Odeneho AI is available 24/7
+              </p>
             </div>
           </div>
         </CardContent>

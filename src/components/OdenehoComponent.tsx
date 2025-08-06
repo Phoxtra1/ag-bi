@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
 
-const ChatbotWidget = () => {
+const OdenehoComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     { 
@@ -118,7 +118,11 @@ const ChatbotWidget = () => {
           className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse hover:animate-none transition-all duration-300"
           onClick={() => setIsOpen(true)}
         >
-          <MessageCircle className="h-6 w-6 text-white" />
+          <img 
+            src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
+            alt="Odeneho AI" 
+            className="w-8 h-8 rounded-full object-cover"
+          />
         </Button>
       )}
       
@@ -128,7 +132,7 @@ const ChatbotWidget = () => {
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                  src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
                   alt="Odeneho AI" 
                   className="w-full h-full rounded-full object-cover"
                 />
@@ -157,7 +161,7 @@ const ChatbotWidget = () => {
                 {message.sender === 'bot' && (
                   <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                     <img 
-                      src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                      src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
                       alt="Odeneho AI" 
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -184,7 +188,7 @@ const ChatbotWidget = () => {
               <div className="flex gap-2 justify-start">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                   <img 
-                    src="/lovable-uploads/c6c3c868-18b1-4268-bb9d-d184e79e37fe.png" 
+                    src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
                     alt="Odeneho AI" 
                     className="w-full h-full rounded-full object-cover"
                   />
@@ -247,4 +251,4 @@ const ChatbotWidget = () => {
   );
 };
 
-export default ChatbotWidget;
+export default OdenehoComponent;

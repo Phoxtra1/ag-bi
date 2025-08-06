@@ -1,6 +1,8 @@
+
 // components/Layout.tsx
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import OdenehoComponent from "./OdenehoComponent";
 
 type Props = {
   children: ReactNode;
@@ -22,6 +24,7 @@ export default function Layout({ children }: Props) {
       <footer className="p-4 text-center text-sm text-gray-500">
         &copy; {new Date().getFullYear()} Amoeba. All rights reserved.
       </footer>
+      <OdenehoComponent />
     </div>
   );
 }

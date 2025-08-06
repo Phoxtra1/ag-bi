@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import HelpSupport from '@/components/dashboard/HelpSupport';
-import ChatbotWidget from '@/components/ChatbotWidget';
+import OdenehoComponent from '@/components/OdenehoComponent';
 
 const HelpCenter = () => {
   return (
@@ -20,7 +20,7 @@ const HelpCenter = () => {
         <HelpSupport />
       </div>
       
-      <ChatbotWidget />
+      <OdenehoComponent />
     </div>
   );
 };
