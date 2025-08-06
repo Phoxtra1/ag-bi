@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,7 +31,7 @@ import WatchDemo from "./pages/WatchDemo";
 import NotFound from "./pages/NotFound";
 
 // ✅ Import centralized Odeneho AI assistant
-import OdenehoComponent from "@/components/Odeneho/OdenehoComponent";
+import OdenehoComponent from "@/components/OdenehoComponent";
 
 const queryClient = new QueryClient();
 
