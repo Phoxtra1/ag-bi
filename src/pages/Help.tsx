@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,13 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
-import { 
-  Search, 
-  Headphones, 
-  User, 
-  Building, 
-  Mail, 
-  MessageCircle, 
+import {
+  Search,
+  Headphones,
+  User,
+  Building,
+  Mail,
+  MessageCircle,
   Clock,
   Send
 } from 'lucide-react';
@@ -68,14 +67,13 @@ const Help = () => {
 
   const onSubmit = (data: TicketForm) => {
     console.log('Ticket submitted:', data);
-    // Handle form submission
     setShowTicketForm(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-12">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -84,7 +82,7 @@ const Help = () => {
             Help Center
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Your go-to space for answers, support, and live assistance. Find solutions 
+            Your go-to space for answers, support, and live assistance. Find solutions
             to common questions or connect with our support team for personalized help.
           </p>
         </div>
@@ -93,8 +91,8 @@ const Help = () => {
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input 
-              placeholder="Search Help Topics" 
+            <Input
+              placeholder="Search Help Topics"
               className="pl-12 pr-4 py-6 text-lg rounded-xl border-2 focus:border-blue-500"
             />
           </div>
@@ -126,7 +124,7 @@ const Help = () => {
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {articles.map((article, index) => (
-              <div 
+              <div
                 key={index}
                 className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
               >
@@ -148,8 +146,8 @@ const Help = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-blue-600 hover:bg-gray-100"
                 onClick={() => setShowChat(true)}
               >
@@ -173,8 +171,8 @@ const Help = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-green-600 hover:bg-gray-100"
                 onClick={() => setShowTicketForm(true)}
               >
@@ -195,15 +193,15 @@ const Help = () => {
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-900">Submit Support Ticket</h3>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     onClick={() => setShowTicketForm(false)}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     ✕
                   </Button>
                 </div>
-                
+
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
@@ -234,7 +232,7 @@ const Help = () => {
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={form.control}
                       name="subject"
@@ -248,7 +246,7 @@ const Help = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="category"
@@ -256,8 +254,8 @@ const Help = () => {
                         <FormItem>
                           <FormLabel>Category</FormLabel>
                           <FormControl>
-                            <select 
-                              {...field} 
+                            <select
+                              {...field}
                               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                               <option value="">Select a category</option>
@@ -271,7 +269,7 @@ const Help = () => {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="message"
@@ -279,24 +277,24 @@ const Help = () => {
                         <FormItem>
                           <FormLabel>Message</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Please describe your issue in detail..." 
+                            <Textarea
+                              placeholder="Please describe your issue in detail..."
                               rows={6}
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    
+
                     <div className="flex gap-4">
                       <Button type="submit" size="lg" className="flex-1">
                         Submit Ticket
                       </Button>
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         size="lg"
                         onClick={() => setShowTicketForm(false)}
                       >
@@ -310,16 +308,16 @@ const Help = () => {
           </div>
         )}
 
-        {/* Chat Widget */}
+        {/* Odeneho AI Chat Widget */}
         {showChat && (
           <div className="fixed bottom-4 right-4 w-96 h-96 bg-white rounded-xl shadow-2xl border z-50">
             <div className="bg-blue-600 text-white p-4 rounded-t-xl flex justify-between items-center">
               <div>
-                <h4 className="font-semibold">Amniva Support Bot</h4>
-                <p className="text-sm text-blue-100">Usually replies instantly</p>
+                <h4 className="font-semibold">Odeneho – AI Assistant</h4>
+                <p className="text-sm text-blue-100">Available 24/7 for instant support</p>
               </div>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={() => setShowChat(false)}
                 className="text-white hover:bg-blue-700"
@@ -331,7 +329,7 @@ const Help = () => {
               <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
                 <div className="bg-blue-100 rounded-lg p-3 mb-3">
                   <p className="text-sm">
-                    Hi! I'm Odeneho, your Amniva support assistant. How can I help you today?
+                    Hello! I'm <strong>Odeneho</strong>, your AI assistant. How can I help you today?
                   </p>
                 </div>
               </div>
@@ -345,20 +343,15 @@ const Help = () => {
           </div>
         )}
 
-        {/* Support Bot Info */}
+        {/* Support Bot Info – WITHOUT "Start Chat Now" CTA */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 text-center">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            24/7 AI Support Available
+            24/7 AI Support by Odeneho
           </h2>
           <p className="text-lg text-gray-700 mb-6">
-            Speak directly to our Amniva Support Bot for instant answers to common questions, 
-            or escalate to live agents when you need human assistance.
+            Talk to Odeneho – our AI assistant – for quick help or escalate to a live agent if needed.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => setShowChat(true)}>
-              <MessageCircle className="mr-2 h-5 w-5" />
-              Start Chat Now
-            </Button>
             <Button size="lg" variant="outline">
               Browse Help Articles
             </Button>
