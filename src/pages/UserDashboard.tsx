@@ -11,7 +11,6 @@ import ApiAccessGuard from '@/components/auth/ApiAccessGuard';
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
-import ChatbotWidget from '@/components/ChatbotWidget';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -75,9 +74,6 @@ const UserDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Global Chatbot Widget */}
-      <ChatbotWidget />
     </div>
   );
 };
