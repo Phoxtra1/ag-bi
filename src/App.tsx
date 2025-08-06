@@ -7,7 +7,7 @@ import AdminDataSync from "@/components/admin/AdminDataSync";
 
 // Pages & Components
 import Login from "@/components/Login";
-import Signup from "@/components/Signup"; // ✅ Import Signup component
+import Signup from "@/components/Signup";
 import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
@@ -29,6 +29,9 @@ import Newsletter from "./pages/Newsletter";
 import WatchDemo from "./pages/WatchDemo";
 import NotFound from "./pages/NotFound";
 
+// ✅ Import centralized Odeneho AI assistant
+import OdenehoComponent from "@/components/Odeneho/OdenehoComponent";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -37,11 +40,12 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AdminDataSync />
+
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} /> {/* ✅ New Signup Route */}
+          <Route path="/signup" element={<Signup />} />
           <Route path="/verify" element={<VerifyInfo />} />
           <Route path="/trending" element={<Trending />} />
           <Route path="/predictions" element={<Predictions />} />
@@ -62,6 +66,9 @@ const App = () => (
           <Route path="/watch-demo" element={<WatchDemo />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+
+        {/* ✅ Persistent centralized Odeneho chatbot */}
+        <OdenehoComponent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
