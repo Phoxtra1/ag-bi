@@ -24,7 +24,7 @@ const HelpSupport = () => {
   };
 
   const handleEmailSupport = () => {
-    window.open('mailto:support@amniva.com', '_self');
+    window.open('mailto:ana@amnewsworld.com', '_self');
   };
 
   const supportOptions = [
