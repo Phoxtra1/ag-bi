@@ -23,7 +23,28 @@ const HelpSupport = () => {
   };
 
   const handleEmailSupport = () => {
-    window.open('mailto:ana@amnewsworld.com', '_self');
+    const subject = encodeURIComponent('Support Request - Amniva Platform');
+    const body = encodeURIComponent(`Hello Amniva Support Team,
+
+I need assistance with:
+
+[Please describe your issue or question here]
+
+Account Email: ${localStorage.getItem('userEmail') || '[Your Email]'}
+Platform: User Dashboard
+Date: ${new Date().toLocaleDateString()}
+
+Thank you for your assistance.
+
+Best regards,
+[Your Name]`);
+    
+    window.open(`mailto:ana@amnewsworld.com?subject=${subject}&body=${body}`, '_self');
+    
+    toast({
+      title: "Email Client Opened",
+      description: "Your email client has been opened with a pre-filled support request template.",
+    });
   };
 
   const supportOptions = [
@@ -45,10 +66,10 @@ const HelpSupport = () => {
     },
     {
       title: "Email Support",
-      description: "Send us a detailed message - we'll respond within 24 hours",
+      description: "Send us a detailed message - we'll respond within 5 business days",
       icon: Mail,
       action: handleEmailSupport,
-      badge: "24h Response",
+      badge: "5 Business Days",
       color: "bg-purple-50 border-purple-200 hover:bg-purple-100"
     }
   ];

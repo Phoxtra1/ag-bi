@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -56,10 +55,19 @@ const CustomFeedManager = () => {
         const feeds = JSON.parse(savedFeeds) as FeedSource[];
         setFeedSources(feeds);
       } else {
-        // Initialize with default feeds if none exist
+        // Initialize with default feeds including Amnewsworld
         const defaultFeeds: FeedSource[] = [
           {
             id: '1',
+            name: 'Amnewsworld Spotlite',
+            url: 'https://www.amnewsworld.com/spotlite/',
+            type: 'news',
+            category: 'Breaking News',
+            isActive: true,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: '2',
             name: 'Reuters World News',
             url: 'https://feeds.reuters.com/reuters/worldNews',
             type: 'rss',
@@ -68,7 +76,7 @@ const CustomFeedManager = () => {
             lastUpdated: new Date().toISOString()
           },
           {
-            id: '2', 
+            id: '3', 
             name: 'BBC Breaking News',
             url: 'https://feeds.bbci.co.uk/news/rss.xml',
             type: 'rss',
