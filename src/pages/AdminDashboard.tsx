@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,8 @@ import {
   Mail,
   FileText,
   Inbox,
-  Building
+  Building,
+  Rss
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -38,6 +40,7 @@ import SystemStatus from '@/components/admin/SystemStatus';
 import ContentSubmissions from '@/components/admin/ContentSubmissions';
 import ContactInbox from '@/components/admin/ContactInbox';
 import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
+import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -115,6 +118,7 @@ const AdminDashboard = () => {
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'api-requests', label: 'API Requests', icon: Building },
+    { id: 'feed-sources', label: 'Feed Sources', icon: Rss },
     { id: 'content-inbox', label: 'Content Inbox', icon: FileText, badge: notifications.contentPending },
     { id: 'contact-inbox', label: 'Contact Inbox', icon: Mail, badge: notifications.contactUnread },
     { id: 'financials', label: 'Financials', icon: DollarSign },
@@ -226,6 +230,7 @@ const AdminDashboard = () => {
           {activeTab === 'users' && <UserManagement />}
           {activeTab === 'admins' && <AdminInvitation />}
           {activeTab === 'api-requests' && <ApiAccessRequests />}
+          {activeTab === 'feed-sources' && <CustomFeedManager />}
           {activeTab === 'content-inbox' && <ContentSubmissions />}
           {activeTab === 'contact-inbox' && <ContactInbox />}
           {activeTab === 'financials' && <FinancialReports stats={realTimeStats} />}
