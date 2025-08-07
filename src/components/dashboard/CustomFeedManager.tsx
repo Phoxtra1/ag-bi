@@ -20,35 +20,7 @@ interface FeedSource {
 
 const CustomFeedManager = () => {
   const { toast } = useToast();
-  const [feedSources, setFeedSources] = useState<FeedSource[]>([
-    {
-      id: '1',
-      name: 'Reuters World News',
-      url: 'https://feeds.reuters.com/reuters/worldNews',
-      type: 'rss',
-      category: 'Global News',
-      isActive: true,
-      lastUpdated: new Date().toISOString()
-    },
-    {
-      id: '2', 
-      name: 'BBC Breaking News',
-      url: 'https://feeds.bbci.co.uk/news/rss.xml',
-      type: 'rss',
-      category: 'Breaking News',
-      isActive: true,
-      lastUpdated: new Date().toISOString()
-    },
-    {
-      id: '3',
-      name: 'TechCrunch',
-      url: 'https://techcrunch.com/feed/',
-      type: 'rss',
-      category: 'Technology',
-      isActive: false,
-      lastUpdated: new Date().toISOString()
-    }
-  ]);
+  const [feedSources, setFeedSources] = useState<FeedSource[]>([]);
 
   const [newFeed, setNewFeed] = useState({
     name: '',
@@ -72,6 +44,69 @@ const CustomFeedManager = () => {
     'Weather'
   ];
 
+  // Load feed sources from localStorage on component mount
+  useEffect(() => {
+    loadFeedSources();
+  }, []);
+
+  const loadFeedSources = () => {
+    try {
+      const savedFeeds = localStorage.getItem('customFeedSources');
+      if (savedFeeds) {
+        const feeds = JSON.parse(savedFeeds) as FeedSource[];
+        setFeedSources(feeds);
+      } else {
+        // Initialize with default feeds if none exist
+        const defaultFeeds: FeedSource[] = [
+          {
+            id: '1',
+            name: 'Reuters World News',
+            url: 'https://feeds.reuters.com/reuters/worldNews',
+            type: 'rss',
+            category: 'Global News',
+            isActive: true,
+            lastUpdated: new Date().toISOString()
+          },
+          {
+            id: '2', 
+            name: 'BBC Breaking News',
+            url: 'https://feeds.bbci.co.uk/news/rss.xml',
+            type: 'rss',
+            category: 'Breaking News',
+            isActive: true,
+            lastUpdated: new Date().toISOString()
+          }
+        ];
+        setFeedSources(defaultFeeds);
+        saveFeedSources(defaultFeeds);
+      }
+    } catch (error) {
+      console.error('Error loading feed sources:', error);
+      toast({
+        title: "Error Loading Feeds",
+        description: "Could not load saved feed sources",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const saveFeedSources = (feeds: FeedSource[]) => {
+    try {
+      localStorage.setItem('customFeedSources', JSON.stringify(feeds));
+      
+      // Also save to the newsFeeds format for compatibility
+      localStorage.setItem('adminNewsFeeds', JSON.stringify(feeds));
+      
+      // Trigger update event for InsightsFeed
+      const event = new CustomEvent('customFeedUpdate', { detail: feeds });
+      window.dispatchEvent(event);
+      
+      console.log('Feed sources saved:', feeds.length, 'feeds');
+    } catch (error) {
+      console.error('Error saving feed sources:', error);
+    }
+  };
+
   const handleAddFeed = () => {
     if (!newFeed.name || !newFeed.url || !newFeed.category) {
       toast({
@@ -92,49 +127,45 @@ const CustomFeedManager = () => {
       lastUpdated: new Date().toISOString()
     };
 
-    setFeedSources(prev => [...prev, feed]);
+    const updatedFeeds = [...feedSources, feed];
+    setFeedSources(updatedFeeds);
+    saveFeedSources(updatedFeeds);
+    
     setNewFeed({ name: '', url: '', type: 'rss', category: '' });
     setShowAddForm(false);
 
-    // Update the insights feed in real-time
-    const event = new CustomEvent('customFeedUpdate', { detail: feedSources });
-    window.dispatchEvent(event);
-
     toast({
       title: "Feed Added Successfully",
-      description: `${feed.name} has been added to your custom feeds`
+      description: `${feed.name} has been added to your custom feeds and is now active`
     });
   };
 
   const toggleFeedStatus = (feedId: string) => {
-    setFeedSources(prev => prev.map(feed => 
-      feed.id === feedId ? { ...feed, isActive: !feed.isActive } : feed
-    ));
-
-    // Trigger insights feed update
     const updatedFeeds = feedSources.map(feed => 
-      feed.id === feedId ? { ...feed, isActive: !feed.isActive } : feed
+      feed.id === feedId ? { ...feed, isActive: !feed.isActive, lastUpdated: new Date().toISOString() } : feed
     );
     
-    const event = new CustomEvent('customFeedUpdate', { detail: updatedFeeds });
-    window.dispatchEvent(event);
+    setFeedSources(updatedFeeds);
+    saveFeedSources(updatedFeeds);
 
+    const toggledFeed = updatedFeeds.find(feed => feed.id === feedId);
+    
     toast({
       title: "Feed Status Updated",
-      description: "Your insights feed will update shortly"
+      description: `${toggledFeed?.name} is now ${toggledFeed?.isActive ? 'active' : 'inactive'}. Insights feed will update shortly.`
     });
   };
 
   const removeFeed = (feedId: string) => {
     const feedToRemove = feedSources.find(feed => feed.id === feedId);
-    setFeedSources(prev => prev.filter(feed => feed.id !== feedId));
-
-    const event = new CustomEvent('customFeedUpdate', { detail: feedSources.filter(feed => feed.id !== feedId) });
-    window.dispatchEvent(event);
+    const updatedFeeds = feedSources.filter(feed => feed.id !== feedId);
+    
+    setFeedSources(updatedFeeds);
+    saveFeedSources(updatedFeeds);
 
     toast({
       title: "Feed Removed",
-      description: `${feedToRemove?.name} has been removed from your feeds`
+      description: `${feedToRemove?.name} has been removed from your feeds. Insights will no longer show content from this source.`
     });
   };
 
@@ -149,24 +180,34 @@ const CustomFeedManager = () => {
     }
   };
 
+  const activeFeeds = feedSources.filter(feed => feed.isActive);
+  const inactiveFeeds = feedSources.filter(feed => !feed.isActive);
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
-            Configure Custom Feed
+            Manage Feed Sources
           </CardTitle>
           <CardDescription>
-            Manage your custom news sources and feeds. Active feeds will appear in your Live Insights Feed.
+            Configure news sources for your Live Insights Feed. Only active feeds will generate content for your dashboard.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Add New Feed Button */}
-          <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-600">
-              {feedSources.filter(f => f.isActive).length} active feeds configured
-            </p>
+          {/* Status Summary */}
+          <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{activeFeeds.length}</div>
+                <div className="text-sm text-blue-600">Active Feeds</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-gray-500">{inactiveFeeds.length}</div>
+                <div className="text-sm text-gray-500">Inactive Feeds</div>
+              </div>
+            </div>
             <Button onClick={() => setShowAddForm(!showAddForm)}>
               <Plus className="w-4 h-4 mr-2" />
               Add Feed Source
@@ -232,59 +273,117 @@ const CustomFeedManager = () => {
             </Card>
           )}
 
-          {/* Feed Sources List */}
-          <div className="space-y-3">
-            {feedSources.map(feed => (
-              <Card key={feed.id} className={`transition-all ${feed.isActive ? 'border-green-200 bg-green-50' : 'border-gray-200'}`}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {getFeedIcon(feed.type)}
-                      <div>
-                        <h4 className="font-medium">{feed.name}</h4>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <span>{feed.url}</span>
-                          <a href={feed.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+          {/* Active Feed Sources */}
+          {activeFeeds.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-green-700 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Active Feed Sources ({activeFeeds.length})
+              </h4>
+              {activeFeeds.map(feed => (
+                <Card key={feed.id} className="border-green-200 bg-green-50">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {getFeedIcon(feed.type)}
+                        <div>
+                          <h4 className="font-medium">{feed.name}</h4>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <span>{feed.url}</span>
+                            <a href={feed.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
                         </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="default">{feed.category}</Badge>
+                        <Badge variant="default" className="bg-green-600">Active</Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleFeedStatus(feed.id)}
+                        >
+                          Deactivate
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeFeed(feed.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={feed.isActive ? "default" : "secondary"}>
-                        {feed.category}
-                      </Badge>
-                      <Badge variant={feed.isActive ? "default" : "outline"}>
-                        {feed.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => toggleFeedStatus(feed.id)}
-                      >
-                        {feed.isActive ? 'Deactivate' : 'Activate'}
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => removeFeed(feed.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Inactive Feed Sources */}
+          {inactiveFeeds.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="font-semibold text-gray-700">Inactive Feed Sources ({inactiveFeeds.length})</h4>
+              {inactiveFeeds.map(feed => (
+                <Card key={feed.id} className="border-gray-200">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {getFeedIcon(feed.type)}
+                        <div>
+                          <h4 className="font-medium text-gray-600">{feed.name}</h4>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>{feed.url}</span>
+                            <a href={feed.url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">{feed.category}</Badge>
+                        <Badge variant="outline">Inactive</Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => toggleFeedStatus(feed.id)}
+                        >
+                          Activate
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeFeed(feed.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {feedSources.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               <Rss className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>No custom feeds configured</p>
-              <p className="text-sm">Add your first feed source to get started</p>
+              <p>No feed sources configured</p>
+              <p className="text-sm">Add your first feed source to start receiving insights</p>
             </div>
           )}
+
+          {/* Important Note */}
+          <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex gap-2">
+              <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
+              <div className="text-sm">
+                <strong>Important:</strong> Only active feed sources will generate content in your Live Insights Feed. 
+                Deactivated sources will not appear in categories or generate any insights until reactivated.
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
