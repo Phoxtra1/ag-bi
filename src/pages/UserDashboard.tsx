@@ -27,7 +27,7 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
