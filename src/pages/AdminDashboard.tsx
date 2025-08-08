@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,14 +52,23 @@ const AdminDashboard = () => {
     systemAlerts: 0
   });
 
-  // Real-time stats for dashboard
+  // Real-time stats for dashboard - Updated to match expected interface
   const [realTimeStats, setRealTimeStats] = useState({
     totalUsers: 1847,
-    activeUsers: 234,
-    totalRevenue: 89420,
-    apiRequests: 45672,
-    systemHealth: 98.5,
-    avgResponseTime: 145
+    individualUsers: 1620,
+    organizationUsers: 227,
+    newSignupsToday: 23,
+    weeklyGrowth: 45,
+    monthlyGrowth: 187,
+    closedAccountsToday: 2,
+    closedAccountsWeekly: 8,
+    activeApiSubscriptions: 34,
+    currentEarnings: {
+      daily: 142.50,
+      weekly: 998.75,
+      monthly: 4250.00,
+      yearly: 51000.00
+    }
   });
 
   useEffect(() => {
@@ -122,9 +130,14 @@ const AdminDashboard = () => {
     const interval = setInterval(() => {
       setRealTimeStats(prev => ({
         ...prev,
-        activeUsers: prev.activeUsers + Math.floor(Math.random() * 10) - 5,
-        apiRequests: prev.apiRequests + Math.floor(Math.random() * 100),
-        avgResponseTime: prev.avgResponseTime + Math.floor(Math.random() * 20) - 10
+        newSignupsToday: Math.max(0, prev.newSignupsToday + Math.floor(Math.random() * 3) - 1),
+        totalUsers: prev.totalUsers + Math.floor(Math.random() * 2),
+        individualUsers: prev.individualUsers + Math.floor(Math.random() * 2),
+        organizationUsers: prev.organizationUsers + Math.floor(Math.random() * 1),
+        currentEarnings: {
+          ...prev.currentEarnings,
+          daily: Math.max(0, prev.currentEarnings.daily + Math.floor(Math.random() * 20) - 10)
+        }
       }));
     }, 5000);
 
@@ -173,7 +186,7 @@ const AdminDashboard = () => {
                   <span>System Healthy</span>
                 </div>
                 <span>•</span>
-                <span>{realTimeStats.activeUsers} active users</span>
+                <span>{realTimeStats.newSignupsToday} new signups today</span>
               </div>
               <Button variant="outline" size="sm">
                 <Bell className="h-4 w-4 mr-2" />
