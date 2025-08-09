@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, Globe, Rss, Settings, ExternalLink, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, Globe, Rss, Settings, ExternalLink, CheckCircle, AlertTriangle, TestTube } from 'lucide-react';
+import { linkValidationEngine, newsFeedEngine } from '@/lib/dynamicContentEngines';
 
 interface FeedSource {
   id: string;
@@ -15,17 +17,22 @@ interface FeedSource {
   category: string;
   isActive: boolean;
   lastUpdated: string;
+  apiKey?: string;
+  isValidated?: boolean;
+  validationStatus?: string;
 }
 
 const CustomFeedManager = () => {
   const { toast } = useToast();
   const [feedSources, setFeedSources] = useState<FeedSource[]>([]);
+  const [testingFeed, setTestingFeed] = useState<string | null>(null);
 
   const [newFeed, setNewFeed] = useState({
     name: '',
     url: '',
     type: 'rss' as const,
-    category: ''
+    category: '',
+    apiKey: ''
   });
 
   const [showAddForm, setShowAddForm] = useState(false);
@@ -64,7 +71,9 @@ const CustomFeedManager = () => {
             type: 'news',
             category: 'Breaking News',
             isActive: true,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
+            isValidated: true,
+            validationStatus: 'verified'
           },
           {
             id: '2',
@@ -73,7 +82,9 @@ const CustomFeedManager = () => {
             type: 'rss',
             category: 'Global News',
             isActive: true,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
+            isValidated: true,
+            validationStatus: 'verified'
           },
           {
             id: '3', 
@@ -82,7 +93,9 @@ const CustomFeedManager = () => {
             type: 'rss',
             category: 'Breaking News',
             isActive: true,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
+            isValidated: true,
+            validationStatus: 'verified'
           }
         ];
         setFeedSources(defaultFeeds);
@@ -102,20 +115,109 @@ const CustomFeedManager = () => {
     try {
       localStorage.setItem('customFeedSources', JSON.stringify(feeds));
       
-      // Also save to the newsFeeds format for compatibility
-      localStorage.setItem('adminNewsFeeds', JSON.stringify(feeds));
+      // Update the news feed engine with new feeds
+      newsFeedEngine.updateFeeds(feeds);
       
       // Trigger update event for InsightsFeed
       const event = new CustomEvent('customFeedUpdate', { detail: feeds });
       window.dispatchEvent(event);
       
-      console.log('Feed sources saved:', feeds.length, 'feeds');
+      console.log('Feed sources saved and engines updated:', feeds.length, 'feeds');
     } catch (error) {
       console.error('Error saving feed sources:', error);
     }
   };
 
-  const handleAddFeed = () => {
+  const validateFeedUrl = async (url: string, type: string) => {
+    try {
+      const validation = await linkValidationEngine.validateUrl(url);
+      
+      if (!validation.isValid) {
+        return { isValid: false, error: validation.error };
+      }
+      
+      // Additional type-specific validation
+      if (type === 'rss' && validation.type !== 'rss' && validation.type !== 'general') {
+        return { 
+          isValid: false, 
+          error: 'URL does not appear to be an RSS feed' 
+        };
+      }
+      
+      if (type === 'api' && validation.type !== 'api' && validation.type !== 'general') {
+        return { 
+          isValid: false, 
+          error: 'URL does not appear to be an API endpoint' 
+        };
+      }
+      
+      return { 
+        isValid: true, 
+        details: validation.details,
+        validationType: validation.type
+      };
+    } catch (error) {
+      return { 
+        isValid: false, 
+        error: 'Validation failed: ' + (error as Error).message 
+      };
+    }
+  };
+
+  const testFeedConnection = async (feedId: string) => {
+    const feed = feedSources.find(f => f.id === feedId);
+    if (!feed) return;
+    
+    setTestingFeed(feedId);
+    
+    try {
+      // Test the feed URL
+      const validation = await validateFeedUrl(feed.url, feed.type);
+      
+      if (validation.isValid) {
+        // Update feed status
+        const updatedFeeds = feedSources.map(f => 
+          f.id === feedId 
+            ? { ...f, isValidated: true, validationStatus: 'verified', lastUpdated: new Date().toISOString() }
+            : f
+        );
+        
+        setFeedSources(updatedFeeds);
+        saveFeedSources(updatedFeeds);
+        
+        toast({
+          title: "Feed Test Successful",
+          description: `${feed.name} is working correctly and can fetch content`
+        });
+      } else {
+        // Update feed with error status
+        const updatedFeeds = feedSources.map(f => 
+          f.id === feedId 
+            ? { ...f, isValidated: false, validationStatus: 'error', lastUpdated: new Date().toISOString() }
+            : f
+        );
+        
+        setFeedSources(updatedFeeds);
+        saveFeedSources(updatedFeeds);
+        
+        toast({
+          title: "Feed Test Failed",
+          description: validation.error || 'Could not connect to feed source',
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Feed Test Error",
+        description: 'An error occurred while testing the feed',
+        variant: "destructive"
+      });
+    } finally {
+      setTestingFeed(null);
+    }
+  };
+
+  const handleAddFeed = async () => {
     if (!newFeed.name || !newFeed.url || !newFeed.category) {
       toast({
         title: "Missing Information",
@@ -125,6 +227,9 @@ const CustomFeedManager = () => {
       return;
     }
 
+    // Validate the URL before adding
+    const validation = await validateFeedUrl(newFeed.url, newFeed.type);
+    
     const feed: FeedSource = {
       id: Date.now().toString(),
       name: newFeed.name,
@@ -132,19 +237,22 @@ const CustomFeedManager = () => {
       type: newFeed.type,
       category: newFeed.category,
       isActive: true,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      apiKey: newFeed.apiKey || undefined,
+      isValidated: validation.isValid,
+      validationStatus: validation.isValid ? 'verified' : 'error'
     };
 
     const updatedFeeds = [...feedSources, feed];
     setFeedSources(updatedFeeds);
     saveFeedSources(updatedFeeds);
     
-    setNewFeed({ name: '', url: '', type: 'rss', category: '' });
+    setNewFeed({ name: '', url: '', type: 'rss', category: '', apiKey: '' });
     setShowAddForm(false);
 
     toast({
       title: "Feed Added Successfully",
-      description: `${feed.name} has been added to your custom feeds and is now active`
+      description: `${feed.name} has been added ${validation.isValid ? 'and verified' : 'but requires attention'}`
     });
   };
 
@@ -188,6 +296,18 @@ const CustomFeedManager = () => {
     }
   };
 
+  const getValidationIcon = (feed: FeedSource) => {
+    if (!feed.isValidated) {
+      return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+    }
+    
+    if (feed.validationStatus === 'verified') {
+      return <CheckCircle className="w-4 h-4 text-green-500" />;
+    }
+    
+    return <AlertTriangle className="w-4 h-4 text-red-500" />;
+  };
+
   const activeFeeds = feedSources.filter(feed => feed.isActive);
   const inactiveFeeds = feedSources.filter(feed => !feed.isActive);
 
@@ -197,16 +317,16 @@ const CustomFeedManager = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
-            Manage Feed Sources
+            Feed Source Management
           </CardTitle>
           <CardDescription>
-            Configure news sources for your Live Insights Feed. Only active feeds will generate content for your dashboard.
+            Configure and manage news sources for the Live Insights Feed. Test connections and monitor feed health.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Status Summary */}
           <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{activeFeeds.length}</div>
                 <div className="text-sm text-blue-600">Active Feeds</div>
@@ -214,6 +334,12 @@ const CustomFeedManager = () => {
               <div className="text-center">
                 <div className="text-2xl font-bold text-gray-500">{inactiveFeeds.length}</div>
                 <div className="text-sm text-gray-500">Inactive Feeds</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {feedSources.filter(f => f.isValidated && f.validationStatus === 'verified').length}
+                </div>
+                <div className="text-sm text-green-600">Verified Feeds</div>
               </div>
             </div>
             <Button onClick={() => setShowAddForm(!showAddForm)}>
@@ -229,7 +355,7 @@ const CustomFeedManager = () => {
                 <div className="grid gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Feed Name</label>
+                      <label className="text-sm font-medium mb-2 block">Feed Name *</label>
                       <Input
                         placeholder="e.g., CNN Breaking News"
                         value={newFeed.name}
@@ -237,7 +363,7 @@ const CustomFeedManager = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Feed Type</label>
+                      <label className="text-sm font-medium mb-2 block">Feed Type *</label>
                       <Select value={newFeed.type} onValueChange={(value: any) => setNewFeed(prev => ({ ...prev, type: value }))}>
                         <SelectTrigger>
                           <SelectValue />
@@ -252,15 +378,26 @@ const CustomFeedManager = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Feed URL</label>
+                    <label className="text-sm font-medium mb-2 block">Feed URL *</label>
                     <Input
                       placeholder="https://example.com/rss"
                       value={newFeed.url}
                       onChange={(e) => setNewFeed(prev => ({ ...prev, url: e.target.value }))}
                     />
                   </div>
+                  {(newFeed.type === 'api' || newFeed.type === 'news') && (
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">API Key (optional)</label>
+                      <Input
+                        type="password"
+                        placeholder="Enter API key if required"
+                        value={newFeed.apiKey}
+                        onChange={(e) => setNewFeed(prev => ({ ...prev, apiKey: e.target.value }))}
+                      />
+                    </div>
+                  )}
                   <div>
-                    <label className="text-sm font-medium mb-2 block">Category</label>
+                    <label className="text-sm font-medium mb-2 block">Category *</label>
                     <Select value={newFeed.category} onValueChange={(value) => setNewFeed(prev => ({ ...prev, category: value }))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
@@ -294,6 +431,7 @@ const CustomFeedManager = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getFeedIcon(feed.type)}
+                        {getValidationIcon(feed)}
                         <div>
                           <h4 className="font-medium">{feed.name}</h4>
                           <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -307,6 +445,15 @@ const CustomFeedManager = () => {
                       <div className="flex items-center gap-2">
                         <Badge variant="default">{feed.category}</Badge>
                         <Badge variant="default" className="bg-green-600">Active</Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => testFeedConnection(feed.id)}
+                          disabled={testingFeed === feed.id}
+                        >
+                          <TestTube className={`w-4 h-4 mr-1 ${testingFeed === feed.id ? 'animate-spin' : ''}`} />
+                          Test
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -339,6 +486,7 @@ const CustomFeedManager = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getFeedIcon(feed.type)}
+                        {getValidationIcon(feed)}
                         <div>
                           <h4 className="font-medium text-gray-600">{feed.name}</h4>
                           <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -352,6 +500,15 @@ const CustomFeedManager = () => {
                       <div className="flex items-center gap-2">
                         <Badge variant="secondary">{feed.category}</Badge>
                         <Badge variant="outline">Inactive</Badge>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => testFeedConnection(feed.id)}
+                          disabled={testingFeed === feed.id}
+                        >
+                          <TestTube className={`w-4 h-4 mr-1 ${testingFeed === feed.id ? 'animate-spin' : ''}`} />
+                          Test
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -387,8 +544,8 @@ const CustomFeedManager = () => {
             <div className="flex gap-2">
               <div className="w-2 h-2 bg-amber-500 rounded-full mt-2 flex-shrink-0"></div>
               <div className="text-sm">
-                <strong>Important:</strong> Only active feed sources will generate content in your Live Insights Feed. 
-                Deactivated sources will not appear in categories or generate any insights until reactivated.
+                <strong>Important:</strong> Feed sources are tested automatically when added. Use the "Test" button to verify connectivity. 
+                Only active and verified sources will generate content in the Live Insights Feed.
               </div>
             </div>
           </div>
