@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
@@ -8,7 +7,7 @@ const OdenehoComponent = () => {
   const [messages, setMessages] = useState([
     { 
       id: 1, 
-      text: "Hi! I'm Odeneho, your AI assistant. How can I help you today?", 
+      text: "Hello! I'm Odeneho, your AI assistant at Amniva. How can I help you today?", 
       sender: 'bot' 
     }
   ]);
@@ -24,44 +23,82 @@ const OdenehoComponent = () => {
     return () => window.removeEventListener('openChatbot', handleOpenChatbot);
   }, []);
 
-  // Enhanced AI responses with Amniva context
+  // Enhanced AI responses with better greeting detection and contextual answers
   const getAIResponse = (userMessage: string) => {
     const lowerMessage = userMessage.toLowerCase();
     
-    if (lowerMessage.includes('api') || lowerMessage.includes('integration')) {
-      return "I can help you with Amniva's API integration! Our API provides real-time fact-checking, misinformation detection, and media intelligence. Would you like me to guide you through the API documentation or help you get started with your API key?";
-    }
-    
-    if (lowerMessage.includes('pricing') || lowerMessage.includes('plan') || lowerMessage.includes('subscription')) {
-      return "Amniva offers three plans: Free (basic verification), Elite (advanced features), and Institutional (full API access). Each plan is designed to meet different needs. Would you like detailed information about any specific plan?";
-    }
-    
-    if (lowerMessage.includes('fact') || lowerMessage.includes('verify') || lowerMessage.includes('check')) {
-      return "Amniva's AI-powered fact-checking system analyzes content in real-time, cross-references multiple sources, and provides credibility scores. You can submit content for verification through our dashboard or API. Want me to show you how?";
-    }
-    
-    if (lowerMessage.includes('help') || lowerMessage.includes('support') || lowerMessage.includes('contact')) {
-      return "I'm here to help! You can also reach our human support team via email at support@amniva.com or call +233 200 348 349 during business hours (9AM-6PM GMT). For immediate assistance, I can help you with most questions right now!";
-    }
-    
-    if (lowerMessage.includes('weather') || lowerMessage.includes('forecast')) {
-      return "Amniva provides real-time weather intelligence and climate data analysis. Our weather API can be integrated into your applications for accurate forecasting. Are you interested in weather data for a specific region or our weather intelligence API?";
-    }
-    
-    if (lowerMessage.includes('news') || lowerMessage.includes('media') || lowerMessage.includes('intelligence')) {
-      return "Our media intelligence platform monitors global news sources, social media, and provides real-time misinformation alerts. You can configure custom feeds and get instant credibility scores. Would you like me to explain how to set up your custom news feeds?";
+    // Greeting responses
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey') || 
+        lowerMessage.includes('good morning') || lowerMessage.includes('good afternoon') || 
+        lowerMessage.includes('good evening') || lowerMessage.includes('greetings')) {
+      return "Hello there! Great to meet you! I'm Odeneho, your dedicated AI assistant for Amniva's intelligence platform. I'm here to help you with fact-checking, API integration, pricing information, technical support, and much more. What can I assist you with today?";
     }
 
-    // Default responses with context
-    const responses = [
-      "That's a great question! Let me help you find the right information about Amniva's services. Could you be more specific about what you're looking for?",
-      "I understand you need assistance with Amniva. Our platform specializes in AI-powered fact-checking and media intelligence. What specific aspect would you like to explore?",
-      "Thanks for reaching out! Amniva offers comprehensive misinformation detection and verification services. How can I help you get the most out of our platform?",
-      "I'm here to help you navigate Amniva's features. Whether it's about our API, dashboard features, or verification services, I can guide you through it. What would you like to know?",
-      "As your AI assistant, I can help with account questions, technical support, or general information about Amniva's intelligence platform. What's on your mind?"
+    // Thank you responses
+    if (lowerMessage.includes('thank') || lowerMessage.includes('thanks')) {
+      return "You're very welcome! I'm always happy to help. Is there anything else you'd like to know about Amniva's services or do you need assistance with something specific?";
+    }
+
+    // How are you responses
+    if (lowerMessage.includes('how are you') || lowerMessage.includes('how do you do')) {
+      return "I'm doing great, thank you for asking! I'm here and ready to help you navigate Amniva's powerful intelligence platform. Whether you need help with verification, trending analysis, predictions, or API integration, I'm at your service. What would you like to explore?";
+    }
+
+    // API and integration queries
+    if (lowerMessage.includes('api') || lowerMessage.includes('integration')) {
+      return "Excellent! I'd love to help you with Amniva's API integration. Our API provides real-time fact-checking, misinformation detection, trending analysis, and predictive intelligence. You can access endpoints for verification, reporting, predictions, and trending data. Would you like me to guide you through getting your API key, show you documentation, or help with specific integration questions?";
+    }
+    
+    // Pricing and subscription queries
+    if (lowerMessage.includes('pricing') || lowerMessage.includes('plan') || lowerMessage.includes('subscription') || lowerMessage.includes('cost') || lowerMessage.includes('price')) {
+      return "Great question! Amniva offers three flexible plans tailored to different needs: **Free Plan** (basic verification features), **Elite Plan** (advanced analytics and higher limits), and **Institutional Plan** (full API access with enterprise features). Each plan includes different levels of fact-checking, trending analysis, and API calls. Would you like detailed information about any specific plan or help choosing the right one for your needs?";
+    }
+    
+    // Fact-checking and verification queries
+    if (lowerMessage.includes('fact') || lowerMessage.includes('verify') || lowerMessage.includes('check') || lowerMessage.includes('verification')) {
+      return "Absolutely! Amniva's AI-powered fact-checking is one of our core strengths. Our system analyzes content in real-time, cross-references multiple authoritative sources, and provides detailed credibility scores with supporting evidence. You can submit text, links, or documents for verification through our dashboard or API. The system identifies potential misinformation and provides transparency reports. Would you like me to show you how to submit content for verification or explain our credibility scoring system?";
+    }
+    
+    // Support and help queries
+    if (lowerMessage.includes('help') || lowerMessage.includes('support') || lowerMessage.includes('contact') || lowerMessage.includes('assistance')) {
+      return "I'm here to provide comprehensive support! For immediate assistance, I can help you with account questions, API integration, feature explanations, or troubleshooting. For more complex technical issues or account management, you can also reach our human support team at support@amniva.com or call +233 200 348 349 (9AM-6PM GMT). What specific area would you like help with today?";
+    }
+    
+    // Weather and forecasting queries
+    if (lowerMessage.includes('weather') || lowerMessage.includes('forecast') || lowerMessage.includes('climate')) {
+      return "Perfect! Amniva provides sophisticated weather intelligence and climate data analysis. Our weather API delivers accurate forecasting, real-time conditions, and climate trend analysis. This data can be integrated into your applications for location-based services, agricultural planning, or disaster preparedness. Are you interested in weather data for a specific region, our weather API endpoints, or climate trend analysis?";
+    }
+    
+    // News and media intelligence queries
+    if (lowerMessage.includes('news') || lowerMessage.includes('media') || lowerMessage.includes('intelligence') || lowerMessage.includes('trending')) {
+      return "Excellent! Our media intelligence platform is incredibly powerful. It monitors thousands of global news sources and social media platforms in real-time, providing misinformation alerts, credibility scores, and trending topic analysis. You can configure custom news feeds, set up keyword alerts, and receive instant notifications about emerging stories or potential misinformation. Would you like me to explain how to set up your personalized news feeds or show you our trending analysis features?";
+    }
+
+    // Prediction and forecasting queries
+    if (lowerMessage.includes('predict') || lowerMessage.includes('prediction') || lowerMessage.includes('forecast') || lowerMessage.includes('future')) {
+      return "Great choice! Amniva's prediction engine uses advanced AI to analyze patterns in politics, economics, environmental data, crime statistics, and more. Our system provides probability scores, confidence intervals, and detailed forecasting reports. You can access predictions through our dashboard or API endpoints. Are you interested in predictions for a specific domain like politics, weather, economics, or would you like to know more about how our predictive modeling works?";
+    }
+
+    // Account and dashboard queries
+    if (lowerMessage.includes('account') || lowerMessage.includes('dashboard') || lowerMessage.includes('login')) {
+      return "I can definitely help with account and dashboard questions! Your Amniva dashboard provides access to all our intelligence tools including fact-checking, trending analysis, predictions, and custom feeds. You can manage your API keys, view usage statistics, and configure alerts from there. Are you having trouble accessing your account, need help navigating specific features, or would you like guidance on setting up your dashboard preferences?";
+    }
+
+    // Generic questions about Amniva
+    if (lowerMessage.includes('amniva') || lowerMessage.includes('what do you do') || lowerMessage.includes('about')) {
+      return "Amniva is a cutting-edge AI-powered intelligence platform specializing in real-time fact-checking, misinformation detection, media intelligence, and predictive analytics. We help individuals, organizations, and institutions verify information, track trends, make informed predictions, and combat misinformation. Our platform combines advanced AI with comprehensive data sources to provide reliable, transparent intelligence. What aspect of Amniva's capabilities interests you most?";
+    }
+
+    // Default contextual responses
+    const contextualResponses = [
+      "That's an interesting question! I'd be happy to help you find the right information about Amniva's services. Could you tell me more specifically what you're looking for? Are you interested in our fact-checking, API integration, pricing, or something else?",
+      "I want to make sure I give you the most helpful answer. Could you provide a bit more detail about what you'd like to know? I can assist with verification services, trending analysis, predictions, API documentation, account support, or general platform guidance.",
+      "Great question! To give you the most accurate and helpful response, could you clarify what specific aspect of Amniva you're interested in? I'm here to help with everything from technical integration to understanding our intelligence features.",
+      "I'm here to help you get the most out of Amniva's platform! Whether you're curious about our AI-powered fact-checking, need API documentation, want pricing information, or have technical questions, I can guide you. What would you like to explore first?",
+      "Thanks for reaching out! I'd love to provide you with detailed information. Are you looking for help with account setup, API integration, understanding our verification process, or something else? Just let me know how I can best assist you!"
     ];
     
-    return responses[Math.floor(Math.random() * responses.length)];
+    return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
   };
 
   const handleSendMessage = async () => {
@@ -97,10 +134,11 @@ const OdenehoComponent = () => {
   };
 
   const quickActions = [
+    "Hello! How are you?",
     "How does fact-checking work?",
     "Tell me about API integration",
     "What are your pricing plans?",
-    "Contact human support"
+    "I need help with my account"
   ];
 
   const handleQuickAction = (action: string) => {
