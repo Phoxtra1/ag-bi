@@ -4,16 +4,22 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
 
+type Message = {
+  id: number;
+  text: string;
+  sender: 'bot' | 'user';
+};
+
 const OdenehoComponent = () => {
   // Load settings at mount
   const initialSettings = getResolvedOdenehoSettings();
 
   const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { 
       id: 1, 
       text: initialSettings.greeting, 
-      sender: 'bot' as const
+      sender: 'bot'
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
@@ -145,10 +151,10 @@ const OdenehoComponent = () => {
 
   const handleSendMessage = async () => {
     if (inputMessage.trim()) {
-      const userMessage = {
+      const userMessage: Message = {
         id: messages.length + 1,
         text: inputMessage,
-        sender: 'user' as const
+        sender: 'user'
       };
       
       setMessages(prev => [...prev, userMessage]);
@@ -159,10 +165,10 @@ const OdenehoComponent = () => {
       const delay = typingAnimationEnabled ? 1500 : 0;
       setTimeout(() => {
         setIsTyping(false);
-        const botResponse = {
+        const botResponse: Message = {
           id: messages.length + 2,
           text: getAIResponse(inputMessage),
-          sender: 'bot' as const
+          sender: 'bot'
         };
         setMessages(prev => [...prev, botResponse]);
       }, delay);
