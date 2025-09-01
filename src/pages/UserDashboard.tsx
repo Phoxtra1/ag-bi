@@ -11,6 +11,7 @@ import ApiAccessGuard from '@/components/auth/ApiAccessGuard';
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
+import RealTimeNewsFeed from '@/components/RealTimeNewsFeed';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -27,8 +28,9 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="insights">Live Insights</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="api">API Access</TabsTrigger>
@@ -48,13 +50,17 @@ const UserDashboard = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="insights" className="mt-6">
+            <RealTimeNewsFeed />
+          </TabsContent>
+
           <TabsContent value="predictions" className="mt-6">
             <LivePredictionPanel />
           </TabsContent>
 
           <TabsContent value="reports" className="mt-6">
             <ReportsSubmissions />
-          </TabsContent>
+          </TabContent>
 
           <TabsContent value="api" className="mt-6">
             <ApiAccessGuard 

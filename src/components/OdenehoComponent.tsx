@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
+import { getChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
 
 type Message = {
   id: number;
@@ -61,18 +61,37 @@ const OdenehoComponent = () => {
       }
     };
 
+    // Listen for Chatbase config changes
+    const handleChatbaseConfigUpdated = () => {
+      // No immediate action needed, will be used in getAIResponse
+    };
+
     window.addEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('chatbaseConfigUpdated', handleChatbaseConfigUpdated);
 
     return () => {
       window.removeEventListener('openChatbot', handleOpenChatbot);
       window.removeEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('chatbaseConfigUpdated', handleChatbaseConfigUpdated);
     };
   }, []);
 
-  // Enhanced AI responses with better greeting detection and contextual answers
-  const getAIResponse = (userMessage: string) => {
+  // Enhanced AI responses with Chatbase integration
+  const getAIResponse = async (userMessage: string) => {
+    const chatbaseConfig = getChatbaseConfig();
+    
+    // Try Chatbase first if enabled
+    if (chatbaseConfig.enabled && chatbaseConfig.apiKey && chatbaseConfig.chatbotId) {
+      try {
+        const response = await sendMessageToChatbase(userMessage);
+        return response;
+      } catch (error) {
+        console.error('Chatbase API error, falling back to internal responses:', error);
+      }
+    }
+
     const lowerMessage = userMessage.toLowerCase();
     
     // Greeting responses
@@ -163,14 +182,24 @@ const OdenehoComponent = () => {
       
       // Simulate processing delay for more realistic experience
       const delay = typingAnimationEnabled ? 1500 : 0;
-      setTimeout(() => {
+      setTimeout(async () => {
         setIsTyping(false);
-        const botResponse: Message = {
-          id: messages.length + 2,
-          text: getAIResponse(inputMessage),
-          sender: 'bot'
-        };
-        setMessages(prev => [...prev, botResponse]);
+        try {
+          const responseText = await getAIResponse(inputMessage);
+          const botResponse: Message = {
+            id: messages.length + 2,
+            text: responseText,
+            sender: 'bot'
+          };
+          setMessages(prev => [...prev, botResponse]);
+        } catch (error) {
+          const errorResponse: Message = {
+            id: messages.length + 2,
+            text: "I'm having trouble processing your request right now. Please try again later.",
+            sender: 'bot'
+          };
+          setMessages(prev => [...prev, errorResponse]);
+        }
       }, delay);
     }
   };
