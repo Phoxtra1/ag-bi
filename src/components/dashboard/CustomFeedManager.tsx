@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,15 +22,25 @@ interface FeedSource {
   validationStatus?: string;
 }
 
+// New: explicit state type for newFeed so type is a proper union, not a "rss" literal
+type NewFeedState = {
+  name: string;
+  url: string;
+  type: FeedSource['type'];
+  category: string;
+  apiKey: string;
+};
+
 const CustomFeedManager = () => {
   const { toast } = useToast();
   const [feedSources, setFeedSources] = useState<FeedSource[]>([]);
   const [testingFeed, setTestingFeed] = useState<string | null>(null);
 
-  const [newFeed, setNewFeed] = useState({
+  // Updated: use explicit type and remove 'as const' to prevent literal narrowing
+  const [newFeed, setNewFeed] = useState<NewFeedState>({
     name: '',
     url: '',
-    type: 'rss' as const,
+    type: 'rss',
     category: '',
     apiKey: ''
   });
@@ -363,7 +374,8 @@ const CustomFeedManager = () => {
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">Feed Type *</label>
-                      <Select value={newFeed.type} onValueChange={(value: any) => setNewFeed(prev => ({ ...prev, type: value }))}>
+                      {/* Updated: type the onValueChange to the union type */}
+                      <Select value={newFeed.type} onValueChange={(value: FeedSource['type']) => setNewFeed(prev => ({ ...prev, type: value }))}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
