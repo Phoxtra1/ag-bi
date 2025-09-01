@@ -1,18 +1,25 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
+import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
 
 const OdenehoComponent = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  // Load settings at mount
+  const initialSettings = getResolvedOdenehoSettings();
+
+  const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
   const [messages, setMessages] = useState([
     { 
       id: 1, 
-      text: "Hello! I'm Odeneho, your AI assistant at Amniva. How can I help you today?", 
-      sender: 'bot' 
+      text: initialSettings.greeting, 
+      sender: 'bot' as const
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [quickActions, setQuickActions] = useState<string[]>(initialSettings.quickActions);
+  const [typingAnimationEnabled, setTypingAnimationEnabled] = useState<boolean>(initialSettings.typingAnimation);
 
   useEffect(() => {
     const handleOpenChatbot = () => {
@@ -20,7 +27,42 @@ const OdenehoComponent = () => {
     };
 
     window.addEventListener('openChatbot', handleOpenChatbot);
-    return () => window.removeEventListener('openChatbot', handleOpenChatbot);
+
+    // React to settings changes across the app in real-time
+    const handleSettingsUpdated = (e: Event) => {
+      const custom = e as CustomEvent;
+      const next = getResolvedOdenehoSettings();
+      // Update greeting only if the first message is still the default bot message
+      setMessages(prev => {
+        if (prev.length > 0 && prev[0].sender === 'bot') {
+          const updated = [...prev];
+          updated[0] = { ...updated[0], text: next.greeting };
+          return updated;
+        }
+        return prev;
+      });
+      setQuickActions(next.quickActions);
+      setTypingAnimationEnabled(next.typingAnimation);
+      if (next.autoOpen) setIsOpen(true);
+    };
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'odenehoSettings') {
+        const next = getResolvedOdenehoSettings();
+        setQuickActions(next.quickActions);
+        setTypingAnimationEnabled(next.typingAnimation);
+        // Optional: do not force open here to avoid UX surprises
+      }
+    };
+
+    window.addEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('openChatbot', handleOpenChatbot);
+      window.removeEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   // Enhanced AI responses with better greeting detection and contextual answers
@@ -51,51 +93,51 @@ const OdenehoComponent = () => {
     
     // Pricing and subscription queries
     if (lowerMessage.includes('pricing') || lowerMessage.includes('plan') || lowerMessage.includes('subscription') || lowerMessage.includes('cost') || lowerMessage.includes('price')) {
-      return "Great question! Amniva offers three flexible plans tailored to different needs: **Free Plan** (basic verification features), **Elite Plan** (advanced analytics and higher limits), and **Institutional Plan** (full API access with enterprise features). Each plan includes different levels of fact-checking, trending analysis, and API calls. Would you like detailed information about any specific plan or help choosing the right one for your needs?";
+      return "Great question! Amniva offers three flexible plans tailored to different needs: Free (basic verification features), Elite (advanced analytics and higher limits), and Institutional (full API access with enterprise features). Would you like detailed information about any specific plan or help choosing the right one for your needs?";
     }
     
     // Fact-checking and verification queries
     if (lowerMessage.includes('fact') || lowerMessage.includes('verify') || lowerMessage.includes('check') || lowerMessage.includes('verification')) {
-      return "Absolutely! Amniva's AI-powered fact-checking is one of our core strengths. Our system analyzes content in real-time, cross-references multiple authoritative sources, and provides detailed credibility scores with supporting evidence. You can submit text, links, or documents for verification through our dashboard or API. The system identifies potential misinformation and provides transparency reports. Would you like me to show you how to submit content for verification or explain our credibility scoring system?";
+      return "Absolutely! Amniva's AI-powered fact-checking analyzes content in real-time, cross-references multiple authoritative sources, and provides credibility scores with supporting evidence. Would you like me to show you how to submit content for verification or explain our credibility scoring system?";
     }
     
     // Support and help queries
     if (lowerMessage.includes('help') || lowerMessage.includes('support') || lowerMessage.includes('contact') || lowerMessage.includes('assistance')) {
-      return "I'm here to provide comprehensive support! For immediate assistance, I can help you with account questions, API integration, feature explanations, or troubleshooting. For more complex technical issues or account management, you can also reach our human support team at support@amniva.com or call +233 200 348 349 (9AM-6PM GMT). What specific area would you like help with today?";
+      return "I'm here to help! For immediate assistance, I can guide you on account questions, API integration, feature explanations, or troubleshooting. What specific area would you like help with today?";
     }
     
     // Weather and forecasting queries
     if (lowerMessage.includes('weather') || lowerMessage.includes('forecast') || lowerMessage.includes('climate')) {
-      return "Perfect! Amniva provides sophisticated weather intelligence and climate data analysis. Our weather API delivers accurate forecasting, real-time conditions, and climate trend analysis. This data can be integrated into your applications for location-based services, agricultural planning, or disaster preparedness. Are you interested in weather data for a specific region, our weather API endpoints, or climate trend analysis?";
+      return "Amniva provides weather intelligence and climate analysis. Our weather API delivers accurate forecasts and real-time conditions. Are you interested in data for a specific region, API endpoints, or climate trend analysis?";
     }
     
     // News and media intelligence queries
     if (lowerMessage.includes('news') || lowerMessage.includes('media') || lowerMessage.includes('intelligence') || lowerMessage.includes('trending')) {
-      return "Excellent! Our media intelligence platform is incredibly powerful. It monitors thousands of global news sources and social media platforms in real-time, providing misinformation alerts, credibility scores, and trending topic analysis. You can configure custom news feeds, set up keyword alerts, and receive instant notifications about emerging stories or potential misinformation. Would you like me to explain how to set up your personalized news feeds or show you our trending analysis features?";
+      return "Our media intelligence platform monitors global news and social media in real-time, providing misinformation alerts, credibility scores, and trending topic analysis. Would you like to set up personalized news feeds or review our trending analysis features?";
     }
 
     // Prediction and forecasting queries
     if (lowerMessage.includes('predict') || lowerMessage.includes('prediction') || lowerMessage.includes('forecast') || lowerMessage.includes('future')) {
-      return "Great choice! Amniva's prediction engine uses advanced AI to analyze patterns in politics, economics, environmental data, crime statistics, and more. Our system provides probability scores, confidence intervals, and detailed forecasting reports. You can access predictions through our dashboard or API endpoints. Are you interested in predictions for a specific domain like politics, weather, economics, or would you like to know more about how our predictive modeling works?";
+      return "Amniva's prediction engine analyzes patterns across domains to produce probability scores, confidence intervals, and forecasting reports. Are you looking for predictions in a specific domain like politics, weather, or economics?";
     }
 
     // Account and dashboard queries
     if (lowerMessage.includes('account') || lowerMessage.includes('dashboard') || lowerMessage.includes('login')) {
-      return "I can definitely help with account and dashboard questions! Your Amniva dashboard provides access to all our intelligence tools including fact-checking, trending analysis, predictions, and custom feeds. You can manage your API keys, view usage statistics, and configure alerts from there. Are you having trouble accessing your account, need help navigating specific features, or would you like guidance on setting up your dashboard preferences?";
+      return "Your Amniva dashboard provides access to verification, trending analysis, predictions, custom feeds, and API management. Are you having trouble accessing your account or need guidance on a specific feature?";
     }
 
     // Generic questions about Amniva
     if (lowerMessage.includes('amniva') || lowerMessage.includes('what do you do') || lowerMessage.includes('about')) {
-      return "Amniva is a cutting-edge AI-powered intelligence platform specializing in real-time fact-checking, misinformation detection, media intelligence, and predictive analytics. We help individuals, organizations, and institutions verify information, track trends, make informed predictions, and combat misinformation. Our platform combines advanced AI with comprehensive data sources to provide reliable, transparent intelligence. What aspect of Amniva's capabilities interests you most?";
+      return "Amniva is an AI-powered intelligence platform specializing in real-time fact-checking, misinformation detection, media intelligence, and predictive analytics. What aspect of our capabilities interests you most?";
     }
 
     // Default contextual responses
     const contextualResponses = [
-      "That's an interesting question! I'd be happy to help you find the right information about Amniva's services. Could you tell me more specifically what you're looking for? Are you interested in our fact-checking, API integration, pricing, or something else?",
-      "I want to make sure I give you the most helpful answer. Could you provide a bit more detail about what you'd like to know? I can assist with verification services, trending analysis, predictions, API documentation, account support, or general platform guidance.",
-      "Great question! To give you the most accurate and helpful response, could you clarify what specific aspect of Amniva you're interested in? I'm here to help with everything from technical integration to understanding our intelligence features.",
-      "I'm here to help you get the most out of Amniva's platform! Whether you're curious about our AI-powered fact-checking, need API documentation, want pricing information, or have technical questions, I can guide you. What would you like to explore first?",
-      "Thanks for reaching out! I'd love to provide you with detailed information. Are you looking for help with account setup, API integration, understanding our verification process, or something else? Just let me know how I can best assist you!"
+      "That's an interesting question! Could you tell me more specifically what you're looking for? I can help with fact-checking, API integration, pricing, or technical support.",
+      "I want to make sure I give you the most helpful answer. Could you provide a bit more detail about what you'd like to know?",
+      "Great question! To give you the most accurate response, could you clarify what specific aspect of Amniva you're interested in?",
+      "I'm here to help you get the most out of Amniva's platform! What would you like to explore first?",
+      "Thanks for reaching out! Are you looking for help with account setup, API integration, understanding our verification process, or something else?"
     ];
     
     return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
@@ -114,6 +156,7 @@ const OdenehoComponent = () => {
       setIsTyping(true);
       
       // Simulate processing delay for more realistic experience
+      const delay = typingAnimationEnabled ? 1500 : 0;
       setTimeout(() => {
         setIsTyping(false);
         const botResponse = {
@@ -122,7 +165,7 @@ const OdenehoComponent = () => {
           sender: 'bot' as const
         };
         setMessages(prev => [...prev, botResponse]);
-      }, 1500);
+      }, delay);
     }
   };
 
@@ -131,22 +174,6 @@ const OdenehoComponent = () => {
       e.preventDefault();
       handleSendMessage();
     }
-  };
-
-  const quickActions = [
-    "Hello! How are you?",
-    "How does fact-checking work?",
-    "Tell me about API integration",
-    "What are your pricing plans?",
-    "I need help with my account"
-  ];
-
-  const handleQuickAction = (action: string) => {
-    setInputMessage(action);
-    // Auto-send after a brief delay
-    setTimeout(() => {
-      handleSendMessage();
-    }, 100);
   };
 
   return (
@@ -222,7 +249,7 @@ const OdenehoComponent = () => {
               </div>
             ))}
             
-            {isTyping && (
+            {isTyping && typingAnimationEnabled && (
               <div className="flex gap-2 justify-start">
                 <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                   <img 
@@ -252,7 +279,16 @@ const OdenehoComponent = () => {
                       variant="outline"
                       size="sm"
                       className="text-left justify-start text-xs h-8"
-                      onClick={() => handleQuickAction(action)}
+                      onClick={() => {
+                        setInputMessage(action);
+                        setTimeout(() => {
+                          // Same behavior as handleQuickAction but inline to avoid duplicating logic
+                          if (action.trim()) {
+                            const fakeEvent = { key: 'Enter', shiftKey: false } as unknown as React.KeyboardEvent;
+                            handleSendMessage();
+                          }
+                        }, 100);
+                      }}
                     >
                       {action}
                     </Button>

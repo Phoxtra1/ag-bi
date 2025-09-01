@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { realTimeSync, initializeStorageSync } from '@/lib/realTimeSync';
 import { newsFeedEngine, videoProcessingEngine } from '@/lib/dynamicContentEngines';
@@ -14,11 +13,25 @@ const AdminDataSync: React.FC = () => {
       // Setup admin data change handlers
       const handleAdminVideoChange = (url: string) => {
         console.log('Admin video URL changed:', url);
+        // Persist for initial loads and cross-tab sync
+        try {
+          localStorage.setItem('adminDemoVideoUrl', url || '');
+        } catch (e) {
+          console.warn('Unable to persist adminDemoVideoUrl to localStorage:', e);
+        }
         videoProcessingEngine.updateVideoUrl(url);
       };
 
       const handleAdminNewsChange = (feeds: any[]) => {
         console.log('Admin news feeds changed:', feeds);
+        // Persist to both keys used across the app so initial loads work everywhere
+        try {
+          localStorage.setItem('adminNewsFeeds', JSON.stringify(feeds || []));
+          // NewsFeedEngine loads from "customFeedSources" for active feeds; keep them in sync
+          localStorage.setItem('customFeedSources', JSON.stringify(feeds || []));
+        } catch (e) {
+          console.warn('Unable to persist adminNewsFeeds/customFeedSources to localStorage:', e);
+        }
         newsFeedEngine.updateFeeds(feeds);
       };
 
