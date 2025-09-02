@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,7 +29,8 @@ import {
   FileText,
   Inbox,
   Building,
-  Rss
+  Rss,
+  Bot // added
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -42,6 +44,7 @@ import ContentSubmissions from '@/components/admin/ContentSubmissions';
 import ContactInbox from '@/components/admin/ContactInbox';
 import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
 import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
+import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI'; // added
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -144,6 +147,42 @@ const AdminDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Intercept clicks on "Configure Bot Settings" and route to our config tab
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const actionable = target.closest('button, a, [role="button"]') as HTMLElement | null;
+      const txt = actionable?.textContent?.trim() || '';
+      if (/configure bot settings/i.test(txt)) {
+        e.preventDefault();
+        setActiveTab('odeneho-ai');
+      }
+    };
+
+    // Opportunistically rename labels in existing UI (non-invasive)
+    const renameLabels = () => {
+      const nodes = Array.from(document.querySelectorAll('h1, h2, h3, button, span, p, div'));
+      nodes.forEach((el) => {
+        if (el.childElementCount > 0) return;
+        const text = (el.textContent || '').trim();
+        if (text === 'Configure Bot Settings') el.textContent = 'Configure Odeneho AI';
+        if (text === 'Odeneho Live Chat Bot') el.textContent = 'Odeneho AI Live';
+      });
+    };
+
+    document.addEventListener('click', handleClick, true);
+    renameLabels();
+
+    const mo = new MutationObserver(() => renameLabels());
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      document.removeEventListener('click', handleClick, true);
+      mo.disconnect();
+    };
+  }, []);
+
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
@@ -156,6 +195,7 @@ const AdminDashboard = () => {
     { id: 'api-management', label: 'API Management', icon: Database },
     { id: 'content-oversight', label: 'Content Oversight', icon: Eye },
     { id: 'system-status', label: 'System Status', icon: Activity },
+    { id: 'odeneho-ai', label: 'Configure Odeneho AI', icon: Bot }, // added
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
@@ -254,6 +294,7 @@ const AdminDashboard = () => {
             {activeTab === 'api-management' && <ApiManagement />}
             {activeTab === 'content-oversight' && <ContentOversight />}
             {activeTab === 'system-status' && <SystemStatus />}
+            {activeTab === 'odeneho-ai' && <ConfigureOdenehoAI />}{/* added */}
             {activeTab === 'settings' && <SystemSettings />}
           </div>
         </div>

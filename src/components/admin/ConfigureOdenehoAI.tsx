@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,14 +46,15 @@ const ConfigureOdenehoAI = () => {
 
   return (
     <div className="space-y-6">
+      {/* Top header to match requested naming */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bot className="w-6 h-6 text-blue-600" />
-            Configure Odeneho AI - Chatbase Integration
+            Odeneho AI Live
           </CardTitle>
           <CardDescription>
-            Configure Chatbase API to power Odeneho AI with external engine
+            AI-powered support bot using Chatbase API for 24/7 customer assistance
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -64,7 +65,7 @@ const ConfigureOdenehoAI = () => {
                 setChatbaseConfigState(prev => ({ ...prev, enabled }))
               }
             />
-            <Label>Enable Chatbase API</Label>
+            <Label>Activate Chatbase API</Label>
           </div>
 
           <div className="space-y-2">
@@ -123,7 +124,7 @@ const ConfigureOdenehoAI = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Odeneho AI General Settings</CardTitle>
+          <CardTitle>Configure Odeneho AI</CardTitle>
           <CardDescription>
             Configure general behavior and appearance of Odeneho AI
           </CardDescription>
