@@ -1,62 +1,56 @@
-// amniva-appwrite.js
-// Centralized Appwrite client configuration for Amniva backend
-
+// src/lib/appwrite.js
 import { Client, Account, Databases, Storage, Functions } from "appwrite";
 
-// =============================
-// Environment Configuration
-// =============================
-const APPWRITE_ENDPOINT =
-  import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1";
+// Initialize the Appwrite client
+const client = new Client();
 
+// Use environment variables with fallbacks for safety
+const APPWRITE_ENDPOINT =
+  import.meta.env.VITE_APPWRITE_ENDPOINT || "https://nyc.cloud.appwrite.io/v1";
 const APPWRITE_PROJECT_ID =
   import.meta.env.VITE_APPWRITE_PROJECT_ID || "amniva-ri03";
 
-// =============================
-// Client Initialization
-// =============================
-const client = new Client()
+// Configure the Appwrite client
+client
   .setEndpoint(APPWRITE_ENDPOINT)
   .setProject(APPWRITE_PROJECT_ID);
 
-// =============================
-// Core Services
-// =============================
+// Export core Appwrite services
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
 export const functions = new Functions(client);
 
-// =============================
-// Utility: Connection Test
-// =============================
-// This ensures Appwrite is reachable & project is correctly set
+// Export client in case direct access is needed
+export { client };
+
+/* 
+   Database & Storage constants 
+   👉 keep them here so they’re easy to update
+   👉 prevents "undefined import" issues
+*/
+export const DATABASE_ID = "amniva-db03";
+export const CONTACTS_COLLECTION_ID = "contacts-ava";
+export const PREDICTIONS_COLLECTION_ID = "predictions-ava";
+export const NEWSLETTERS_COLLECTION_ID = "newslettersubscribers-ava";
+export const API_REQUESTS_COLLECTION_ID = "apirequests-ava";
+export const CONTENT_SUBMISSIONS_COLLECTION_ID =
+  "686aac0f002bcbecc1fd";
+
+export const VERIFICATION_BUCKET_ID = "your-verification-bucket-id";
+export const CONTENT_BUCKET_ID = "your-content-bucket-id";
+
+// Quick test function to confirm deployment connection
 export const testConnection = async () => {
   try {
-    await client.health.check(); // Check API health instead of requiring auth
+    await account.get();
     console.log("✅ Appwrite connection successful");
     return true;
   } catch (error) {
-    console.error("❌ Appwrite connection failed:", error.message);
+    console.warn(
+      "⚠️ Appwrite connection test failed (likely no user session):",
+      error.message
+    );
     return false;
   }
 };
-
-// =============================
-// Export Client (if needed)
-// =============================
-export { client };
-
-// =============================
-// Re-export Database Constants
-// =============================
-export {
-  DATABASE_ID,
-  CONTACTS_COLLECTION_ID,
-  PREDICTIONS_COLLECTION_ID,
-  NEWSLETTERS_COLLECTION_ID,
-  API_REQUESTS_COLLECTION_ID,
-  CONTENT_SUBMISSIONS_COLLECTION_ID,
-  VERIFICATION_BUCKET_ID,
-  CONTENT_BUCKET_ID,
-} from "./database";
