@@ -45,6 +45,7 @@ import ContactInbox from '@/components/admin/ContactInbox';
 import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
 import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
 import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI'; // added
+import AIEnginePanel from '@/components/admin/AIEnginePanel';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -196,6 +197,7 @@ const AdminDashboard = () => {
     { id: 'content-oversight', label: 'Content Oversight', icon: Eye },
     { id: 'system-status', label: 'System Status', icon: Activity },
     { id: 'odeneho-ai', label: 'Configure Odeneho AI', icon: Bot }, // added
+    { id: 'ai-engines', label: 'AI Engine Management', icon: Zap },
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
@@ -295,6 +297,7 @@ const AdminDashboard = () => {
             {activeTab === 'content-oversight' && <ContentOversight />}
             {activeTab === 'system-status' && <SystemStatus />}
             {activeTab === 'odeneho-ai' && <ConfigureOdenehoAI />}{/* added */}
+            {activeTab === 'ai-engines' && <AIEnginePanel />}
             {activeTab === 'settings' && <SystemSettings />}
           </div>
         </div>
