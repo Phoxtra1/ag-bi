@@ -1,12 +1,19 @@
 {
   "name": "amniva-report",
   "version": "1.0.0",
-  "description": "Function to trace the source and mechanism of insights in Amniva",
+  "description": "Module to trace the source and mechanism behind insights (internal antenna + optional external APIs).",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "echo \"No tests yet\""
   },
-  "dependencies": {
-    "axios": "^1.6.0"
-  }
+  "keywords": [
+    "amniva",
+    "report",
+    "insight-source",
+    "antenna"
+  ],
+  "author": "Amniva Team",
+  "license": "MIT",
+  "dependencies": {}
 }
