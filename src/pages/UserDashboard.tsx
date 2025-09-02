@@ -28,7 +28,7 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="insights">Live Insights</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
@@ -60,7 +60,7 @@ const UserDashboard = () => {
 
           <TabsContent value="reports" className="mt-6">
             <ReportsSubmissions />
-          </TabContent>
+          </TabsContent>
 
           <TabsContent value="api" className="mt-6">
             <ApiAccessGuard 
