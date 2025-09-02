@@ -1,0 +1,17 @@
+{
+  "name": "amniva-prediction",
+  "version": "1.0.0",
+  "description": "Amniva AI-backed internal prediction system.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.3.1",
+    "appwrite": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
