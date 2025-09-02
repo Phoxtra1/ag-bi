@@ -1,0 +1,11 @@
+{
+  "name": "amniva-verify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    // Add dependencies if your function needs any external packages
+  }
+}
