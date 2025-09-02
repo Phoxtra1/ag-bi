@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/Header';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
@@ -12,13 +11,64 @@ import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import RealTimeNewsFeed from '@/components/RealTimeNewsFeed';
+import { realTimeSync } from '@/lib/realTimeSync';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [hasFeeds, setHasFeeds] = useState(false);
   
   // Mock user data - this would come from authentication context
   const userPlan = 'free'; // or 'elite' or 'institutional'
   const isOrganizationVerified = false;
+
+  // Keep "Live Insights" strictly tied to admin-configured sources
+  useEffect(() => {
+    const checkFeeds = () => {
+      try {
+        const feeds = JSON.parse(localStorage.getItem('customFeedSources') || '[]');
+        setHasFeeds(Array.isArray(feeds) && feeds.length > 0);
+      } catch {
+        setHasFeeds(false);
+      }
+    };
+
+    checkFeeds();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'customFeedSources' || e.key === 'adminNewsFeeds') {
+        checkFeeds();
+      }
+    };
+    window.addEventListener('storage', onStorage);
+
+    const unsubscribeNews = realTimeSync.subscribe('newsFeeds', () => {
+      checkFeeds();
+    });
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      unsubscribeNews();
+    };
+  }, []);
+
+  // Capture user geolocation once for better weather accuracy (non-blocking)
+  useEffect(() => {
+    if (!navigator?.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        try {
+          const coords = { lat: pos.coords.latitude, lon: pos.coords.longitude, ts: Date.now() };
+          localStorage.setItem('userLocation', JSON.stringify(coords));
+          // Broadcast for any listeners that use live location
+          realTimeSync.triggerUpdate('userLocation', coords as any);
+        } catch {}
+      },
+      () => {
+        // Silently ignore denials; widget can use its own fallback
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5 * 60 * 1000 }
+    );
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -51,7 +101,13 @@ const UserDashboard = () => {
           </TabsContent>
 
           <TabsContent value="insights" className="mt-6">
-            <RealTimeNewsFeed />
+            {hasFeeds ? (
+              <RealTimeNewsFeed />
+            ) : (
+              <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                No live insights yet — your admin hasn't configured feed sources.
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="predictions" className="mt-6">

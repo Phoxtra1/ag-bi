@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { realTimeSync, initializeStorageSync } from '@/lib/realTimeSync';
 import { newsFeedEngine, videoProcessingEngine } from '@/lib/dynamicContentEngines';
@@ -35,6 +36,20 @@ const AdminDataSync: React.FC = () => {
         newsFeedEngine.updateFeeds(feeds);
       };
 
+      // INITIAL SYNC: ensure engines/localStorage reflect current admin settings (or empty)
+      try {
+        const initialVideoUrl = localStorage.getItem('adminDemoVideoUrl') || '';
+        handleAdminVideoChange(initialVideoUrl);
+
+        const savedFeedsRaw = localStorage.getItem('adminNewsFeeds') || '[]';
+        const initialFeeds = Array.isArray(JSON.parse(savedFeedsRaw)) ? JSON.parse(savedFeedsRaw) : [];
+        handleAdminNewsChange(initialFeeds);
+      } catch (e) {
+        console.warn('AdminDataSync initial sync fell back to empty values:', e);
+        handleAdminVideoChange('');
+        handleAdminNewsChange([]);
+      }
+
       // Subscribe to admin changes
       const unsubscribeVideo = realTimeSync.subscribe('videoUrl', handleAdminVideoChange);
       const unsubscribeNews = realTimeSync.subscribe('newsFeeds', handleAdminNewsChange);
@@ -63,3 +78,4 @@ const AdminDataSync: React.FC = () => {
 };
 
 export default AdminDataSync;
+

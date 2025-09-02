@@ -238,7 +238,7 @@ const OdenehoComponent = () => {
                 />
               </div>
               <div>
-                <h4 className="font-semibold">Odeneho - AI Assistant</h4>
+                <h4 className="font-semibold">Odeneho AI</h4>
                 <p className="text-sm text-blue-100">Usually replies instantly</p>
               </div>
             </div>
