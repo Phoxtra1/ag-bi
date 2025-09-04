@@ -3,12 +3,13 @@ export interface ChatbaseConfig {
   apiKey: string;
   chatbotId: string;
   enabled: boolean;
+  externalApiUrl?: string;
 }
 
 export const getChatbaseConfig = (): ChatbaseConfig => {
   try {
     const config = localStorage.getItem('chatbaseConfig');
-    if (!config) return { apiKey: '', chatbotId: '', enabled: false };
+    if (!config) return { apiKey: '', chatbotId: '', enabled: false, externalApiUrl: '' };
     return JSON.parse(config) as ChatbaseConfig;
   } catch {
     return { apiKey: '', chatbotId: '', enabled: false };
@@ -29,7 +30,11 @@ export const sendMessageToChatbase = async (message: string): Promise<string> =>
   }
 
   try {
-    const response = await fetch('https://www.chatbase.co/api/v1/chat', {
+    const endpoint = (config.externalApiUrl && config.externalApiUrl.trim())
+      ? config.externalApiUrl.trim()
+      : 'https://www.chatbase.co/api/v1/chat';
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,

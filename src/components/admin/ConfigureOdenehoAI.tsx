@@ -51,10 +51,10 @@ const ConfigureOdenehoAI = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bot className="w-6 h-6 text-blue-600" />
-            Odeneho AI Live
+            Chatbase API Configuration
           </CardTitle>
           <CardDescription>
-            AI-powered support bot using Chatbase API for 24/7 customer assistance
+            Configure Chatbase credentials and external API endpoint for Odeneho AI
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -90,6 +90,19 @@ const ConfigureOdenehoAI = () => {
                 setChatbaseConfigState(prev => ({ ...prev, chatbotId: e.target.value }))
               }
               placeholder="Enter your Chatbot ID"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="externalApiUrl">External API URL (Odeneho)</Label>
+            <Input
+              id="externalApiUrl"
+              type="url"
+              value={(chatbaseConfig as any).externalApiUrl || ''}
+              onChange={(e) => 
+                setChatbaseConfigState(prev => ({ ...prev, externalApiUrl: e.target.value }))
+              }
+              placeholder="https://api.your-odeneho-bot.com/v1/chat"
             />
           </div>
 

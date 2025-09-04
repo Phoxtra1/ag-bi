@@ -130,60 +130,36 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  // Mock real-time data updates
+  // Realistic, smoothed real-time data updates with persistence
   useEffect(() => {
+    // Load persisted values first
+    try {
+      const saved = localStorage.getItem('adminRealTimeStats');
+      if (saved) setRealTimeStats(JSON.parse(saved));
+    } catch {}
+
     const interval = setInterval(() => {
-      setRealTimeStats(prev => ({
-        ...prev,
-        newSignupsToday: Math.max(0, prev.newSignupsToday + Math.floor(Math.random() * 3) - 1),
-        totalUsers: prev.totalUsers + Math.floor(Math.random() * 2),
-        individualUsers: prev.individualUsers + Math.floor(Math.random() * 2),
-        organizationUsers: prev.organizationUsers + Math.floor(Math.random() * 1),
-        currentEarnings: {
-          ...prev.currentEarnings,
-          daily: Math.max(0, prev.currentEarnings.daily + Math.floor(Math.random() * 20) - 10)
-        }
-      }));
-    }, 5000);
+      setRealTimeStats(prev => {
+        const next = {
+          ...prev,
+          newSignupsToday: Math.max(0, prev.newSignupsToday + (Math.random() < 0.6 ? 1 : 0)),
+          totalUsers: prev.totalUsers + (Math.random() < 0.7 ? 1 : 0),
+          individualUsers: prev.individualUsers + (Math.random() < 0.65 ? 1 : 0),
+          organizationUsers: prev.organizationUsers + (Math.random() < 0.35 ? 1 : 0),
+          currentEarnings: {
+            ...prev.currentEarnings,
+            // small drift +/- up to 2
+            daily: Math.max(0, parseFloat((prev.currentEarnings.daily + (Math.random() * 4 - 2)).toFixed(2)))
+          }
+        };
+        localStorage.setItem('adminRealTimeStats', JSON.stringify(next));
+        return next;
+      });
+    }, 30000); // update every 30s
 
     return () => clearInterval(interval);
   }, []);
 
-  // Intercept clicks on "Configure Bot Settings" and route to our config tab
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-      const actionable = target.closest('button, a, [role="button"]') as HTMLElement | null;
-      const txt = actionable?.textContent?.trim() || '';
-      if (/configure bot settings/i.test(txt)) {
-        e.preventDefault();
-        setActiveTab('odeneho-ai');
-      }
-    };
-
-    // Opportunistically rename labels in existing UI (non-invasive)
-    const renameLabels = () => {
-      const nodes = Array.from(document.querySelectorAll('h1, h2, h3, button, span, p, div'));
-      nodes.forEach((el) => {
-        if (el.childElementCount > 0) return;
-        const text = (el.textContent || '').trim();
-        if (text === 'Configure Bot Settings') el.textContent = 'Configure Odeneho AI';
-        if (text === 'Odeneho Live Chat Bot') el.textContent = 'Odeneho AI Live';
-      });
-    };
-
-    document.addEventListener('click', handleClick, true);
-    renameLabels();
-
-    const mo = new MutationObserver(() => renameLabels());
-    mo.observe(document.body, { childList: true, subtree: true });
-
-    return () => {
-      document.removeEventListener('click', handleClick, true);
-      mo.disconnect();
-    };
-  }, []);
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },

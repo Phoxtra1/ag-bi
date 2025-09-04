@@ -42,6 +42,31 @@ const IntegrationsPanel = () => {
     demoVideoUrl: ''
   });
 
+  // Stable bot metrics (avoid disco-style randomness)
+  const [botMetrics, setBotMetrics] = useState<{ activeChats: number; dailyQueries: number }>(() => {
+    try {
+      const saved = localStorage.getItem('odenehoBotMetrics');
+      return saved ? JSON.parse(saved) : { activeChats: 18, dailyQueries: 320 };
+    } catch {
+      return { activeChats: 18, dailyQueries: 320 };
+    }
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setBotMetrics((prev) => {
+        // gentle random walk with bounds
+        const next = {
+          activeChats: Math.max(0, prev.activeChats + (Math.random() < 0.6 ? 1 : -1)),
+          dailyQueries: Math.max(0, prev.dailyQueries + Math.floor(Math.random() * 6) - 3),
+        };
+        localStorage.setItem('odenehoBotMetrics', JSON.stringify(next));
+        return next;
+      });
+    }, 30000); // update every 30s for realism
+    return () => clearInterval(interval);
+  }, []);
+
   // Load settings from localStorage on component mount
   useEffect(() => {
     console.log('IntegrationsPanel: Loading settings from localStorage');
@@ -301,7 +326,7 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Active Chats</span>
                   </div>
                   <p className="text-lg font-semibold text-green-600">
-                    {settings.chatBotEnabled ? Math.floor(Math.random() * 50) + 10 : 0}
+                    {settings.chatBotEnabled ? botMetrics.activeChats : 0}
                   </p>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg">
@@ -310,7 +335,7 @@ const IntegrationsPanel = () => {
                     <span className="text-sm font-medium">Daily Queries</span>
                   </div>
                   <p className="text-lg font-semibold text-purple-600">
-                    {settings.chatBotEnabled ? Math.floor(Math.random() * 200) + 100 : 0}
+                    {settings.chatBotEnabled ? botMetrics.dailyQueries : 0}
                   </p>
                 </div>
               </div>
@@ -364,10 +389,6 @@ const IntegrationsPanel = () => {
                       )}
                     </div>
                   </div>
-                  <Button variant="outline" disabled={settings.chatBotTraining}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Configure Bot Settings
-                  </Button>
                 </div>
               </div>
             </CardContent>
