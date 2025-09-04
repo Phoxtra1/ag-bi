@@ -107,25 +107,25 @@ export const ENGINE_CONFIG = {
     name: 'Verify Engine',
     description: 'AI-powered content authenticity verification',
     default_confidence_threshold: 0.75,
-    external_api_url: process.env.VITE_VERIFY_API_URL || 'https://api.external-verify.com/v1/verify'
+    external_api_url: import.meta.env.VITE_VERIFY_API_URL || 'https://api.external-verify.com/v1/verify'
   },
   report: {
     name: 'Report Engine', 
     description: 'Attribution and source analysis engine',
     default_confidence_threshold: 0.70,
-    external_api_url: process.env.VITE_REPORT_API_URL || 'https://api.external-report.com/v1/analyze'
+    external_api_url: import.meta.env.VITE_REPORT_API_URL || 'https://api.external-report.com/v1/analyze'
   },
   prediction: {
     name: 'Prediction Engine',
     description: 'Predictive analytics for trends and forecasts',
     default_confidence_threshold: 0.65,
-    external_api_url: process.env.VITE_PREDICTION_API_URL || 'https://api.external-predict.com/v1/predict'
+    external_api_url: import.meta.env.VITE_PREDICTION_API_URL || 'https://api.external-predict.com/v1/predict'
   },
   trending: {
     name: 'Trending Engine',
     description: 'Real-time trend detection and analysis',
     default_confidence_threshold: 0.60,
-    external_api_url: process.env.VITE_TRENDING_API_URL || 'https://api.external-trends.com/v1/trends'
+    external_api_url: import.meta.env.VITE_TRENDING_API_URL || 'https://api.external-trends.com/v1/trends'
   }
 };
 
