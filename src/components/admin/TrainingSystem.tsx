@@ -91,54 +91,90 @@ const TrainingSystem = () => {
   const [models, setModels] = useState<ModelVersion[]>([]);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
 
-  // Initialize with mock data for demonstration
+  // Load training jobs from localStorage and listen for updates
   useEffect(() => {
-    setTrainingJobs([
-      {
-        id: 'job-1',
-        engine: 'verify',
-        status: 'running',
-        progress: 65,
-        datasetId: 'dataset-1',
-        datasetName: 'verify_training_data_v2.csv',
-        startedAt: new Date().toISOString(),
-        metrics: {
-          accuracy: 0.87,
-          loss: 0.23,
-          epochs_completed: 13,
-          total_epochs: 20
-        },
-        hyperparameters: {
-          epochs: 20,
-          batch_size: 32,
-          learning_rate: 0.001,
-          train_val_split: 0.8
-        }
-      },
-      {
-        id: 'job-2',
-        engine: 'trending',
-        status: 'completed',
-        progress: 100,
-        datasetId: 'dataset-2',
-        datasetName: 'trending_analysis_data.json',
-        startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        completedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        metrics: {
-          accuracy: 0.91,
-          loss: 0.15,
-          epochs_completed: 25,
-          total_epochs: 25
-        },
-        hyperparameters: {
-          epochs: 25,
-          batch_size: 64,
-          learning_rate: 0.0005,
-          train_val_split: 0.85
-        }
+    const loadTrainingJobs = () => {
+      const stored = localStorage.getItem('trainingJobs');
+      if (stored) {
+        const storedJobs = JSON.parse(stored);
+        // Convert stored format to component format
+        const convertedJobs = storedJobs.map((job: any) => ({
+          id: job.id,
+          engine: job.engine_type,
+          status: job.status,
+          progress: job.progress || 0,
+          datasetId: job.dataset_id,
+          datasetName: datasets.find(d => d.id === job.dataset_id)?.name || 'Unknown Dataset',
+          startedAt: job.started_at,
+          completedAt: job.completed_at,
+          metrics: job.metrics,
+          hyperparameters: job.hyperparameters
+        }));
+        setTrainingJobs(convertedJobs);
+      } else {
+        // Initialize with mock data for demonstration
+        setTrainingJobs([
+          {
+            id: 'job-1',
+            engine: 'verify',
+            status: 'running',
+            progress: 65,
+            datasetId: 'dataset-1',
+            datasetName: 'verify_training_data_v2.csv',
+            startedAt: new Date().toISOString(),
+            metrics: {
+              accuracy: 0.87,
+              loss: 0.23,
+              epochs_completed: 13,
+              total_epochs: 20
+            },
+            hyperparameters: {
+              epochs: 20,
+              batch_size: 32,
+              learning_rate: 0.001,
+              train_val_split: 0.8
+            }
+          },
+          {
+            id: 'job-2',
+            engine: 'trending',
+            status: 'completed',
+            progress: 100,
+            datasetId: 'dataset-2',
+            datasetName: 'trending_analysis_data.json',
+            startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+            completedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+            metrics: {
+              accuracy: 0.91,
+              loss: 0.15,
+              epochs_completed: 25,
+              total_epochs: 25
+            },
+            hyperparameters: {
+              epochs: 25,
+              batch_size: 64,
+              learning_rate: 0.0005,
+              train_val_split: 0.85
+            }
+          }
+        ]);
       }
-    ]);
+    };
 
+    const handleTrainingJobUpdate = () => {
+      loadTrainingJobs();
+    };
+
+    loadTrainingJobs();
+    window.addEventListener('trainingJobUpdated', handleTrainingJobUpdate);
+
+    return () => {
+      window.removeEventListener('trainingJobUpdated', handleTrainingJobUpdate);
+    };
+  }, [datasets]);
+
+  // Initialize models and datasets
+  useEffect(() => {
     setModels([
       {
         id: 'model-1',

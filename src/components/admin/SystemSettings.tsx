@@ -11,11 +11,13 @@ import {
   Shield, 
   Database, 
   Brain,
-  Zap
+  Zap,
+  Bot
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
 import AIEnginePanel from './AIEnginePanel';
 import IntegrationsPanel from './IntegrationsPanel';
+import ConfigureOdenehoAI from './ConfigureOdenehoAI';
 import { useToast } from '@/hooks/use-toast';
 
 interface GeneralSettings {
@@ -97,7 +99,7 @@ const SystemSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="integrations" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Integrations
@@ -109,6 +111,10 @@ const SystemSettings = () => {
           <TabsTrigger value="engines" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Engines
+          </TabsTrigger>
+          <TabsTrigger value="odeneho-ai" className="flex items-center gap-2">
+            <Bot className="w-4 h-4" />
+            Odeneho Chat Bot
           </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -134,6 +140,10 @@ const SystemSettings = () => {
 
         <TabsContent value="engines">
           <IntegrationsEngines />
+        </TabsContent>
+
+        <TabsContent value="odeneho-ai">
+          <ConfigureOdenehoAI />
         </TabsContent>
 
         <TabsContent value="general" className="space-y-6">

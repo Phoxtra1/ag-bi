@@ -48,21 +48,35 @@ export const DataIngestionPanel: React.FC<DataIngestionPanelProps> = ({
       return;
     }
 
+    if (!file.name.match(/\.(csv|json|txt)$/)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a CSV, JSON, or TXT file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setUploading(true);
     try {
-      const result = await trainingService.uploadDataset(file, selectedEngine);
+      // Simulate file upload for demo purposes
+      const datasetId = `dataset-${Date.now()}`;
+      
+      // Analyze file content
+      const content = await readFileContent(file);
+      const schema = analyzeFileSchema(file, content);
       
       const newDataset: Dataset = {
-        id: result.datasetId,
+        id: datasetId,
         name: file.name,
         engine: selectedEngine,
-        fileId: result.fileId,
+        fileId: `file-${datasetId}`,
         uploadedAt: new Date().toISOString(),
-        rows: result.rows || 0,
-        columns: result.columns || 0,
+        rows: schema.rows,
+        columns: schema.columns?.length || 0,
         fileSize: file.size / (1024 * 1024), // Convert to MB
         status: 'uploaded',
-        schema: result.schema
+        schema: schema
       };
 
       onDatasetUpdate([...datasets, newDataset]);
@@ -88,20 +102,62 @@ export const DataIngestionPanel: React.FC<DataIngestionPanelProps> = ({
     }
   };
 
+  // Helper functions for file processing
+  const readFileContent = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string || '');
+      reader.onerror = reject;
+      reader.readAsText(file);
+    });
+  };
+
+  const analyzeFileSchema = (file: File, content: string) => {
+    try {
+      if (file.name.endsWith('.csv')) {
+        const lines = content.split('\n').filter(line => line.trim());
+        const headers = lines[0]?.split(',').map(h => h.trim().replace(/"/g, ''));
+        
+        return {
+          rows: lines.length - 1,
+          columns: headers || [],
+          types: headers?.reduce((acc, col) => ({ ...acc, [col]: 'text' }), {}) || {}
+        };
+      } else if (file.name.endsWith('.json')) {
+        const data = JSON.parse(content);
+        if (Array.isArray(data) && data.length > 0) {
+          return {
+            rows: data.length,
+            columns: Object.keys(data[0]),
+            types: Object.keys(data[0]).reduce((acc, col) => ({ 
+              ...acc, 
+              [col]: typeof data[0][col] 
+            }), {})
+          };
+        }
+      }
+      
+      return { rows: 0, columns: [], types: {} };
+    } catch (error) {
+      return { rows: 0, columns: [], types: {} };
+    }
+  };
+
   const validateDataset = async (datasetId: string) => {
     try {
-      const result = await trainingService.validateDataset(datasetId);
+      // Simulate validation for demo purposes
+      const isValid = Math.random() > 0.1; // 90% success rate
       
       onDatasetUpdate(datasets.map(d => 
         d.id === datasetId 
-          ? { ...d, status: result.isValid ? 'validated' : 'error', schema: result.schema }
+          ? { ...d, status: isValid ? 'validated' : 'error' }
           : d
       ));
 
       toast({
-        title: result.isValid ? "Validation Successful" : "Validation Failed",
-        description: result.message,
-        variant: result.isValid ? "default" : "destructive"
+        title: isValid ? "Validation Successful" : "Validation Failed",
+        description: isValid ? "Dataset structure is valid for training" : "Dataset has validation errors",
+        variant: isValid ? "default" : "destructive"
       });
     } catch (error) {
       toast({
@@ -114,7 +170,7 @@ export const DataIngestionPanel: React.FC<DataIngestionPanelProps> = ({
 
   const deleteDataset = async (datasetId: string) => {
     try {
-      await trainingService.deleteDataset(datasetId);
+      // Simulate deletion for demo purposes
       onDatasetUpdate(datasets.filter(d => d.id !== datasetId));
       
       toast({

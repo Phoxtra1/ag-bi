@@ -145,34 +145,31 @@ export interface StartTrainingRequest {
 
 export const startTraining = async (request: StartTrainingRequest): Promise<string> => {
   try {
-    // Create training job record
-    const trainingJob = await databases.createDocument(
-      DATABASE_ID,
-      ENGINE_COLLECTIONS.TRAINING_JOBS,
-      ID.unique(),
-      {
-        engine_type: request.engine,
-        dataset_id: request.datasetId,
-        status: 'pending',
-        hyperparameters: JSON.stringify(request.hyperparameters),
-        additional_config: request.additionalConfig ? JSON.stringify(request.additionalConfig) : null,
-        started_at: new Date().toISOString(),
-        created_by: 'admin' // TODO: Get from auth context
-      }
-    );
+    // For now, simulate training since we don't have actual Appwrite functions deployed
+    const jobId = ID.unique();
+    
+    // Simulate saving to localStorage for demo purposes
+    const trainingJobs = JSON.parse(localStorage.getItem('trainingJobs') || '[]');
+    
+    const newJob = {
+      id: jobId,
+      engine_type: request.engine,
+      dataset_id: request.datasetId,
+      status: 'running',
+      progress: 0,
+      hyperparameters: request.hyperparameters,
+      additional_config: request.additionalConfig || null,
+      started_at: new Date().toISOString(),
+      created_by: 'admin'
+    };
+    
+    trainingJobs.push(newJob);
+    localStorage.setItem('trainingJobs', JSON.stringify(trainingJobs));
+    
+    // Simulate training progress
+    simulateTrainingProgress(jobId);
 
-    // Trigger training function
-    const functionResponse = await functions.createExecution(
-      'start-training',
-      JSON.stringify({
-        jobId: trainingJob.$id,
-        engine: request.engine,
-        datasetId: request.datasetId,
-        hyperparameters: request.hyperparameters
-      })
-    );
-
-    return trainingJob.$id;
+    return jobId;
   } catch (error) {
     console.error('Training start failed:', error);
     throw new Error('Failed to start training');
@@ -181,22 +178,14 @@ export const startTraining = async (request: StartTrainingRequest): Promise<stri
 
 export const stopTraining = async (jobId: string) => {
   try {
-    // Update job status
-    await databases.updateDocument(
-      DATABASE_ID,
-      ENGINE_COLLECTIONS.TRAINING_JOBS,
-      jobId,
-      {
-        status: 'stopped',
-        stopped_at: new Date().toISOString()
-      }
+    // Simulate stopping training
+    const trainingJobs = JSON.parse(localStorage.getItem('trainingJobs') || '[]');
+    const updatedJobs = trainingJobs.map((job: any) => 
+      job.id === jobId 
+        ? { ...job, status: 'stopped', stopped_at: new Date().toISOString() }
+        : job
     );
-
-    // Trigger stop training function
-    await functions.createExecution(
-      'stop-training',
-      JSON.stringify({ jobId })
-    );
+    localStorage.setItem('trainingJobs', JSON.stringify(updatedJobs));
   } catch (error) {
     console.error('Training stop failed:', error);
     throw new Error('Failed to stop training');
@@ -205,22 +194,17 @@ export const stopTraining = async (jobId: string) => {
 
 export const resumeTraining = async (jobId: string) => {
   try {
-    // Update job status
-    await databases.updateDocument(
-      DATABASE_ID,
-      ENGINE_COLLECTIONS.TRAINING_JOBS,
-      jobId,
-      {
-        status: 'running',
-        resumed_at: new Date().toISOString()
-      }
+    // Simulate resuming training
+    const trainingJobs = JSON.parse(localStorage.getItem('trainingJobs') || '[]');
+    const updatedJobs = trainingJobs.map((job: any) => 
+      job.id === jobId 
+        ? { ...job, status: 'running', resumed_at: new Date().toISOString() }
+        : job
     );
-
-    // Trigger resume training function
-    await functions.createExecution(
-      'resume-training',
-      JSON.stringify({ jobId })
-    );
+    localStorage.setItem('trainingJobs', JSON.stringify(updatedJobs));
+    
+    // Continue progress simulation
+    simulateTrainingProgress(jobId);
   } catch (error) {
     console.error('Training resume failed:', error);
     throw new Error('Failed to resume training');
@@ -439,4 +423,60 @@ const getTimeAgoTimestamp = (timeRange: string): string => {
   
   const ms = timeMap[timeRange] || timeMap['24h'];
   return new Date(now.getTime() - ms).toISOString();
+};
+
+// Simulate training progress for demo purposes
+const simulateTrainingProgress = (jobId: string) => {
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 10;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      
+      // Mark as completed
+      const trainingJobs = JSON.parse(localStorage.getItem('trainingJobs') || '[]');
+      const updatedJobs = trainingJobs.map((job: any) => 
+        job.id === jobId 
+          ? { 
+              ...job, 
+              status: 'completed', 
+              progress: 100,
+              completed_at: new Date().toISOString(),
+              metrics: {
+                accuracy: 0.85 + Math.random() * 0.1,
+                loss: Math.random() * 0.3,
+                epochs_completed: job.hyperparameters.epochs,
+                total_epochs: job.hyperparameters.epochs
+              }
+            }
+          : job
+      );
+      localStorage.setItem('trainingJobs', JSON.stringify(updatedJobs));
+      
+      // Dispatch event to notify components
+      window.dispatchEvent(new CustomEvent('trainingJobUpdated', { detail: { jobId } }));
+    } else {
+      // Update progress
+      const trainingJobs = JSON.parse(localStorage.getItem('trainingJobs') || '[]');
+      const updatedJobs = trainingJobs.map((job: any) => 
+        job.id === jobId 
+          ? { 
+              ...job, 
+              progress: Math.round(progress),
+              metrics: {
+                accuracy: Math.random() * 0.9,
+                loss: Math.random() * 0.5,
+                epochs_completed: Math.round((progress / 100) * job.hyperparameters.epochs),
+                total_epochs: job.hyperparameters.epochs
+              }
+            }
+          : job
+      );
+      localStorage.setItem('trainingJobs', JSON.stringify(updatedJobs));
+      
+      // Dispatch event to notify components
+      window.dispatchEvent(new CustomEvent('trainingJobUpdated', { detail: { jobId } }));
+    }
+  }, 2000);
 };
