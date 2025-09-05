@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, User } from 'lucide-react';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
 import { getChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
+import OdenehoVoiceComponent from './OdenehoVoiceComponent';
 
 type Message = {
   id: number;
@@ -212,19 +213,20 @@ const OdenehoComponent = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {!isOpen && (
-        <Button
-          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse hover:animate-none transition-all duration-300"
-          onClick={() => setIsOpen(true)}
-        >
-          <img 
-            src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
-            alt="Odeneho AI" 
-            className="w-8 h-8 rounded-full object-cover"
-          />
-        </Button>
-      )}
+    <>
+      <div className="fixed bottom-6 right-6 z-50">
+        {!isOpen && (
+          <Button
+            className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse hover:animate-none transition-all duration-300"
+            onClick={() => setIsOpen(true)}
+          >
+            <img 
+              src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png" 
+              alt="Odeneho AI" 
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          </Button>
+        )}
       
       {isOpen && (
         <div className="bg-white rounded-lg shadow-2xl w-96 h-[500px] flex flex-col border border-gray-200">
@@ -356,7 +358,11 @@ const OdenehoComponent = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+      
+      {/* Voice Component */}
+      <OdenehoVoiceComponent />
+    </>
   );
 };
 

@@ -6,14 +6,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, Save, TestTube } from 'lucide-react';
+import { Bot, Save, TestTube, Mic, Volume2 } from 'lucide-react';
 import { getChatbaseConfig, setChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
 import { getOdenehoSettings, setOdenehoSettings } from '@/lib/odenehoSettings';
+import { getOdenehoVoiceConfig, setOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
 import { toast } from 'sonner';
 
 const ConfigureOdenehoAI = () => {
   const [chatbaseConfig, setChatbaseConfigState] = useState(getChatbaseConfig());
   const [odenehoSettings, setOdenehoSettingsState] = useState(getOdenehoSettings());
+  const [voiceConfig, setVoiceConfigState] = useState(getOdenehoVoiceConfig());
   const [testMessage, setTestMessage] = useState('Hello, how are you?');
   const [testing, setTesting] = useState(false);
 
@@ -25,6 +27,11 @@ const ConfigureOdenehoAI = () => {
   const handleOdenehoSave = () => {
     setOdenehoSettings(odenehoSettings);
     toast.success('Odeneho AI settings saved successfully!');
+  };
+
+  const handleVoiceSave = () => {
+    setOdenehoVoiceConfig(voiceConfig);
+    toast.success('Voice configuration saved successfully!');
   };
 
   const handleTestChatbase = async () => {
@@ -46,15 +53,15 @@ const ConfigureOdenehoAI = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top header to match requested naming */}
+      {/* External API Configuration */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bot className="w-6 h-6 text-blue-600" />
-            Chatbase API Configuration
+            External API Configuration
           </CardTitle>
           <CardDescription>
-            Configure Chatbase credentials and external API endpoint for Odeneho AI
+            Configure external Chatbase API and custom endpoints for Odeneho AI
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -135,9 +142,74 @@ const ConfigureOdenehoAI = () => {
         </CardContent>
       </Card>
 
+      {/* Voice & STT/TTS Configuration */}
       <Card>
         <CardHeader>
-          <CardTitle>Configure Odeneho AI</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Volume2 className="w-6 h-6 text-green-600" />
+            Voice & Streaming Configuration
+          </CardTitle>
+          <CardDescription>
+            Configure ElevenLabs STT/TTS streaming for real-time voice interaction
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={voiceConfig.enabled}
+              onCheckedChange={(enabled) => 
+                setVoiceConfigState(prev => ({ ...prev, enabled }))
+              }
+            />
+            <Label>Enable Voice Capabilities</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={voiceConfig.streaming}
+              onCheckedChange={(streaming) => 
+                setVoiceConfigState(prev => ({ ...prev, streaming }))
+              }
+            />
+            <Label>Enable Streaming Mode (STT/TTS)</Label>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="elevenApiKey">ElevenLabs API Key</Label>
+            <Input
+              id="elevenApiKey"
+              type="password"
+              value={voiceConfig.elevenApiKey || ''}
+              onChange={(e) => 
+                setVoiceConfigState(prev => ({ ...prev, elevenApiKey: e.target.value }))
+              }
+              placeholder="Enter your ElevenLabs API key (XI_API_KEY)"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="agentId">ElevenLabs Agent ID (Optional)</Label>
+            <Input
+              id="agentId"
+              value={voiceConfig.agentId || ''}
+              onChange={(e) => 
+                setVoiceConfigState(prev => ({ ...prev, agentId: e.target.value }))
+              }
+              placeholder="Enter ElevenLabs Conversational AI Agent ID"
+            />
+          </div>
+
+          <Button onClick={handleVoiceSave} className="flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            Save Voice Configuration
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* General AI Configuration */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Internal AI Configuration</CardTitle>
           <CardDescription>
             Configure general behavior and appearance of Odeneho AI
           </CardDescription>

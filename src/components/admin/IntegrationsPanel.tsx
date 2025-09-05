@@ -295,7 +295,7 @@ const IntegrationsPanel = () => {
                     Odeneho Live Chat Bot
                   </CardTitle>
                   <CardDescription>
-                    AI-powered support bot using Chatbase API for 24/7 customer assistance
+                    AI-powered support bot with streaming voice capabilities and external API integration
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -340,53 +340,90 @@ const IntegrationsPanel = () => {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Chatbase API Configuration</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Internal Configuration */}
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="chatbase-api-key">Chatbase API Key</Label>
-                    <p className="text-sm text-gray-600 mb-2">
-                      Enter your Chatbase API key to power the Odeneho chat bot
-                    </p>
-                    <div className="flex gap-2 mt-2">
-                      <Input
-                        id="chatbase-api-key"
-                        type="password"
-                        placeholder="Enter your Chatbase API key"
-                        value={settings.chatbaseApiKey}
-                        onChange={(e) => updateSetting('chatbaseApiKey', e.target.value)}
-                      />
-                      <Button onClick={handleChatbaseApiKeySave}>
-                        <Key className="w-4 h-4 mr-2" />
-                        Save
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Settings className="w-5 h-5" />
+                    Internal Configuration
+                  </h3>
+                  <div className="p-4 border rounded-lg space-y-4">
+                    <div>
+                      <Label htmlFor="voice-config">Voice & STT/TTS Setup</Label>
+                      <p className="text-xs text-gray-600 mb-2">Configure ElevenLabs streaming voice</p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open('/admin?tab=configure-ai', '_self')}
+                        className="w-full"
+                      >
+                        Configure Voice Settings
                       </Button>
                     </div>
-                    {settings.chatbaseApiKey && (
-                      <p className="text-sm text-green-600 mt-1">✓ Chatbase API key configured</p>
-                    )}
+                    
+                    <div>
+                      <Label htmlFor="training-file">Internal Training Data</Label>
+                      <div className="mt-2">
+                        <Input
+                          id="training-file"
+                          type="file"
+                          accept=".txt,.csv,.json"
+                          onChange={handleFileUpload}
+                          disabled={settings.chatBotTraining}
+                          className="text-xs"
+                        />
+                        {settings.chatBotTraining && (
+                          <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                            Training in progress...
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Training & Configuration</h3>
+                {/* External Configuration */}
                 <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="training-file">Upload Training Data</Label>
-                    <div className="mt-2">
-                      <Input
-                        id="training-file"
-                        type="file"
-                        accept=".txt,.csv,.json"
-                        onChange={handleFileUpload}
-                        disabled={settings.chatBotTraining}
-                      />
-                      {settings.chatBotTraining && (
-                        <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                          Training in progress...
-                        </div>
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Key className="w-5 h-5" />
+                    External Configuration
+                  </h3>
+                  <div className="p-4 border rounded-lg space-y-4">
+                    <div>
+                      <Label htmlFor="chatbase-api-key">Chatbase API Key</Label>
+                      <p className="text-xs text-gray-600 mb-2">
+                        Connect external Chatbase service
+                      </p>
+                      <div className="flex gap-2 mt-2">
+                        <Input
+                          id="chatbase-api-key"
+                          type="password"
+                          placeholder="Enter Chatbase API key"
+                          value={settings.chatbaseApiKey}
+                          onChange={(e) => updateSetting('chatbaseApiKey', e.target.value)}
+                          className="text-xs"
+                        />
+                        <Button onClick={handleChatbaseApiKeySave} size="sm">
+                          Save
+                        </Button>
+                      </div>
+                      {settings.chatbaseApiKey && (
+                        <p className="text-xs text-green-600 mt-1">✓ External API configured</p>
                       )}
+                    </div>
+                    
+                    <div>
+                      <Label>External Endpoint</Label>
+                      <p className="text-xs text-gray-600 mb-2">Additional configuration in AI settings</p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => window.open('/admin?tab=configure-ai', '_self')}
+                        className="w-full text-xs"
+                      >
+                        Configure External APIs
+                      </Button>
                     </div>
                   </div>
                 </div>
