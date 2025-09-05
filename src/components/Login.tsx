@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { account } from "@/lib/appwrite";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building, User } from "lucide-react";
+import { handleLogin, handleSignup } from "@/lib/apiHandlers";
+import { useToast } from "@/hooks/use-toast";
 
 interface LoginFormData {
   email: string;
@@ -28,6 +29,7 @@ interface RegisterFormData {
 export default function Login() {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const loginForm = useForm<LoginFormData>();
   const registerForm = useForm<RegisterFormData>({
@@ -40,43 +42,70 @@ export default function Login() {
 
   const onLogin = async (data: LoginFormData) => {
     try {
-      await account.createEmailPasswordSession(data.email, data.password);
-      navigate("/dashboard");
+      const result = await handleLogin(data.email, data.password);
+      if (result.success) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been successfully logged in.",
+        });
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Login Failed",
+          description: result.error || "Invalid email or password.",
+          variant: "destructive"
+        });
+      }
     } catch (error: any) {
-      alert("Login failed: " + error.message);
+      toast({
+        title: "Login Failed",
+        description: error.message || "Failed to connect to the server.",
+        variant: "destructive"
+      });
     }
   };
 
   const onRegister = async (data: RegisterFormData) => {
     if (data.password !== data.confirmPassword) {
-      alert("Passwords do not match");
+      toast({
+        title: "Password Mismatch",
+        description: "Passwords do not match. Please try again.",
+        variant: "destructive"
+      });
       return;
     }
 
     try {
-      // Create user account
-      await account.create(
-        'unique()', 
-        data.email, 
-        data.password, 
-        data.name
-      );
-
-      // Auto-login after registration
-      await account.createEmailPasswordSession(data.email, data.password);
+      const result = await handleSignup(data.name, data.email, data.password);
       
-      // Store user type and organization info (would typically go to database)
-      console.log('User registration data:', {
-        name: data.name,
-        email: data.email,
-        userType: data.userType,
-        organizationName: data.organizationName,
-        organizationWebsite: data.organizationWebsite
-      });
+      if (result.success) {
+        // Store user type and organization info (would typically go to database)
+        console.log('User registration data:', {
+          name: data.name,
+          email: data.email,
+          userType: data.userType,
+          organizationName: data.organizationName,
+          organizationWebsite: data.organizationWebsite
+        });
 
-      navigate("/dashboard");
+        toast({
+          title: "Account Created Successfully!",
+          description: "Welcome to Amniva. You have been automatically logged in.",
+        });
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: result.error || "An error occurred during registration.",
+          variant: "destructive"
+        });
+      }
     } catch (error: any) {
-      alert("Registration failed: " + error.message);
+      toast({
+        title: "Registration Failed",
+        description: error.message || "Failed to connect to the server.",
+        variant: "destructive"
+      });
     }
   };
 

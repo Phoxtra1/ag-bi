@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { handleSignup } from "@/lib/apiHandlers";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -16,6 +18,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -38,16 +41,31 @@ export default function Signup() {
 
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const result = await handleSignup(formData.fullName, formData.email, formData.password);
+      
+      if (result.success) {
+        toast({
+          title: "Account Created Successfully!",
+          description: "Welcome to Amniva. You have been automatically logged in.",
+        });
+        navigate('/dashboard');
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: result.error || "An error occurred during registration.",
+          variant: "destructive"
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: "Account Created Successfully!",
-        description: "Welcome to Amniva. Please check your email to verify your account.",
+        title: "Registration Failed",
+        description: error.message || "Failed to connect to the server.",
+        variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
-      // Redirect to dashboard or login
-      window.location.href = '/dashboard';
-    }, 2000);
+    }
   };
 
   return (
