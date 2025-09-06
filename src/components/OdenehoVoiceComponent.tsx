@@ -4,6 +4,7 @@ import { MessageCircle, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
 import { useConversation } from '@11labs/react';
+import { toast } from 'sonner';
 
 const OdenehoVoiceComponent = () => {
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
@@ -41,8 +42,11 @@ const OdenehoVoiceComponent = () => {
   }, []);
 
   const startVoiceMode = async () => {
-    if (!voiceConfig.enabled || !voiceConfig.agentId || !voiceConfig.elevenApiKey) {
-      console.warn('Voice mode not configured (need ElevenLabs Agent ID and API Key)');
+    if (!voiceConfig.agentId || !voiceConfig.elevenApiKey) {
+      toast.error('Voice not configured', {
+        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+      });
+      try { window.open('/admin#odeneho-ai', '_self'); } catch {}
       return;
     }
 
@@ -90,9 +94,10 @@ const OdenehoVoiceComponent = () => {
     setIsListening(!isListening);
   };
 
-  if (!voiceConfig.enabled) {
-    return null;
-  }
+  // Voice UI is always visible; if not configured we show guidance on click
+  // if (!voiceConfig.enabled) {
+  //   return null;
+  // }
 
   return (
     <div className="fixed bottom-24 right-6 z-50">
