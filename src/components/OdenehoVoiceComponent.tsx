@@ -41,8 +41,9 @@ const OdenehoVoiceComponent = () => {
   }, []);
 
   const startVoiceMode = async () => {
-    if (!voiceConfig.enabled || !voiceConfig.elevenApiKey) {
-      console.warn('Voice mode not configured');
+    // Require both Agent ID and API key to create a signed URL per ElevenLabs API
+    if (!voiceConfig.enabled || !voiceConfig.agentId || !voiceConfig.elevenApiKey) {
+      console.warn('Voice mode not configured (need ElevenLabs Agent ID and API Key)');
       return;
     }
 

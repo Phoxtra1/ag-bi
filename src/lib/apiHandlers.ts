@@ -7,21 +7,47 @@ import { ID } from 'appwrite';
 export const handleSignup = async (name: string, email: string, password: string) => {
   try {
     const user = await account.create(ID.unique(), email, password, name);
-    await account.createEmailPasswordSession(email, password);
-    return { success: true, user };
+    // Ensure we don't conflict with any existing session
+    try { await account.deleteSession('current'); } catch {}
+    const session = await account.createEmailPasswordSession(email, password);
+    return { success: true, user, session };
   } catch (error: any) {
     console.error('Signup error:', error);
-    return { success: false, error: error.message };
+    const message: string = error?.message || '';
+    const code: number | undefined = error?.code;
+
+    // If the user already exists, attempt to log them in instead
+    if (code === 409 || /already exists/i.test(message)) {
+      try {
+        try { await account.deleteSession('current'); } catch {}
+        const session = await account.createEmailPasswordSession(email, password);
+        return { success: true, session };
+      } catch (loginError: any) {
+        return { success: false, error: 'Email already registered. Please log in with your password.' };
+      }
+    }
+
+    return { success: false, error: message || 'Registration failed' };
   }
 };
 
 export const handleLogin = async (email: string, password: string) => {
   try {
+    // If a session is already active, clear it first to avoid 409 conflicts
+    try { await account.deleteSession('current'); } catch {}
     const session = await account.createEmailPasswordSession(email, password);
     return { success: true, session };
   } catch (error: any) {
     console.error('Login error:', error);
-    return { success: false, error: error.message };
+    const message: string = error?.message || '';
+    const code: number | undefined = error?.code;
+
+    // If a session is already active, treat as a successful login
+    if (code === 409 || /session is active/i.test(message)) {
+      return { success: true, session: { current: true } };
+    }
+
+    return { success: false, error: message || 'Login failed' };
   }
 };
 

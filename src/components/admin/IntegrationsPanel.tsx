@@ -354,7 +354,7 @@ const IntegrationsPanel = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => window.open('/admin?tab=configure-ai', '_self')}
+                        onClick={() => window.open('/admin#odeneho-ai', '_self')}
                         className="w-full"
                       >
                         Configure Voice Settings
@@ -391,38 +391,17 @@ const IntegrationsPanel = () => {
                   </h3>
                   <div className="p-4 border rounded-lg space-y-4">
                     <div>
-                      <Label htmlFor="chatbase-api-key">Chatbase API Key</Label>
+                      <Label>External Configuration</Label>
                       <p className="text-xs text-gray-600 mb-2">
-                        Connect external Chatbase service
+                        Manage Chatbase API and external endpoints in Odeneho Chat Bot settings.
                       </p>
-                      <div className="flex gap-2 mt-2">
-                        <Input
-                          id="chatbase-api-key"
-                          type="password"
-                          placeholder="Enter Chatbase API key"
-                          value={settings.chatbaseApiKey}
-                          onChange={(e) => updateSetting('chatbaseApiKey', e.target.value)}
-                          className="text-xs"
-                        />
-                        <Button onClick={handleChatbaseApiKeySave} size="sm">
-                          Save
-                        </Button>
-                      </div>
-                      {settings.chatbaseApiKey && (
-                        <p className="text-xs text-green-600 mt-1">✓ External API configured</p>
-                      )}
-                    </div>
-                    
-                    <div>
-                      <Label>External Endpoint</Label>
-                      <p className="text-xs text-gray-600 mb-2">Additional configuration in AI settings</p>
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => window.open('/admin?tab=configure-ai', '_self')}
+                        onClick={() => window.open('/admin#odeneho-ai', '_self')}
                         className="w-full text-xs"
                       >
-                        Configure External APIs
+                        Open Odeneho Chat Bot Settings
                       </Button>
                     </div>
                   </div>

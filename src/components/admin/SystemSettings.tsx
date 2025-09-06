@@ -37,7 +37,15 @@ interface SecuritySettings {
 
 const SystemSettings = () => {
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('integrations');
+  const getDefaultTab = () => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace('#','');
+      const allowed = new Set(['integrations','ai-engines','engines','odeneho-ai','general','security','database']);
+      if (allowed.has(hash)) return hash as string;
+    }
+    return 'integrations';
+  };
+  const [activeTab, setActiveTab] = useState<string>(getDefaultTab());
 
   const [generalSettings, setGeneralSettings] = useState<GeneralSettings>({
     siteName: 'Amniva™',
@@ -54,7 +62,7 @@ const SystemSettings = () => {
     passwordMinLength: 8
   });
 
-  // Load settings from localStorage on component mount
+  // Sync tab with URL hash and load settings from localStorage on component mount
   useEffect(() => {
     const savedGeneralSettings = localStorage.getItem('adminGeneralSettings');
     if (savedGeneralSettings) {
@@ -65,6 +73,13 @@ const SystemSettings = () => {
     if (savedSecuritySettings) {
       setSecuritySettings(JSON.parse(savedSecuritySettings));
     }
+  
+    const onHashChange = () => setActiveTab(getDefaultTab());
+    window.addEventListener('hashchange', onHashChange);
+
+    return () => {
+      window.removeEventListener('hashchange', onHashChange);
+    };
   }, []);
 
   const saveGeneralSettings = () => {

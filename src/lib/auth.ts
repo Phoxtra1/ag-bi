@@ -15,6 +15,8 @@ export interface RegisterCredentials {
 
 export const loginUser = async (credentials: LoginCredentials) => {
   try {
+    // Clear any existing session to avoid 409 conflicts
+    try { await account.deleteSession('current'); } catch {}
     const session = await account.createEmailPasswordSession(
       credentials.email,
       credentials.password
@@ -27,9 +29,17 @@ export const loginUser = async (credentials: LoginCredentials) => {
     };
   } catch (error: any) {
     console.error('Login error:', error);
+    const message: string = error?.message || 'Login failed';
+    const code: number | undefined = error?.code;
+
+    // If a session is already active, consider it success
+    if (code === 409 || /session is active/i.test(message)) {
+      return { success: true, data: { current: true }, status: 200 };
+    }
+
     return {
       success: false,
-      data: { error: error.message || 'Login failed' },
+      data: { error: message },
       status: 400
     };
   }
@@ -45,6 +55,7 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     );
     
     // Auto-login after registration
+    try { await account.deleteSession('current'); } catch {}
     const session = await account.createEmailPasswordSession(
       credentials.email,
       credentials.password
@@ -57,9 +68,26 @@ export const registerUser = async (credentials: RegisterCredentials) => {
     };
   } catch (error: any) {
     console.error('Registration error:', error);
+    const message: string = error?.message || 'Registration failed';
+    const code: number | undefined = error?.code;
+
+    // If the user already exists, attempt to sign them in
+    if (code === 409 || /already exists/i.test(message)) {
+      try {
+        try { await account.deleteSession('current'); } catch {}
+        const session = await account.createEmailPasswordSession(
+          credentials.email,
+          credentials.password
+        );
+        return { success: true, data: { session }, status: 200 };
+      } catch (loginError: any) {
+        return { success: false, data: { error: 'Email already registered. Please log in with your password.' }, status: 400 };
+      }
+    }
+
     return {
       success: false,
-      data: { error: error.message || 'Registration failed' },
+      data: { error: message },
       status: 400
     };
   }
