@@ -41,7 +41,6 @@ const OdenehoVoiceComponent = () => {
   }, []);
 
   const startVoiceMode = async () => {
-    // Require both Agent ID and API key to create a signed URL per ElevenLabs API
     if (!voiceConfig.enabled || !voiceConfig.agentId || !voiceConfig.elevenApiKey) {
       console.warn('Voice mode not configured (need ElevenLabs Agent ID and API Key)');
       return;
@@ -51,13 +50,25 @@ const OdenehoVoiceComponent = () => {
       // Request microphone access
       await navigator.mediaDevices.getUserMedia({ audio: true });
       
-      if (voiceConfig.agentId) {
-        // Use ElevenLabs Conversational AI if agent ID provided
-        await conversation.startSession({ agentId: voiceConfig.agentId });
-      } else {
-        // Use custom implementation
-        console.log('Starting custom voice mode');
+      // Generate signed URL for ElevenLabs Conversational AI
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${voiceConfig.agentId}`,
+        {
+          method: 'GET',
+          headers: {
+            'xi-api-key': voiceConfig.elevenApiKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to get signed URL: ${response.status}`);
       }
+
+      const data = await response.json();
+      
+      // Use signed URL to start conversation
+      await conversation.startSession({ signedUrl: data.signed_url });
       
       setIsVoiceModeActive(true);
       setIsListening(true);
