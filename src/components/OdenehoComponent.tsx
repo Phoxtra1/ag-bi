@@ -142,7 +142,7 @@ const OdenehoComponent = () => {
       } else {
         // Polished neutral fallback for visitors (no "I'm learning" leak)
         botResponse =
-          'I can help with Amniva account setup, API access, predictions, verification, reporting, and trending. Could you rephrase or be more specific so I can help?';
+          'To create an Amniva account, register from the platform with your email and password, and then signin to access our components';
       }
 
       setMessages((prev) => [
