@@ -13,53 +13,56 @@ type Message = {
   sender: 'bot' | 'user';
 };
 
-// 🔹 Static Knowledge Base
+// 🔹 Static Knowledge Base (keys are lowercase for reliable matching)
 const staticAnswers: Record<string, string> = {
   'create amniva account':
     'To create an Amniva account, sign up on our portal with your email and password. Once verified, you’ll gain access to Prediction, Verify, Report, and Trending.',
   'amniva api':
     'The Amniva API lets developers integrate Prediction, Verification, and Reporting into apps and platforms. It provides real-time access to media intelligence tools.',
-  prediction:
+  'prediction':
     'Amniva Prediction uses AI to forecast media trends, audience behavior, and viral potential. Perfect for journalists, brands, and agencies.',
-  verify:
-    'Amniva Verify authenticates content and provide insights to combat misinformation and ensure trust across digital platforms.',
-  report:
-    'Amniva Report delivers analytics on sources and details of insight reports, reach, and engagement to measure impact.',
-  trending:
+  'verify':
+    'Amniva Verify authenticates content and provides insights to combat misinformation and ensure trust across digital platforms.',
+  'report':
+    'Amniva Report delivers analytics on sources and insight reports, reach, and engagement to measure impact.',
+  'trending':
     'Amniva Trending shows the most viral and relevant stories in real time, helping you follow what matters now.',
-  pricing:
-    'Amniva offers flexible plans: entry-level free trial for individuals, and organizations, by offering Pro, Elite and Institutiona options. Visit amniva.io/pricing for full details.',
-  'what is Amniva':
-    'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.'
+  'pricing':
+    'Amniva offers flexible plans: entry-level free trial for individuals and tiered plans for businesses and enterprises. Visit amniva.io/pricing for full details.',
+  'what is amniva':
+    'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.',
   'who do we serve':
-    'Amniva provide services to individuals, media organizations, businesses, civil society organizations, research institutions and reseatchers who want to provide authentic information for an inform public decision making.'
+    'Amniva serves individuals, media organizations, businesses, civil society organizations, and research institutions that need reliable media intelligence for informed decision-making.'
 };
 
+// find best static answer by searching normalized keys
 const findStaticAnswer = (input: string) => {
-  const key = Object.keys(staticAnswers).find((k) =>
-    input.toLowerCase().includes(k)
-  );
+  if (!input) return null;
+  const normalized = input.toLowerCase();
+  const key = Object.keys(staticAnswers).find((k) => normalized.includes(k));
   return key ? staticAnswers[key] : null;
 };
 
 const OdenehoComponent = () => {
   const initialSettings = getResolvedOdenehoSettings();
 
+  const defaultGreeting =
+    initialSettings?.greeting ||
+    "👋 Hello there! I'm Odeneho, your AI assistant at Amniva. How can I help you today?";
+
   const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "👋 Hello there! I'm Odeneho, your AI assistant at Amniva. How can I help you today?",
-      sender: 'bot'
-    },
+    { id: 1, text: defaultGreeting, sender: 'bot' },
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [quickActions] = useState<string[]>([
+
+  // three clickable preemptive questions
+  const quickActions: string[] = [
     'How do I create an Amniva account?',
     'Tell me about Amniva API',
     'What is Amniva Prediction?'
-  ]);
+  ];
 
   // Voice state
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
@@ -73,15 +76,11 @@ const OdenehoComponent = () => {
     },
   });
 
+  // stable handler for voice config updates so cleanup works
   useEffect(() => {
-    window.addEventListener('odenehoVoiceConfigUpdated', () =>
-      setVoiceConfig(getOdenehoVoiceConfig())
-    );
-    return () => {
-      window.removeEventListener('odenehoVoiceConfigUpdated', () =>
-        setVoiceConfig(getOdenehoVoiceConfig())
-      );
-    };
+    const onVoiceConfigUpdated = () => setVoiceConfig(getOdenehoVoiceConfig());
+    window.addEventListener('odenehoVoiceConfigUpdated', onVoiceConfigUpdated);
+    return () => window.removeEventListener('odenehoVoiceConfigUpdated', onVoiceConfigUpdated);
   }, []);
 
   const startVoiceMode = async () => {
@@ -126,8 +125,8 @@ const OdenehoComponent = () => {
   };
 
   const handleSendMessage = async (text?: string) => {
-    const content = text || inputMessage;
-    if (!content.trim()) return;
+    const content = (text || inputMessage || '').trim();
+    if (!content) return;
 
     const userMsg: Message = { id: Date.now(), text: content, sender: 'user' };
     setMessages((prev) => [...prev, userMsg]);
@@ -135,10 +134,16 @@ const OdenehoComponent = () => {
     setIsTyping(true);
 
     try {
+      // Try static knowledge base first
       const staticResponse = findStaticAnswer(content);
-      const botResponse = staticResponse
-        ? staticResponse
-        : "Good question! To create an Amniva account, sign up on our portal with your email.";
+      let botResponse: string;
+      if (staticResponse) {
+        botResponse = staticResponse;
+      } else {
+        // Polished neutral fallback for visitors (no "I'm learning" leak)
+        botResponse =
+          'I can help with Amniva account setup, API access, predictions, verification, reporting, and trending. Could you rephrase or be more specific so I can help?';
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -146,6 +151,15 @@ const OdenehoComponent = () => {
       ]);
     } catch (err) {
       console.error('Bot reply failed:', err);
+      // graceful fallback
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          text: 'Sorry — something went wrong. Please try again.',
+          sender: 'bot',
+        },
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -229,21 +243,14 @@ const OdenehoComponent = () => {
             </button>
           </div>
 
-          {/* Quick actions */}
-          {messages.length === 1 && (
-            <div className="p-3 flex flex-wrap gap-2 border-t bg-gray-50">
-              {quickActions.map((qa, idx) => (
-                <Button
-                  key={idx}
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleSendMessage(qa)}
-                >
-                  {qa}
-                </Button>
-              ))}
-            </div>
-          )}
+          {/* Quick actions (3 preemptive clickable questions) */}
+          <div className="p-3 flex flex-wrap gap-2 border-t bg-gray-50">
+            {quickActions.map((qa, idx) => (
+              <Button key={idx} size="sm" variant="outline" onClick={() => handleSendMessage(qa)}>
+                {qa}
+              </Button>
+            ))}
+          </div>
         </div>
       )}
     </div>
