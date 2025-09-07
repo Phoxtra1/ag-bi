@@ -1,9 +1,28 @@
-
 import React, { useEffect, useState } from "react";
 import { databases, storage } from "@/lib/appwrite";
 import { DATABASE_ID, PREDICTIONS_COLLECTION_ID, VERIFICATION_BUCKET_ID } from "@/lib/database";
-import { getCurrentUser } from "@/lib/auth";
 import { Models } from "appwrite";
+
+// ===== DEV MODE MOCK USER =====
+const isDevMode = true;
+
+const getCurrentUser = async (): Promise<Models.User> => {
+  if (isDevMode) {
+    return {
+      $id: "test-user",
+      name: "Admin Test",
+      email: "test@example.com",
+      emailVerification: true,
+      passwordUpdate: "",
+      prefs: {},
+      registration: "",
+      status: 1,
+      passwordLastUpdate: "",
+    } as Models.User;
+  }
+  // Place real auth call here when needed
+  // return await realGetCurrentUser();
+};
 
 interface Prediction {
   $id: string;
@@ -18,12 +37,16 @@ interface Prediction {
   prompt: string;
 }
 
-const DashboardAdmin = () => {
+const DashboardAdmin: React.FC = () => {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchPredictions();
+    const init = async () => {
+      await getCurrentUser(); // mock user
+      fetchPredictions();
+    };
+    init();
   }, []);
 
   const fetchPredictions = async () => {
@@ -83,7 +106,9 @@ const DashboardAdmin = () => {
           <tbody>
             {predictions.map((prediction) => (
               <tr key={prediction.$id} className="border-t text-center">
-                <td className="px-4 py-2">{prediction.title || prediction.prompt?.substring(0, 50) + '...'}</td>
+                <td className="px-4 py-2">
+                  {prediction.title || prediction.prompt?.substring(0, 50) + '...'}
+                </td>
                 <td className="px-4 py-2">{prediction.submittedBy || prediction.email}</td>
                 <td className="px-4 py-2">{new Date(prediction.submittedAt).toLocaleDateString()}</td>
                 <td className="px-4 py-2 capitalize">{prediction.status || "pending"}</td>
