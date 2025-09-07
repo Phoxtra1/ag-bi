@@ -1,96 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Mic, MicOff, VolumeX } from 'lucide-react';
-import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
-import { toast } from 'sonner';
-import { useConversation } from '@11labs/react';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Mic, MicOff, VolumeX } from "lucide-react";
+import { getOdenehoVoiceConfig } from "@/lib/odenehoVoiceConfig";
+import { toast } from "sonner";
+import { useConversation } from "@11labs/react";
 
 const OdenehoVoiceComponent = () => {
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
   const [isListening, setIsListening] = useState(false);
-  const [isVoiceModeActive, setIsVoiceModeActive] = useState(false);
 
   const conversation = useConversation({
     onConnect: () => {
-      console.log('✅ Odeneho Voice connected to ElevenLabs');
-      setIsVoiceModeActive(true);
+      console.log("✅ Odeneho Voice connected to ElevenLabs");
+      toast.success("Voice chat connected");
     },
     onDisconnect: () => {
-      console.log('❌ Odeneho Voice disconnected');
-      setIsVoiceModeActive(false);
+      console.log("❌ Odeneho Voice disconnected");
       setIsListening(false);
+      toast("Voice chat ended");
     },
     onMessage: (message) => {
-      console.log('📩 Odeneho Voice message:', message);
-      if (message.type === 'response.audio') {
-        // ElevenLabs handles audio playback internally if enabled
-        console.log('🔊 AI is speaking...');
+      console.log("📩 Odeneho Voice message:", message);
+      if (message.type === "response.audio") {
+        console.log("🔊 AI is speaking...");
       }
     },
     onError: (error) => {
-      console.error('⚠️ Odeneho Voice error:', error);
-      toast.error('Voice error', { description: String(error) });
+      console.error("⚠️ Odeneho Voice error:", error);
+      toast.error("Voice error", { description: String(error) });
     },
   });
 
+  // Refresh config when updated in admin
   useEffect(() => {
     const handleVoiceConfigUpdate = () => {
       setVoiceConfig(getOdenehoVoiceConfig());
     };
-    window.addEventListener('odenehoVoiceConfigUpdated', handleVoiceConfigUpdate);
+    window.addEventListener("odenehoVoiceConfigUpdated", handleVoiceConfigUpdate);
     return () => {
-      window.removeEventListener('odenehoVoiceConfigUpdated', handleVoiceConfigUpdate);
+      window.removeEventListener("odenehoVoiceConfigUpdated", handleVoiceConfigUpdate);
     };
   }, []);
 
   const startVoiceMode = async () => {
     if (!voiceConfig.agentId || !voiceConfig.elevenApiKey) {
-      toast.error('Voice not configured', {
-        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+      toast.error("Voice not configured", {
+        description:
+          "Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.",
       });
       try {
-        window.open('/admin#odeneho-ai', '_self');
+        window.open("/admin#odeneho-ai", "_self");
       } catch {}
       return;
     }
 
     try {
-      // Request microphone
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
-      // Get signed URL for conversation session
       const response = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${voiceConfig.agentId}`,
         {
-          method: 'GET',
-          headers: { 'xi-api-key': voiceConfig.elevenApiKey },
+          method: "GET",
+          headers: { "xi-api-key": voiceConfig.elevenApiKey },
         }
       );
 
       if (!response.ok) throw new Error(`Failed to get signed URL: ${response.status}`);
       const data = await response.json();
 
-      // Start ElevenLabs conversation
       await conversation.startSession({ signedUrl: data.signed_url });
 
       setIsListening(true);
-      toast.success('Voice mode started');
+      toast.success("Voice mode started");
     } catch (error) {
-      console.error('❌ Failed to start voice mode:', error);
-      toast.error('Failed to start voice mode', { description: String(error) });
+      console.error("❌ Failed to start voice mode:", error);
+      toast.error("Failed to start voice mode", { description: String(error) });
     }
   };
 
   const stopVoiceMode = async () => {
     try {
-      if (conversation.status === 'connected') {
+      if (conversation.status === "connected") {
         await conversation.endSession();
       }
-      setIsVoiceModeActive(false);
       setIsListening(false);
-      toast('Voice mode ended');
+      toast("Voice mode ended");
     } catch (err) {
-      console.error('Error stopping voice mode:', err);
+      console.error("Error stopping voice mode:", err);
     }
   };
 
@@ -104,13 +100,14 @@ const OdenehoVoiceComponent = () => {
         setIsListening(true);
       }
     } catch (err) {
-      console.error('Mic toggle failed:', err);
+      console.error("Mic toggle failed:", err);
     }
   };
 
+  // --- RENDER ---
   return (
     <div className="fixed bottom-24 right-6 z-50">
-      {!isVoiceModeActive ? (
+      {conversation.status !== "connected" ? (
         <Button
           onClick={startVoiceMode}
           className="h-12 w-12 rounded-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
@@ -125,10 +122,10 @@ const OdenehoVoiceComponent = () => {
             onClick={toggleMute}
             className={`h-12 w-12 rounded-full shadow-lg ${
               isListening
-                ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 animate-pulse'
-                : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
+                ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 animate-pulse"
+                : "bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800"
             }`}
-            title={isListening ? 'Mute Microphone' : 'Unmute Microphone'}
+            title={isListening ? "Mute Microphone" : "Unmute Microphone"}
           >
             {isListening ? (
               <Mic className="w-6 h-6 text-white" />
