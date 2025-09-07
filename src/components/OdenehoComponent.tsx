@@ -6,10 +6,38 @@ import { useConversation } from '@11labs/react';
 import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
 import { toast } from 'sonner';
 
+// Types
 type Message = {
   id: number;
   text: string;
   sender: 'bot' | 'user';
+};
+
+// 🔹 Static Knowledge Base
+const staticAnswers: Record<string, string> = {
+  'create amniva account':
+    'To create an Amniva account, sign up on our portal with your email. Once verified, you’ll gain access to Prediction, Verify, Report, and Trending.',
+  'amniva api':
+    'The Amniva API lets developers integrate Prediction, Verification, and Reporting into apps and platforms. It provides real-time access to media intelligence tools.',
+  prediction:
+    'Amniva Prediction uses AI to forecast media trends, audience behavior, and viral potential. Perfect for journalists, brands, and agencies.',
+  verify:
+    'Amniva Verify authenticates media content to combat misinformation and ensure trust across digital platforms.',
+  report:
+    'Amniva Report delivers analytics on media activity, reach, and engagement to measure impact.',
+  trending:
+    'Amniva Trending shows the most viral and relevant stories in real time, helping you follow what matters now.',
+  pricing:
+    'Amniva offers flexible plans: entry-level for individuals, business plans for startups, and enterprise options. Visit amniva.io/pricing for full details.',
+  'what is amniva':
+    'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.'
+};
+
+const findStaticAnswer = (input: string) => {
+  const key = Object.keys(staticAnswers).find((k) =>
+    input.toLowerCase().includes(k)
+  );
+  return key ? staticAnswers[key] : null;
 };
 
 const OdenehoComponent = () => {
@@ -17,14 +45,23 @@ const OdenehoComponent = () => {
 
   const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: initialSettings.greeting, sender: 'bot' },
+    {
+      id: 1,
+      text: "Hello there! I'm Odeneho, your AI assistant at Amniva. How can I help you today?",
+      sender: 'bot'
+    },
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [quickActions, setQuickActions] = useState<string[]>(initialSettings.quickActions);
-  const [typingAnimationEnabled, setTypingAnimationEnabled] = useState<boolean>(
-    initialSettings.typingAnimation
-  );
+  const [quickActions] = useState<string[]>([
+    'How do I create an Amniva account?',
+    'Tell me about Amniva API',
+    'What is Amniva Prediction?',
+    'How does Verify work?',
+    'What is Amniva Report?',
+    'What is Trending in Amniva?',
+    'Show me pricing information'
+  ]);
 
   // Voice state
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
@@ -39,45 +76,10 @@ const OdenehoComponent = () => {
   });
 
   useEffect(() => {
-    const handleOpenChatbot = () => setIsOpen(true);
-
-    window.addEventListener('openChatbot', handleOpenChatbot);
-
-    const handleSettingsUpdated = () => {
-      const next = getResolvedOdenehoSettings();
-      setMessages((prev) => {
-        if (prev.length > 0 && prev[0].sender === 'bot') {
-          const updated = [...prev];
-          updated[0] = { ...updated[0], text: next.greeting };
-          return updated;
-        }
-        return prev;
-      });
-      setQuickActions(next.quickActions);
-      setTypingAnimationEnabled(next.typingAnimation);
-      if (next.autoOpen) setIsOpen(true);
-    };
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'odenehoSettings') {
-        const next = getResolvedOdenehoSettings();
-        setQuickActions(next.quickActions);
-        setTypingAnimationEnabled(next.typingAnimation);
-      }
-    };
-
-    window.addEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
-    window.addEventListener('storage', handleStorage);
-    window.addEventListener('chatbaseConfigUpdated', () => {});
     window.addEventListener('odenehoVoiceConfigUpdated', () =>
       setVoiceConfig(getOdenehoVoiceConfig())
     );
-
     return () => {
-      window.removeEventListener('openChatbot', handleOpenChatbot);
-      window.removeEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
-      window.removeEventListener('storage', handleStorage);
-      window.removeEventListener('chatbaseConfigUpdated', () => {});
       window.removeEventListener('odenehoVoiceConfigUpdated', () =>
         setVoiceConfig(getOdenehoVoiceConfig())
       );
@@ -90,7 +92,7 @@ const OdenehoComponent = () => {
       toast.error('Voice not configured', {
         description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
       });
-      return; // ✅ no redirect
+      return;
     }
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -125,15 +127,21 @@ const OdenehoComponent = () => {
     return startVoiceMode();
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-    const userMsg: Message = { id: Date.now(), text: inputMessage, sender: 'user' };
+  const handleSendMessage = async (text?: string) => {
+    const content = text || inputMessage;
+    if (!content.trim()) return;
+
+    const userMsg: Message = { id: Date.now(), text: content, sender: 'user' };
     setMessages((prev) => [...prev, userMsg]);
     setInputMessage('');
     setIsTyping(true);
+
     try {
-      // placeholder for AI response
-      const botResponse = `Echo: ${userMsg.text}`;
+      const staticResponse = findStaticAnswer(content);
+      const botResponse = staticResponse
+        ? staticResponse
+        : `I’m still learning! You asked: "${content}". Soon I’ll provide deeper insights as Amniva evolves.`;
+
       setMessages((prev) => [
         ...prev,
         { id: Date.now() + 1, text: botResponse, sender: 'bot' },
@@ -142,13 +150,6 @@ const OdenehoComponent = () => {
       console.error('Bot reply failed:', err);
     } finally {
       setIsTyping(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
     }
   };
 
@@ -218,17 +219,33 @@ const OdenehoComponent = () => {
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Type a message..."
               className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-400"
             />
             <button
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
             >
               <Send size={18} />
             </button>
           </div>
+
+          {/* Quick actions */}
+          {messages.length === 1 && (
+            <div className="p-2 flex flex-wrap gap-2 border-t">
+              {quickActions.map((qa, idx) => (
+                <Button
+                  key={idx}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleSendMessage(qa)}
+                >
+                  {qa}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
