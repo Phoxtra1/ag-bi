@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Send, X, User, Mic, MicOff } from 'lucide-react';
+import { MessageCircle, Send, X, Mic, MicOff } from 'lucide-react';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
-import { getChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
 import { useConversation } from '@11labs/react';
 import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
 import { toast } from 'sonner';
@@ -27,16 +26,12 @@ const OdenehoComponent = () => {
     initialSettings.typingAnimation
   );
 
-  // Voice session state
+  // Voice state
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
   const [isRecording, setIsRecording] = useState(false);
   const conversation = useConversation({
-    onConnect: () => {
-      console.log('Odeneho Voice: connected');
-    },
-    onDisconnect: () => {
-      setIsRecording(false);
-    },
+    onConnect: () => console.log('Odeneho Voice: connected'),
+    onDisconnect: () => setIsRecording(false),
     onError: (err) => {
       console.error('Odeneho Voice error:', err);
       toast.error('Voice error', { description: String(err?.message || err) });
@@ -93,13 +88,9 @@ const OdenehoComponent = () => {
     const cfg = voiceConfig;
     if (!cfg?.agentId || !cfg?.elevenApiKey) {
       toast.error('Voice not configured', {
-        description:
-          'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
       });
-      try {
-        window.open('/admin#odeneho-ai', '_self');
-      } catch {}
-      return;
+      return; // ✅ no redirect
     }
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -141,7 +132,8 @@ const OdenehoComponent = () => {
     setInputMessage('');
     setIsTyping(true);
     try {
-      const botResponse = await getAIResponse(userMsg.text);
+      // placeholder for AI response
+      const botResponse = `Echo: ${userMsg.text}`;
       setMessages((prev) => [
         ...prev,
         { id: Date.now() + 1, text: botResponse, sender: 'bot' },
@@ -196,9 +188,7 @@ const OdenehoComponent = () => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${
-                  msg.sender === 'user' ? 'justify-end' : 'justify-start'
-                }`}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
                   className={`px-3 py-2 rounded-lg max-w-[80%] ${
@@ -211,9 +201,7 @@ const OdenehoComponent = () => {
                 </div>
               </div>
             ))}
-            {isTyping && (
-              <div className="text-gray-400 text-xs">Odeneho is typing...</div>
-            )}
+            {isTyping && <div className="text-gray-400 text-xs">Odeneho is typing...</div>}
           </div>
 
           {/* Input */}
