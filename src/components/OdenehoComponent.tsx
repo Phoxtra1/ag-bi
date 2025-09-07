@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Send, X, User } from 'lucide-react';
+import { MessageCircle, Send, X, User, Mic, MicOff } from 'lucide-react';
 import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
 import { getChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
-import OdenehoVoiceComponent from './OdenehoVoiceComponent';
+import { useConversation } from '@11labs/react';
+import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
+import { toast } from 'sonner';
 
 type Message = {
   id: number;
@@ -27,6 +29,22 @@ const OdenehoComponent = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [quickActions, setQuickActions] = useState<string[]>(initialSettings.quickActions);
   const [typingAnimationEnabled, setTypingAnimationEnabled] = useState<boolean>(initialSettings.typingAnimation);
+
+  // Voice session state (embedded mic)
+  const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
+  const [isRecording, setIsRecording] = useState(false);
+  const conversation = useConversation({
+    onConnect: () => {
+      console.log('Odeneho Voice: connected');
+    },
+    onDisconnect: () => {
+      setIsRecording(false);
+    },
+    onError: (err) => {
+      console.error('Odeneho Voice error:', err);
+      toast.error('Voice error', { description: String(err?.message || err) });
+    },
+  });
 
   useEffect(() => {
     const handleOpenChatbot = () => {
@@ -71,11 +89,15 @@ const OdenehoComponent = () => {
     window.addEventListener('storage', handleStorage);
     window.addEventListener('chatbaseConfigUpdated', handleChatbaseConfigUpdated);
 
+    const handleVoiceConfigUpdate = () => setVoiceConfig(getOdenehoVoiceConfig());
+    window.addEventListener('odenehoVoiceConfigUpdated', handleVoiceConfigUpdate);
+
     return () => {
       window.removeEventListener('openChatbot', handleOpenChatbot);
       window.removeEventListener('odenehoSettingsUpdated', handleSettingsUpdated as EventListener);
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('chatbaseConfigUpdated', handleChatbaseConfigUpdated);
+      window.removeEventListener('odenehoVoiceConfigUpdated', handleVoiceConfigUpdate);
     };
   }, []);
 
@@ -169,42 +191,45 @@ const OdenehoComponent = () => {
     return contextualResponses[Math.floor(Math.random() * contextualResponses.length)];
   };
 
-  const handleSendMessage = async () => {
-    if (inputMessage.trim()) {
-      const userMessage: Message = {
-        id: messages.length + 1,
-        text: inputMessage,
-        sender: 'user'
-      };
-      
-      setMessages(prev => [...prev, userMessage]);
-      setInputMessage('');
-      setIsTyping(true);
-      
-      // Simulate processing delay for more realistic experience
-      const delay = typingAnimationEnabled ? 1500 : 0;
-      setTimeout(async () => {
-        setIsTyping(false);
-        try {
-          const responseText = await getAIResponse(inputMessage);
-          const botResponse: Message = {
-            id: messages.length + 2,
-            text: responseText,
-            sender: 'bot'
-          };
-          setMessages(prev => [...prev, botResponse]);
-        } catch (error) {
-          const errorResponse: Message = {
-            id: messages.length + 2,
-            text: "I'm having trouble processing your request right now. Please try again later.",
-            sender: 'bot'
-          };
-          setMessages(prev => [...prev, errorResponse]);
-        }
-      }, delay);
+  const startVoiceMode = async () => {
+    const cfg = voiceConfig;
+    if (!cfg?.agentId || !cfg?.elevenApiKey) {
+      toast.error('Voice not configured', {
+        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+      });
+      try { window.open('/admin#odeneho-ai', '_self'); } catch {}
+      return;
+    }
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const resp = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversation/get_signed_url?agent_id=${cfg.agentId}`,
+        { headers: { 'xi-api-key': cfg.elevenApiKey } }
+      );
+      if (!resp.ok) throw new Error(`Signed URL failed: ${resp.status}`);
+      const data = await resp.json();
+      await conversation.startSession({ signedUrl: data.signed_url });
+      setIsRecording(true);
+    } catch (e: any) {
+      console.error('Failed to start voice:', e);
+      toast.error('Unable to start recording', { description: e?.message || 'Check mic permissions and config.' });
     }
   };
 
+  const stopVoiceMode = async () => {
+    try {
+      if (conversation.status === 'connected') {
+        await conversation.endSession();
+      }
+    } finally {
+      setIsRecording(false);
+    }
+  };
+
+  const toggleRecording = async () => {
+    if (isRecording) return stopVoiceMode();
+    return startVoiceMode();
+  };
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -346,6 +371,14 @@ const OdenehoComponent = () => {
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 disabled={isTyping}
               />
+              <Button
+                onClick={toggleRecording}
+                size="sm"
+                className={`px-3 ${isRecording ? 'bg-red-600 hover:bg-red-700' : ''}`}
+                title={isRecording ? 'Stop recording' : 'Start voice' }
+              >
+                {isRecording ? <MicOff className="h-4 w-4 text-white" /> : <Mic className="h-4 w-4" />}
+              </Button>
               <Button 
                 onClick={handleSendMessage} 
                 size="sm" 

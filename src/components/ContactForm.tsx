@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { Send, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { handleContactSubmission } from '@/lib/apiHandlers';
 
 interface ContactFormData {
   fullName: string;
@@ -29,52 +29,17 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-    
     try {
-      // Get existing contacts from localStorage
-      const existingContacts = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-      
-      // Create new contact submission
-      const newContact = {
-        ...data,
-        timestamp: new Date().toISOString(),
-        id: Date.now().toString(),
-        status: 'new'
-      };
-      
-      // Add to existing contacts
-      existingContacts.push(newContact);
-      
-      // Save back to localStorage
-      localStorage.setItem('contactSubmissions', JSON.stringify(existingContacts));
-      
-      // Trigger storage event for real-time updates
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'contactSubmissions',
-        newValue: JSON.stringify(existingContacts)
-      }));
+      const result = await handleContactSubmission(data);
+      if (!result.success) throw new Error(result.error || 'Submission failed');
 
-      console.log('Contact form submitted successfully:', newContact);
-      
       setIsSubmitted(true);
       form.reset();
-      
-      toast({
-        title: "Message Sent Successfully!",
-        description: "We'll get back to you within 48 hours.",
-      });
-      
-      if (onSuccess) {
-        setTimeout(onSuccess, 2000);
-      }
-      
-    } catch (error) {
+      toast({ title: 'Message Sent Successfully!', description: "We'll get back to you within 48 hours." });
+      onSuccess && setTimeout(onSuccess, 1200);
+    } catch (error: any) {
       console.error('Contact form submission error:', error);
-      toast({
-        title: "Submission Failed",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
+      toast({ title: 'Submission Failed', description: error?.message || 'Please try again later.', variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
     }

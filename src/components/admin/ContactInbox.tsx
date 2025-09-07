@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { listContacts, updateContactStatus, deleteContact } from '@/lib/contacts';
 
 interface ContactMessage {
   id: string;
@@ -38,83 +38,49 @@ const ContactInbox = () => {
 
   useEffect(() => {
     loadMessages();
-
-    // Listen for storage changes (real-time updates)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'contactSubmissions') {
-        console.log('ContactInbox: Storage change detected, reloading messages');
-        loadMessages();
-      }
-    };
-
-    // Listen for custom events
-    const handleCustomUpdate = () => {
-      console.log('ContactInbox: Custom event detected, reloading messages');
-      loadMessages();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('contactUpdated', handleCustomUpdate);
-
-    // Poll for updates every 5 seconds
-    const interval = setInterval(loadMessages, 5000);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('contactUpdated', handleCustomUpdate);
-      clearInterval(interval);
-    };
   }, []);
 
-  const loadMessages = () => {
+  const loadMessages = async () => {
+    setIsLoading(true);
     try {
-      const stored = localStorage.getItem('contactSubmissions');
-      console.log('ContactInbox: Loading messages from localStorage:', stored);
-      
-      if (stored) {
-        const parsedMessages = JSON.parse(stored);
-        console.log('ContactInbox: Parsed messages:', parsedMessages);
-        setMessages(parsedMessages);
-      } else {
-        console.log('ContactInbox: No messages found in localStorage');
-        setMessages([]);
-      }
+      const docs: any[] = await listContacts();
+      const mapped = docs.map((d) => ({
+        id: d.$id,
+        fullName: d.fullName,
+        email: d.email,
+        subject: d.subject,
+        category: d.category,
+        message: d.message,
+        timestamp: d.timestamp || d.$createdAt,
+        status: (d.status as 'new' | 'read') || 'new',
+      }));
+      setMessages(mapped);
     } catch (error) {
-      console.error('ContactInbox: Failed to load contact messages:', error);
+      console.error('ContactInbox: Failed to load from Appwrite:', error);
       setMessages([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const markAsRead = (id: string) => {
-    const updated = messages.map(msg => 
-      msg.id === id ? { ...msg, status: 'read' as const } : msg
-    );
-    setMessages(updated);
-    localStorage.setItem('contactSubmissions', JSON.stringify(updated));
-    
-    // Trigger update event
-    window.dispatchEvent(new CustomEvent('contactUpdated'));
-    
-    toast({
-      title: "Message marked as read",
-      description: "Contact message has been marked as read.",
-    });
+  const markAsRead = async (id: string) => {
+    try {
+      await updateContactStatus(id, 'read');
+      await loadMessages();
+      toast({ title: 'Message marked as read' });
+    } catch (e) {
+      toast({ title: 'Failed to update', variant: 'destructive' });
+    }
   };
 
-  const deleteMessage = (id: string) => {
-    const updated = messages.filter(msg => msg.id !== id);
-    setMessages(updated);
-    localStorage.setItem('contactSubmissions', JSON.stringify(updated));
-    
-    // Trigger update event
-    window.dispatchEvent(new CustomEvent('contactUpdated'));
-    
-    toast({
-      title: "Message deleted",
-      description: "Contact message has been removed.",
-    });
+  const deleteMessage = async (id: string) => {
+    try {
+      await deleteContact(id);
+      await loadMessages();
+      toast({ title: 'Message deleted' });
+    } catch (e) {
+      toast({ title: 'Failed to delete', variant: 'destructive' });
+    }
   };
 
   const viewMessage = (message: ContactMessage) => {

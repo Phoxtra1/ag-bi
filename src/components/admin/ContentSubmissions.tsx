@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { listContentSubmissions, updateContentSubmissionStatus, deleteContentSubmission } from '@/lib/contentSubmissions';
 
 interface ContentSubmission {
   id: string;
@@ -40,41 +40,48 @@ const ContentSubmissions = () => {
     loadSubmissions();
   }, []);
 
-  const loadSubmissions = () => {
+  const loadSubmissions = async () => {
+    setIsLoading(true);
     try {
-      const stored = localStorage.getItem('contentSubmissions');
-      if (stored) {
-        setSubmissions(JSON.parse(stored));
-      }
-    } catch (error) {
-      console.error('Failed to load submissions:', error);
+      const docs: any[] = await listContentSubmissions();
+      const mapped = docs.map((d) => ({
+        id: d.$id,
+        title: d.title,
+        link: d.link || '',
+        type: d.type,
+        content: d.content || '',
+        submissionTime: d.submissionTime || d.$createdAt,
+        status: d.status || 'pending',
+        submitterName: d.submitterName,
+        submitterEmail: d.submitterEmail,
+      })) as ContentSubmission[];
+      setSubmissions(mapped);
+    } catch (e) {
+      console.error('Failed to load submissions:', e);
+      setSubmissions([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateSubmissionStatus = (id: string, newStatus: 'approved' | 'rejected') => {
-    const updated = submissions.map(sub => 
-      sub.id === id ? { ...sub, status: newStatus } : sub
-    );
-    setSubmissions(updated);
-    localStorage.setItem('contentSubmissions', JSON.stringify(updated));
-    
-    toast({
-      title: `Submission ${newStatus}`,
-      description: `Content has been ${newStatus} successfully.`,
-    });
+  const updateSubmissionStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
+    try {
+      await updateContentSubmissionStatus(id, newStatus);
+      await loadSubmissions();
+      toast({ title: `Submission ${newStatus}`, description: `Content has been ${newStatus} successfully.` });
+    } catch (e) {
+      toast({ title: 'Failed to update', variant: 'destructive' });
+    }
   };
 
-  const deleteSubmission = (id: string) => {
-    const updated = submissions.filter(sub => sub.id !== id);
-    setSubmissions(updated);
-    localStorage.setItem('contentSubmissions', JSON.stringify(updated));
-    
-    toast({
-      title: "Submission deleted",
-      description: "Content submission has been removed.",
-    });
+  const deleteSubmission = async (id: string) => {
+    try {
+      await deleteContentSubmission(id);
+      await loadSubmissions();
+      toast({ title: 'Submission deleted', description: 'Content submission has been removed.' });
+    } catch (e) {
+      toast({ title: 'Failed to delete', variant: 'destructive' });
+    }
   };
 
   const getStatusBadge = (status: string) => {

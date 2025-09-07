@@ -32,6 +32,7 @@ import NotFound from "./pages/NotFound";
 
 // ✅ Import centralized Odeneho AI assistant
 import OdenehoComponent from "@/components/OdenehoComponent";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -47,14 +48,18 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/verify" element={<VerifyInfo />} />
-          <Route path="/trending" element={<Trending />} />
-          <Route path="/predictions" element={<Predictions />} />
-          <Route path="/reports" element={<ReportInsights />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/api-organizations" element={<ApiOrganizations />} />
-          <Route path="/dashboard" element={<UserDashboard />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+
+          {/* Protected routes */}
+          <Route path="/verify" element={<RequireAuth><VerifyInfo /></RequireAuth>} />
+          <Route path="/trending" element={<RequireAuth><Trending /></RequireAuth>} />
+          <Route path="/predictions" element={<RequireAuth><Predictions /></RequireAuth>} />
+          <Route path="/reports" element={<RequireAuth><ReportInsights /></RequireAuth>} />
+          <Route path="/pricing" element={<RequireAuth><Pricing /></RequireAuth>} />
+          <Route path="/api-organizations" element={<RequireAuth><ApiOrganizations /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><UserDashboard /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+
+          {/* Other routes (optional to protect later) */}
           <Route path="/amnewsworld" element={<Amnewsworld />} />
           <Route path="/about" element={<About />} />
           <Route path="/careers" element={<Careers />} />

@@ -210,11 +210,6 @@ const MainContent = () => {
           Join organizations worldwide that trust Amniva for accurate, real-time intelligence.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/dashboard">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-              Access Dashboard
-            </Button>
-          </Link>
           <Link to="/verify">
             <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
               Try Verification Tool
