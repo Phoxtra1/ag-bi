@@ -136,7 +136,7 @@ const OdenehoComponent = () => {
       const staticResponse = findStaticAnswer(content);
       const botResponse = staticResponse
         ? staticResponse
-        : "I’m still learning, but that's a great question! I'll soon provide deeper insights as Amniva evolves.";
+        : "Good question! To create an Amniva account, sign up on our portal with your email.";
 
       setMessages((prev) => [
         ...prev,
