@@ -20,7 +20,7 @@ const staticAnswers: Record<string, string> = {
   'amniva api':
     'The Amniva API lets developers integrate Prediction, Verification, and Reporting into apps and platforms. It provides real-time access to media intelligence tools.',
   'prediction':
-    'Amniva Prediction uses AI to forecast media trends, audience behavior, and viral potential. Perfect for journalists, brands, and agencies.',
+    'Amniva Prediction leverages AI to analyze past events, current trends, and historical data, delivering political, environmental, situational, and societal insights. It anticipates potential outcomes, helping individuals and organizations make informed decisions and take timely precautions.',
   'verify':
     'Amniva Verify authenticates content and provides insights to combat misinformation and ensure trust across digital platforms.',
   'report':
