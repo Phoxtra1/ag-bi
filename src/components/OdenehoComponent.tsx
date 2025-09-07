@@ -30,7 +30,7 @@ const staticAnswers: Record<string, string> = {
   pricing:
     'Amniva offers flexible plans: entry-level for individuals, business plans for startups, and enterprise options. Visit amniva.io/pricing for full details.',
   'what is amniva':
-    'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.'
+    'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.',
 };
 
 const findStaticAnswer = (input: string) => {
@@ -48,20 +48,20 @@ const OdenehoComponent = () => {
     {
       id: 1,
       text: "Hello there! I'm Odeneho, your AI assistant at Amniva. How can I help you today?",
-      sender: 'bot'
+      sender: 'bot',
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [quickActions] = useState<string[]>([
+  const quickActions: string[] = [
     'How do I create an Amniva account?',
     'Tell me about Amniva API',
     'What is Amniva Prediction?',
     'How does Verify work?',
     'What is Amniva Report?',
     'What is Trending in Amniva?',
-    'Show me pricing information'
-  ]);
+    'Show me pricing information',
+  ];
 
   // Voice state
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
@@ -90,7 +90,8 @@ const OdenehoComponent = () => {
     const cfg = voiceConfig;
     if (!cfg?.agentId || !cfg?.elevenApiKey) {
       toast.error('Voice not configured', {
-        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+        description:
+          'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
       });
       return;
     }
@@ -140,7 +141,7 @@ const OdenehoComponent = () => {
       const staticResponse = findStaticAnswer(content);
       const botResponse = staticResponse
         ? staticResponse
-        : `I’m still learning! You asked: "${content}". Soon I’ll provide deeper insights as Amniva evolves.`;
+        : 'I can help you with Amniva account, APIs, Prediction, Verify, Report, Trending, and pricing. Could you rephrase your question?';
 
       setMessages((prev) => [
         ...prev,
@@ -206,34 +207,34 @@ const OdenehoComponent = () => {
           </div>
 
           {/* Input */}
-          <div className="border-t p-2 flex items-center space-x-2">
-            <button
-              onClick={toggleRecording}
-              className={`p-2 rounded-full ${
-                isRecording ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
-              }`}
-            >
-              {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
-            </button>
-            <input
-              type="text"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Type a message..."
-              className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-400"
-            />
-            <button
-              onClick={() => handleSendMessage()}
-              className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
-            >
-              <Send size={18} />
-            </button>
-          </div>
+          <div className="border-t p-2 flex flex-col space-y-2">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={toggleRecording}
+                className={`p-2 rounded-full ${
+                  isRecording ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
+                }`}
+              >
+                {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder="Type a message..."
+                className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-400"
+              />
+              <button
+                onClick={() => handleSendMessage()}
+                className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+              >
+                <Send size={18} />
+              </button>
+            </div>
 
-          {/* Quick actions */}
-          {messages.length === 1 && (
-            <div className="p-2 flex flex-wrap gap-2 border-t">
+            {/* Quick actions always visible */}
+            <div className="flex flex-wrap gap-2">
               {quickActions.map((qa, idx) => (
                 <Button
                   key={idx}
@@ -245,7 +246,7 @@ const OdenehoComponent = () => {
                 </Button>
               ))}
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
