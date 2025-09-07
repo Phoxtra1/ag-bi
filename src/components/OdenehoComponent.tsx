@@ -16,21 +16,23 @@ type Message = {
 // 🔹 Static Knowledge Base
 const staticAnswers: Record<string, string> = {
   'create amniva account':
-    'To create an Amniva account, sign up on our portal with your email. Once verified, you’ll gain access to Prediction, Verify, Report, and Trending.',
+    'To create an Amniva account, sign up on our portal with your email and password. Once verified, you’ll gain access to Prediction, Verify, Report, and Trending.',
   'amniva api':
     'The Amniva API lets developers integrate Prediction, Verification, and Reporting into apps and platforms. It provides real-time access to media intelligence tools.',
   prediction:
     'Amniva Prediction uses AI to forecast media trends, audience behavior, and viral potential. Perfect for journalists, brands, and agencies.',
   verify:
-    'Amniva Verify authenticates media content to combat misinformation and ensure trust across digital platforms.',
+    'Amniva Verify authenticates content and provide insights to combat misinformation and ensure trust across digital platforms.',
   report:
-    'Amniva Report delivers analytics on media activity, reach, and engagement to measure impact.',
+    'Amniva Report delivers analytics on sources and details of insight reports, reach, and engagement to measure impact.',
   trending:
     'Amniva Trending shows the most viral and relevant stories in real time, helping you follow what matters now.',
   pricing:
-    'Amniva offers flexible plans: entry-level for individuals, business plans for startups, and enterprise options. Visit amniva.io/pricing for full details.',
-  'what is amniva':
+    'Amniva offers flexible plans: entry-level free trial for individuals, and organizations, by offering Pro, Elite and Institutiona options. Visit amniva.io/pricing for full details.',
+  'what is Amniva':
     'Amniva is a media intelligence platform combining AI-powered insights with real-time monitoring. It helps you track, verify, predict, and report media content effectively.'
+  'who do we serve':
+    'Amniva provide services to individuals, media organizations, businesses, civil society organizations, research institutions and reseatchers who want to provide authentic information for an inform public decision making.'
 };
 
 const findStaticAnswer = (input: string) => {
