@@ -7,9 +7,6 @@ import { useConversation } from '@11labs/react';
 import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
 import { toast } from 'sonner';
 
-// ✅ FIX: Import the voice component
-import OdenehoVoiceComponent from '@/components/OdenehoVoiceComponent';
-
 type Message = {
   id: number;
   text: string;
@@ -17,7 +14,6 @@ type Message = {
 };
 
 const OdenehoComponent = () => {
-  // Load settings at mount
   const initialSettings = getResolvedOdenehoSettings();
 
   const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
@@ -27,9 +23,11 @@ const OdenehoComponent = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [quickActions, setQuickActions] = useState<string[]>(initialSettings.quickActions);
-  const [typingAnimationEnabled, setTypingAnimationEnabled] = useState<boolean>(initialSettings.typingAnimation);
+  const [typingAnimationEnabled, setTypingAnimationEnabled] = useState<boolean>(
+    initialSettings.typingAnimation
+  );
 
-  // Voice session state (embedded mic)
+  // Voice session state
   const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
   const [isRecording, setIsRecording] = useState(false);
   const conversation = useConversation({
@@ -46,14 +44,11 @@ const OdenehoComponent = () => {
   });
 
   useEffect(() => {
-    const handleOpenChatbot = () => {
-      setIsOpen(true);
-    };
+    const handleOpenChatbot = () => setIsOpen(true);
 
     window.addEventListener('openChatbot', handleOpenChatbot);
 
-    // React to settings changes across the app in real-time
-    const handleSettingsUpdated = (e: Event) => {
+    const handleSettingsUpdated = () => {
       const next = getResolvedOdenehoSettings();
       setMessages((prev) => {
         if (prev.length > 0 && prev[0].sender === 'bot') {
@@ -94,13 +89,12 @@ const OdenehoComponent = () => {
     };
   }, []);
 
-  // --- keep all your getAIResponse logic as is ---
-
   const startVoiceMode = async () => {
     const cfg = voiceConfig;
     if (!cfg?.agentId || !cfg?.elevenApiKey) {
       toast.error('Voice not configured', {
-        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
+        description:
+          'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
       });
       try {
         window.open('/admin#odeneho-ai', '_self');
@@ -167,32 +161,89 @@ const OdenehoComponent = () => {
   };
 
   return (
-    <>
-      <div className="fixed bottom-6 right-6 z-50">
-        {!isOpen && (
-          <Button
-            className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse hover:animate-none transition-all duration-300"
-            onClick={() => setIsOpen(true)}
-          >
-            <img
-              src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png"
-              alt="Odeneho AI"
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          </Button>
-        )}
+    <div className="fixed bottom-6 right-6 z-50">
+      {!isOpen && (
+        <Button
+          className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg animate-pulse hover:animate-none transition-all duration-300"
+          onClick={() => setIsOpen(true)}
+        >
+          <img
+            src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png"
+            alt="Odeneho AI"
+            className="w-8 h-8 rounded-full object-cover"
+          />
+        </Button>
+      )}
 
-        {/* Chat Window */}
-        {isOpen && (
-          <div className="bg-white rounded-lg shadow-2xl w-96 h-[500px] flex flex-col border border-gray-200">
-            {/* --- header, messages, quick actions, input etc. remain unchanged --- */}
+      {isOpen && (
+        <div className="bg-white rounded-lg shadow-2xl w-96 h-[500px] flex flex-col border border-gray-200">
+          {/* Header */}
+          <div className="flex items-center justify-between p-3 border-b">
+            <div className="flex items-center space-x-2">
+              <MessageCircle className="w-5 h-5 text-blue-600" />
+              <h2 className="font-semibold text-gray-800">Odeneho AI</h2>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
-        )}
-      </div>
 
-      {/* ✅ Voice Component is now properly imported and rendered */}
-      <OdenehoVoiceComponent />
-    </>
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 text-sm">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${
+                  msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                }`}
+              >
+                <div
+                  className={`px-3 py-2 rounded-lg max-w-[80%] ${
+                    msg.sender === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isTyping && (
+              <div className="text-gray-400 text-xs">Odeneho is typing...</div>
+            )}
+          </div>
+
+          {/* Input */}
+          <div className="border-t p-2 flex items-center space-x-2">
+            <button
+              onClick={toggleRecording}
+              className={`p-2 rounded-full ${
+                isRecording ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+            </button>
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type a message..."
+              className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring focus:border-blue-400"
+            />
+            <button
+              onClick={handleSendMessage}
+              className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
+            >
+              <Send size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
