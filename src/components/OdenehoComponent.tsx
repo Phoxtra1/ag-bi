@@ -70,9 +70,9 @@ const OdenehoComponent = () => {
   const conversation = useConversation({
     onConnect: () => console.log('Odeneho Voice: connected'),
     onDisconnect: () => setIsRecording(false),
-    onError: (err) => {
+    onError: (err: any) => {
       console.error('Odeneho Voice error:', err);
-      toast.error('Voice error', { description: String(err?.message || err) });
+      toast.error('Voice error', { description: err?.message || String(err) });
     },
   });
 
