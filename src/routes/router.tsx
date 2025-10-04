@@ -12,6 +12,7 @@ import Newsletter from "@/components/NewsletterForm";
 import HelpCenter from "@/pages/HelpCenter";
 import NotFound from "@/pages/NotFound";
 import Index from "@/pages/Index";
+import RequireAuth from "@/components/auth/RequireAuth";
 
 const router = createBrowserRouter([
   {
@@ -28,23 +29,23 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <RequireAuth><Dashboard /></RequireAuth>,
   },
   {
     path: "/contact",
-    element: <Contact />,
+    element: <RequireAuth><Contact /></RequireAuth>,
   },
   {
     path: "/api-request",
-    element: <ApiRequest />,
+    element: <RequireAuth><ApiRequest /></RequireAuth>,
   },
   {
     path: "/prediction",
-    element: <Prediction />,
+    element: <RequireAuth><Prediction /></RequireAuth>,
   },
   {
     path: "/newsletter",
-    element: <Newsletter />,
+    element: <RequireAuth><Newsletter /></RequireAuth>,
   },
   {
     path: "/help-center",

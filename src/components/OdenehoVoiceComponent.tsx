@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, VolumeX } from "lucide-react";
+import { Mic, VolumeX } from "lucide-react";
 import { getOdenehoVoiceConfig } from "@/lib/odenehoVoiceConfig";
 import { toast } from "sonner";
 import { useConversation } from "@11labs/react";
@@ -19,11 +19,8 @@ const OdenehoVoiceComponent = () => {
       setIsListening(false);
       toast("Voice chat ended");
     },
-    onMessage: (message) => {
-      console.log("📩 Odeneho Voice message:", message);
-      if (message.type === "response.audio") {
-        console.log("🔊 AI is speaking...");
-      }
+    onMessage: (payload: any) => {
+      console.log("📩 Odeneho Voice message:", payload);
     },
     onError: (error) => {
       console.error("⚠️ Odeneho Voice error:", error);
@@ -90,19 +87,6 @@ const OdenehoVoiceComponent = () => {
     }
   };
 
-  const toggleMute = async () => {
-    try {
-      if (isListening) {
-        await conversation.muteMic();
-        setIsListening(false);
-      } else {
-        await conversation.unmuteMic();
-        setIsListening(true);
-      }
-    } catch (err) {
-      console.error("Mic toggle failed:", err);
-    }
-  };
 
   // --- RENDER ---
   return (
@@ -117,24 +101,6 @@ const OdenehoVoiceComponent = () => {
         </Button>
       ) : (
         <div className="flex flex-col gap-2">
-          {/* Mic Toggle */}
-          <Button
-            onClick={toggleMute}
-            className={`h-12 w-12 rounded-full shadow-lg ${
-              isListening
-                ? "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 animate-pulse"
-                : "bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800"
-            }`}
-            title={isListening ? "Mute Microphone" : "Unmute Microphone"}
-          >
-            {isListening ? (
-              <Mic className="w-6 h-6 text-white" />
-            ) : (
-              <MicOff className="w-6 h-6 text-white" />
-            )}
-          </Button>
-
-          {/* End Session */}
           <Button
             onClick={stopVoiceMode}
             variant="outline"
@@ -143,8 +109,6 @@ const OdenehoVoiceComponent = () => {
           >
             <VolumeX className="w-5 h-5" />
           </Button>
-
-          {/* Speaking Indicator */}
           {conversation.isSpeaking && (
             <div className="absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full animate-pulse" />
           )}
