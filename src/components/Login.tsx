@@ -113,6 +113,11 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex justify-between items-start mb-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+              ← Back to Home
+            </Button>
+          </div>
           <CardTitle className="text-2xl font-bold">Amniva</CardTitle>
           <CardDescription>Welcome! Please sign in or create your account</CardDescription>
         </CardHeader>

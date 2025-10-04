@@ -5,6 +5,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
 import Dashboard from "@/components/DashboardUser";
+import AdminDashboard from "@/pages/AdminDashboard";
 import Contact from "@/components/ContactForm";
 import ApiRequest from "@/components/ApiRequestForm";
 import Prediction from "@/components/PredictionForm";
@@ -13,6 +14,7 @@ import HelpCenter from "@/pages/HelpCenter";
 import NotFound from "@/pages/NotFound";
 import Index from "@/pages/Index";
 import RequireAuth from "@/components/auth/RequireAuth";
+import RequireAdmin from "@/components/auth/RequireAdmin";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <RequireAuth><Dashboard /></RequireAuth>,
+  },
+  {
+    path: "/admin",
+    element: <RequireAuth><RequireAdmin><AdminDashboard /></RequireAdmin></RequireAuth>,
   },
   {
     path: "/contact",

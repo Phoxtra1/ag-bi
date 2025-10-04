@@ -72,6 +72,11 @@ export default function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex justify-between items-start mb-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+              ← Back to Home
+            </Button>
+          </div>
           <CardTitle className="text-2xl font-bold text-gray-900">Create Your Account</CardTitle>
           <CardDescription>
             Join Amniva and start verifying information with AI-powered intelligence
