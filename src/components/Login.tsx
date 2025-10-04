@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Building, User } from "lucide-react";
 import { handleLogin, handleSignup } from "@/lib/apiHandlers";
+import { sendPasswordRecovery } from "@/lib/auth";
 import { useToast } from "@/hooks/use-toast";
 
 interface LoginFormData {
@@ -28,6 +30,9 @@ interface RegisterFormData {
 
 export default function Login() {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [isResetting, setIsResetting] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -109,6 +114,45 @@ export default function Login() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      const result = await sendPasswordRecovery(resetEmail);
+      if (result.success) {
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your inbox for password reset instructions.",
+        });
+        setForgotPasswordOpen(false);
+        setResetEmail('');
+      } else {
+        toast({
+          title: "Failed to Send Reset Email",
+          description: result.error || "Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset email.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -159,6 +203,38 @@ export default function Login() {
                 <Button type="submit" className="w-full">
                   Sign In
                 </Button>
+
+                <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="link" className="w-full text-sm">
+                      Forgot Password?
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Reset Your Password</DialogTitle>
+                      <DialogDescription>
+                        Enter your email address and we'll send you instructions to reset your password.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="reset-email">Email Address</Label>
+                        <Input
+                          id="reset-email"
+                          type="email"
+                          placeholder="your.email@example.com"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <Button type="submit" className="w-full" disabled={isResetting}>
+                        {isResetting ? "Sending..." : "Send Reset Link"}
+                      </Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </form>
             </TabsContent>
 

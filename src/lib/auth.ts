@@ -112,3 +112,24 @@ export const logoutUser = async () => {
     return { success: false, error: error.message };
   }
 };
+
+export const sendPasswordRecovery = async (email: string) => {
+  try {
+    const resetUrl = `${window.location.origin}/reset-password`;
+    await account.createRecovery(email, resetUrl);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Password recovery error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const resetPassword = async (userId: string, secret: string, password: string) => {
+  try {
+    await account.updateRecovery(userId, secret, password);
+    return { success: true };
+  } catch (error: any) {
+    console.error('Password reset error:', error);
+    return { success: false, error: error.message };
+  }
+};
