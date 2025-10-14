@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { getCurrentUser } from '@/lib/auth';
-import { databases } from '@/lib/appwrite';
+import { databases, DATABASE_ID } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 
 const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -21,7 +21,7 @@ const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
         // Check if user has admin role in user_roles collection
         const response = await databases.listDocuments(
-          'amniva-db',
+          DATABASE_ID,
           'user_roles',
           [Query.equal('user_id', user.$id), Query.equal('role', 'admin')]
         );
