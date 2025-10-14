@@ -33,12 +33,12 @@ export const DATABASE_ID = "amniva-db03";
 export const CONTACTS_COLLECTION_ID = "contacts-ava";
 export const PREDICTIONS_COLLECTION_ID = "predictions-ava";
 export const NEWSLETTERS_COLLECTION_ID = "newslettersubscribers-ava";
-export const API_REQUESTS_COLLECTION_ID = "apirequests-ava";
+export const API_REQUESTS_COLLECTION_ID = "api-requests-ava";
 export const CONTENT_SUBMISSIONS_COLLECTION_ID =
-  "686aac0f002bcbecc1fd";
+  "content-submissions-ava";
 
-export const VERIFICATION_BUCKET_ID = "your-verification-bucket-id";
-export const CONTENT_BUCKET_ID = "your-content-bucket-id";
+export const VERIFICATION_BUCKET_ID = "verification-ava";
+export const CONTENT_BUCKET_ID = "content-ava";
 
 // Quick test function to confirm deployment connection
 export const testConnection = async () => {

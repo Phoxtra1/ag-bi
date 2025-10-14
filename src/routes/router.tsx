@@ -7,7 +7,7 @@ import Signup from "@/components/Signup";
 import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/components/DashboardUser";
 import AdminDashboard from "@/pages/AdminDashboard";
-import Contact from "@/components/ContactForm";
+import Contact from "@/pages/Contact";
 import ApiRequest from "@/components/ApiRequestForm";
 import Prediction from "@/components/PredictionForm";
 import Newsletter from "@/components/NewsletterForm";
