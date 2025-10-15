@@ -1,18 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
 import Header from '@/components/Header';
 import { 
   BarChart, 
@@ -29,12 +18,30 @@ import {
   Line
 } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { useForm } from 'react-hook-form';
-import { useToast } from '@/hooks/use-toast';
+import { account } from '@/lib/appwrite';
+import { useNavigate } from 'react-router-dom';
+import ReportSubmissionForm from '@/components/ReportSubmissionForm';
+import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 
 const ReportInsights = () => {
-  const { toast } = useToast();
-  const form = useForm();
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      await account.get();
+      setIsAuthenticated(true);
+    } catch (error) {
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Sample data for charts
   const topIssuesData = [
@@ -67,14 +74,16 @@ const ReportInsights = () => {
     { week: 'Week 4', verified: 203, fake: 67, total: 270 }
   ];
 
-  const onSubmitInsight = (data: any) => {
-    console.log('Insight submitted:', data);
-    toast({
-      title: "Insight Submitted",
-      description: "Your insight has been submitted for analysis and will be reviewed by our AI system.",
-    });
-    form.reset();
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Header />
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -100,6 +109,26 @@ const ReportInsights = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
+        {/* User Submission & Insights Section (Only for authenticated users) */}
+        {isAuthenticated && (
+          <div className="mb-12">
+            <Tabs defaultValue="submit" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="submit">Submit Report</TabsTrigger>
+                <TabsTrigger value="insights">My Insights & History</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="submit">
+                <ReportSubmissionForm />
+              </TabsContent>
+
+              <TabsContent value="insights">
+                <UserInsightsDashboard />
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
         
         {/* AI-Powered Insights Section */}
         <div className="mb-12">
@@ -316,98 +345,8 @@ const ReportInsights = () => {
           </Card>
         </div>
 
-        {/* Two Column Layout for Form and Briefs */}
+        {/* Weekly/Monthly Briefs */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
-          
-          {/* Submit Your Insight */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Submit Your Insight</CardTitle>
-              <CardDescription>Share your analysis and contribute to our intelligence network</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmitInsight)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="topic"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Topic</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Political Misinformation Campaign" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="insight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Insight Summary</FormLabel>
-                        <FormControl>
-                          <Textarea 
-                            placeholder="Describe your insight, patterns you've noticed, or analysis..."
-                            className="min-h-24"
-                            {...field} 
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="region"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Region</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., West Africa" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Insight Type</FormLabel>
-                          <FormControl>
-                            <select {...field} className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md">
-                              <option value="">Select type...</option>
-                              <option value="political">Political</option>
-                              <option value="civic">Civic</option>
-                              <option value="economic">Economic</option>
-                              <option value="environmental">Environmental</option>
-                              <option value="health">Health</option>
-                              <option value="technology">Technology</option>
-                              <option value="social">Social</option>
-                            </select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  
-                  <Button type="submit" className="w-full">
-                    Submit Insight
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-
-          {/* Weekly/Monthly Briefs */}
           <Card>
             <CardHeader>
               <CardTitle>Intelligence Briefs</CardTitle>

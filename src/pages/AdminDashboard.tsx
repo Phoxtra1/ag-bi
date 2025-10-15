@@ -47,6 +47,7 @@ import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
 import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI'; // added
 import AIEnginePanel from '@/components/admin/AIEnginePanel';
 import TrainingSystem from '@/components/admin/TrainingSystem';
+import InsightReviewPanel from '@/components/admin/InsightReviewPanel';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -165,6 +166,7 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
+    { id: 'insight-review', label: 'Insight Review', icon: Bot },
     { id: 'api-requests', label: 'API Requests', icon: Building },
     { id: 'feed-sources', label: 'Feed Sources', icon: Rss },
     { id: 'content-inbox', label: 'Content Inbox', icon: FileText, badge: notifications.contentPending },
@@ -264,6 +266,7 @@ const AdminDashboard = () => {
             {activeTab === 'overview' && <DashboardOverview stats={realTimeStats} />}
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'admins' && <AdminInvitation />}
+            {activeTab === 'insight-review' && <InsightReviewPanel />}
             {activeTab === 'api-requests' && <ApiAccessRequests />}
             {activeTab === 'feed-sources' && <CustomFeedManager />}
             {activeTab === 'content-inbox' && <ContentSubmissions />}

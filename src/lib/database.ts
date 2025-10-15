@@ -22,6 +22,8 @@ export const PREDICTIONS_COLLECTION_ID = "predictions-ava";
 export const NEWSLETTERS_COLLECTION_ID = "newslettersubscribers-ava";
 export const API_REQUESTS_COLLECTION_ID = "api-requests-ava";
 export const CONTENT_SUBMISSIONS_COLLECTION_ID = "content-submissions-ava";
+export const REPORTS_COLLECTION_ID = "reports-ava";
+export const INSIGHTS_COLLECTION_ID = "insights-ava";
 
 // Storage Bucket IDs
 export const VERIFICATION_BUCKET_ID = "verification-ava";
