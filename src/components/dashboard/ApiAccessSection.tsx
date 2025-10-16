@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import ApiAccessForm from './ApiAccessForm';
 import { 
   Key, 
   Copy, 
@@ -21,9 +22,11 @@ import {
 const ApiAccessSection = () => {
   const [apiKey, setApiKey] = useState('sk-amniva-1234567890abcdef...');
   const [isKeyVisible, setIsKeyVisible] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false); // Track if user has applied
+  const [isApproved, setIsApproved] = useState(false); // Track if admin approved
 
   // Mock user subscription status
-  const hasInstitutionalPlan = true; // This would come from user's subscription data
+  const hasInstitutionalPlan = false; // This would come from user's subscription data
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -36,36 +39,33 @@ const ApiAccessSection = () => {
     alert('New API key generated!');
   };
 
-  if (!hasInstitutionalPlan) {
+  // Show application form if not applied yet
+  if (!hasApplied && !isApproved) {
+    return <ApiAccessForm />;
+  }
+
+  // Show pending status if applied but not approved
+  if (hasApplied && !isApproved) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="w-6 h-6" />
-            API Access
+            API Access Application
           </CardTitle>
-          <CardDescription>
-            Access Amniva's powerful API for institutional use
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">API Access Required</h3>
+            <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Application Under Review</h3>
             <p className="text-gray-600 mb-6">
-              Upgrade to an Institutional Plan to access our API and unlock advanced features for your organization.
+              Your API access request is currently being reviewed by our team. 
+              You'll be notified once it's approved and your API keys will be accessible here.
             </p>
-            <div className="space-y-3">
-              <Button asChild className="w-full">
-                <a href="/api-organizations">
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Register Organization & Subscribe
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="/pricing">View Pricing Plans</a>
-              </Button>
-            </div>
+            <Badge className="bg-yellow-100 text-yellow-800">
+              <AlertTriangle className="w-4 h-4 mr-1" />
+              Pending Approval
+            </Badge>
           </div>
         </CardContent>
       </Card>

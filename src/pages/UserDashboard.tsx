@@ -3,11 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/Header';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
 import LivePredictionPanel from '@/components/dashboard/LivePredictionPanel';
-import ReportsSubmissions from '@/components/dashboard/ReportsSubmissions';
 import AccountManagement from '@/components/dashboard/AccountManagement';
 import ApiAccessSection from '@/components/dashboard/ApiAccessSection';
-
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
+import VerifyTracking from '@/components/dashboard/VerifyTracking';
+import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import { Button } from '@/components/ui/button';
@@ -34,9 +34,10 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
+            <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="api">API Access</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
@@ -60,8 +61,12 @@ const UserDashboard = () => {
             <LivePredictionPanel />
           </TabsContent>
 
+          <TabsContent value="verify" className="mt-6">
+            <VerifyTracking />
+          </TabsContent>
+
           <TabsContent value="reports" className="mt-6">
-            <ReportsSubmissions />
+            <UserInsightsDashboard />
           </TabsContent>
 
           <TabsContent value="api" className="mt-6">

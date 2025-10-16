@@ -18,7 +18,8 @@ const ReportSubmissionForm = () => {
     category: 'Other' as 'Environment' | 'Political' | 'Weather' | 'Business' | 'Disaster' | 'Other',
     content: '',
     location: '',
-    tags: ''
+    tags: '',
+    file: null as File | null,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,7 +70,8 @@ const ReportSubmissionForm = () => {
         category: 'Other',
         content: '',
         location: '',
-        tags: ''
+        tags: '',
+        file: null,
       });
     } catch (error: any) {
       console.error('Error submitting report:', error);
@@ -157,6 +159,23 @@ const ReportSubmissionForm = () => {
               />
               <p className="text-xs text-muted-foreground">Separate tags with commas</p>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="file">Upload Supporting File (Optional)</Label>
+            <Input
+              id="file"
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setFormData(prev => ({ ...prev, file }));
+              }}
+              accept=".txt,.csv,.pdf,.jpg,.jpeg,.png,.mp4,.mp3"
+              className="cursor-pointer"
+            />
+            <p className="text-xs text-muted-foreground">
+              Accepted formats: Text, CSV, PDF, Images (JPG, PNG), Video (MP4), Audio (MP3)
+            </p>
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">

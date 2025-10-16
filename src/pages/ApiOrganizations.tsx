@@ -3,9 +3,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { 
   Building, 
   Shield, 
@@ -21,43 +18,6 @@ import {
 } from 'lucide-react';
 
 const ApiOrganizations = () => {
-  const [formData, setFormData] = useState({
-    organizationName: '',
-    organizationEmail: '',
-    website: '',
-    country: '',
-    sector: '',
-    useCase: '',
-    document: null as File | null
-  });
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    setFormData(prev => ({ ...prev, document: file }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('API Access Request:', formData);
-    alert('API access request submitted! We will review and contact you within 2-3 business days.');
-    setIsDialogOpen(false);
-    setFormData({
-      organizationName: '',
-      organizationEmail: '',
-      website: '',
-      country: '',
-      sector: '',
-      useCase: '',
-      document: null
-    });
-  };
-
   const features = [
     { icon: <Database className="w-6 h-6" />, title: 'Breaking News & Trends', description: 'Real-time access to verified breaking news and trending topics' },
     { icon: <Globe className="w-6 h-6" />, title: 'Predictive Intelligence', description: 'AI-powered political and climate insights with forecasting capabilities' },
@@ -94,128 +54,13 @@ const ApiOrganizations = () => {
             Get real-time data, insights, and predictive intelligence via secure API endpoints designed for enterprise-grade applications.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-                  Apply for API Access
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>API Access Application</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Organization Name *
-                      </label>
-                      <Input
-                        name="organizationName"
-                        value={formData.organizationName}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Enter your organization name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Organization Email *
-                      </label>
-                      <Input
-                        type="email"
-                        name="organizationEmail"
-                        value={formData.organizationEmail}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="contact@organization.com"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Website *
-                      </label>
-                      <Input
-                        type="url"
-                        name="website"
-                        value={formData.website}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="https://www.organization.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Country *
-                      </label>
-                      <Input
-                        name="country"
-                        value={formData.country}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Enter your country"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sector *
-                    </label>
-                    <select
-                      name="sector"
-                      value={formData.sector}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">Select your sector</option>
-                      <option value="media">Media & Broadcasting</option>
-                      <option value="government">Government Agency</option>
-                      <option value="academic">Academic & Research</option>
-                      <option value="civic">Civic Institution</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Intended Use Case *
-                    </label>
-                    <Textarea
-                      name="useCase"
-                      value={formData.useCase}
-                      onChange={handleInputChange}
-                      required
-                      rows={4}
-                      placeholder="Describe how you plan to use Amniva's API services..."
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Verification Document *
-                    </label>
-                    <Input
-                      type="file"
-                      onChange={handleFileChange}
-                      accept=".pdf,.doc,.docx"
-                      required
-                    />
-                    <p className="text-sm text-gray-500 mt-1">
-                      Upload Certificate of Incorporation, Academic License, or Media License
-                    </p>
-                  </div>
-
-                  <Button type="submit" size="lg" className="w-full">
-                    Submit API Access Request
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <Button 
+              size="lg" 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => window.location.href = '/login'}
+            >
+              Apply for API Access
+            </Button>
             <Button size="lg" variant="outline">
               View Documentation
             </Button>
@@ -408,30 +253,19 @@ const ApiOrganizations = () => {
                 <span>Live Chat for Verified Organizations</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
-                <span>Dedicated Slack Channel</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-blue-600" />
-                <span>Developer Forum Access</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-600" />
-                <span>Troubleshooting & Documentation</span>
+                <span>Comprehensive API Documentation</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-blue-600" />
+                <span>Dedicated Account Manager</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <span>99.9% Uptime SLA Guarantee</span>
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        {/* Footer Notice */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <p className="text-gray-700">
-            <strong>Important:</strong> API Access is governed by our terms of use. Unauthorized sharing of keys or data resale is strictly prohibited. 
-            All API requests are logged and monitored for compliance.
-          </p>
-          <p className="text-sm text-gray-600 mt-2">
-            Once approved, you'll receive dashboard access to manage your API usage, monitor requests, and access advanced organizational features.
-          </p>
         </div>
       </main>
 
