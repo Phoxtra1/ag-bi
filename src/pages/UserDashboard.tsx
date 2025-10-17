@@ -10,6 +10,7 @@ import VerifyTracking from '@/components/dashboard/VerifyTracking';
 import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
+import CommunityFeed from '@/components/community/CommunityFeed';
 import { Button } from '@/components/ui/button';
 import { logoutUser } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -34,11 +35,12 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="community">Amniva Society</TabsTrigger>
             <TabsTrigger value="api">API Access</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="support">Support</TabsTrigger>
@@ -67,6 +69,10 @@ const UserDashboard = () => {
 
           <TabsContent value="reports" className="mt-6">
             <UserInsightsDashboard />
+          </TabsContent>
+
+          <TabsContent value="community" className="mt-6">
+            <CommunityFeed />
           </TabsContent>
 
           <TabsContent value="api" className="mt-6">
