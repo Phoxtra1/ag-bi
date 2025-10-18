@@ -49,6 +49,7 @@ import AIEnginePanel from '@/components/admin/AIEnginePanel';
 import TrainingSystem from '@/components/admin/TrainingSystem';
 import InsightReviewPanel from '@/components/admin/InsightReviewPanel';
 import CommunityModeration from '@/components/admin/CommunityModeration';
+import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -168,6 +169,7 @@ const AdminDashboard = () => {
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'community', label: 'Community Moderation', icon: Users },
+    { id: 'community-analytics', label: 'Community Analytics', icon: TrendingUp },
     { id: 'insight-review', label: 'Insight Review', icon: Bot },
     { id: 'api-requests', label: 'API Requests', icon: Building },
     { id: 'feed-sources', label: 'Feed Sources', icon: Rss },
@@ -269,6 +271,7 @@ const AdminDashboard = () => {
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'admins' && <AdminInvitation />}
             {activeTab === 'community' && <CommunityModeration />}
+            {activeTab === 'community-analytics' && <CommunityAnalytics />}
             {activeTab === 'insight-review' && <InsightReviewPanel />}
             {activeTab === 'api-requests' && <ApiAccessRequests />}
             {activeTab === 'feed-sources' && <CustomFeedManager />}
