@@ -1,37 +1,38 @@
-import fetch from "node-fetch";
+import axios from "axios";
 
-export default async ({ req, res }: any) => {
-  console.log("Secret key detected:", !!process.env.RECAPTCHA_SECRET_KEY);
-
-  const body = JSON.parse(req.body || "{}");
-  const captchaToken = body.captchaToken;
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-
-  if (!captchaToken) {
-    return res.json({ success: false, message: "Missing CAPTCHA token." });
-  }
-
+export default async ({ req, res, log, error }) => {
   try {
-    // Verify CAPTCHA with Google
-    const verify = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `secret=${secretKey}&response=${captchaToken}`,
-    });
+    const { token } = JSON.parse(req.body);
+    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
 
-    const data = await verify.json();
-
-    if (!data.success) {
-      console.error("CAPTCHA verification failed:", data);
-      return res.json({ success: false, message: "CAPTCHA verification failed." });
+    if (!token) {
+      return res.json({ success: false, message: "Missing CAPTCHA token" }, 400);
     }
 
-    // If verified
-    console.log("CAPTCHA verified successfully");
-    return res.json({ success: true, message: "CAPTCHA passed" });
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: token,
+        },
+      }
+    );
 
-  } catch (error: any) {
-    console.error("CAPTCHA verification error:", error);
-    return res.json({ success: false, message: "Error verifying CAPTCHA." });
+    const data = response.data;
+
+    if (data.success) {
+      return res.json({ success: true, score: data.score || null });
+    } else {
+      return res.json({
+        success: false,
+        message: "CAPTCHA verification failed",
+        details: data["error-codes"],
+      });
+    }
+  } catch (err) {
+    error("❌ CAPTCHA verification error:", err);
+    return res.json({ success: false, message: err.message }, 500);
   }
 };
