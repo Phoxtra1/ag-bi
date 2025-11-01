@@ -69,8 +69,8 @@ export const handleContactSubmission = async (data: {
   category: string;
   message: string;
 }) => {
-  try {
-    const response = await databases.createDocument(
+  const create = async () =>
+    await databases.createDocument(
       DATABASE_ID,
       CONTACTS_COLLECTION_ID,
       ID.unique(),
@@ -81,13 +81,31 @@ export const handleContactSubmission = async (data: {
         category: data.category,
         message: data.message,
         status: 'new',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
     );
+
+  try {
+    const response = await create();
     return { success: true, document: response };
   } catch (error: any) {
+    // If not authorized, try creating an anonymous session and retry once
+    const msg = error?.message || '';
+    const code = error?.code;
+    if (code === 401 || code === 403 || /permission|unauthorized|scope/i.test(msg)) {
+      try {
+        // @ts-ignore - method exists in Appwrite JS SDK
+        await account.createAnonymousSession();
+        const response = await create();
+        return { success: true, document: response };
+      } catch (e2: any) {
+        console.error('Contact submission retry failed:', e2);
+        const hint = 'Ask admin to enable Create permission for guests on contacts-ava or set up a server function proxy.';
+        return { success: false, error: `${e2?.message || 'Unauthorized'}. ${hint}` };
+      }
+    }
     console.error('Contact submission error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: msg || 'Submission failed' };
   }
 };
 

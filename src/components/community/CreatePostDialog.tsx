@@ -9,6 +9,7 @@ import { Plus, Image, Link, FileText } from 'lucide-react';
 import { createPost, getUserBadge } from '@/lib/community';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import PostComposer from './PostComposer';
 
 interface CreatePostDialogProps {
   currentUser: any;
@@ -185,12 +186,12 @@ const CreatePostDialog: React.FC<CreatePostDialogProps> = ({
           {/* Content */}
           <div className="space-y-2">
             <Label>Content</Label>
-            <Textarea
-              placeholder="Share your thoughts..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={6}
-              className="resize-none"
+            <PostComposer
+              currentUser={currentUser}
+              content={content}
+              setContent={setContent}
+              imageUrl={imageUrl}
+              setImageUrl={setImageUrl}
             />
           </div>
 

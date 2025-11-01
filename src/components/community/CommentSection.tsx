@@ -113,7 +113,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, currentUser, on
           </Avatar>
           <div className="flex-1 space-y-2">
             <Textarea
-              placeholder="Write a comment..."
+              placeholder={`Comment as ${currentUser?.name || currentUser?.email}`}
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               rows={2}
