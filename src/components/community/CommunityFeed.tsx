@@ -57,8 +57,36 @@ const CommunityFeed = () => {
       return;
     }
 
-    await likePost(postId, currentUser.$id);
-    loadPosts();
+    // Optimistic update for snappy UI
+    setPosts((prev) => prev.map((p) => {
+      if (p.$id !== postId) return p;
+      const liked = (p.liked_by || []).includes(currentUser.$id);
+      const newLikedBy = liked
+        ? (p.liked_by || []).filter((id: string) => id !== currentUser.$id)
+        : ([...(p.liked_by || []), currentUser.$id]);
+      return { ...p, liked_by: newLikedBy, likes: newLikedBy.length };
+    }));
+
+    try {
+      const { error } = await likePost(postId, currentUser.$id);
+      if (error) throw error as any;
+    } catch (e: any) {
+      // Revert on error
+      setPosts((prev) => prev.map((p) => {
+        if (p.$id !== postId) return p;
+        const liked = (p.liked_by || []).includes(currentUser.$id);
+        const newLikedBy = liked
+          ? (p.liked_by || []).filter((id: string) => id !== currentUser.$id)
+          : ([...(p.liked_by || []), currentUser.$id]);
+        return { ...p, liked_by: newLikedBy, likes: newLikedBy.length };
+      }));
+
+      toast({
+        title: "Failed to like",
+        description: e?.message || "Please try again",
+        variant: "destructive"
+      });
+    }
   };
 
   const handlePostCreated = async () => {

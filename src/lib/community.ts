@@ -1,11 +1,11 @@
 import { databases, storage, DATABASE_ID } from './appwrite';
 import { ID, Query } from 'appwrite';
 
-export const COMMUNITY_POSTS_COLLECTION_ID = 'community_posts';
-export const COMMUNITY_COMMENTS_COLLECTION_ID = 'community_comments';
-export const BADGES_COLLECTION_ID = 'badges';
-export const ADS_COLLECTION_ID = 'ads';
-export const AD_STATS_COLLECTION_ID = 'ad_stats';
+export const COMMUNITY_POSTS_COLLECTION_ID = import.meta.env.VITE_COMMUNITY_POSTS_COLLECTION_ID || 'community_posts';
+export const COMMUNITY_COMMENTS_COLLECTION_ID = import.meta.env.VITE_COMMUNITY_COMMENTS_COLLECTION_ID || 'community_comments';
+export const BADGES_COLLECTION_ID = import.meta.env.VITE_BADGES_COLLECTION_ID || 'badges';
+export const ADS_COLLECTION_ID = import.meta.env.VITE_ADS_COLLECTION_ID || 'ads';
+export const AD_STATS_COLLECTION_ID = import.meta.env.VITE_AD_STATS_COLLECTION_ID || 'ad_stats';
 
 export interface CommunityPost {
   $id?: string;

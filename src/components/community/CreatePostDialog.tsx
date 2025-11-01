@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Image, Link, FileText } from 'lucide-react';
 import { createPost, getUserBadge } from '@/lib/community';
 import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
 
 interface CreatePostDialogProps {
   currentUser: any;
@@ -28,21 +29,52 @@ const CreatePostDialog: React.FC<CreatePostDialogProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
+  const isValidUrl = (value: string) => {
+    try {
+      const u = new URL(value);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+
+  const contentSchema = z.string().trim().min(1, { message: 'Content is required' }).max(1000, { message: 'Content is too long (max 1000 characters)' });
+
   const handleSubmit = async () => {
-    if (!content.trim()) {
+    // Basic content validation
+    const parsed = contentSchema.safeParse(content);
+    if (!parsed.success) {
       toast({
-        title: "Content Required",
-        description: "Please enter some content for your post",
-        variant: "destructive"
+        title: 'Invalid Content',
+        description: parsed.error.errors[0]?.message || 'Please check your input',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (postType === 'image' && (!imageUrl.trim() || !isValidUrl(imageUrl))) {
+      toast({
+        title: 'Image URL required',
+        description: 'Please provide a valid image URL (http/https)',
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    if (postType === 'link' && (!linkUrl.trim() || !isValidUrl(linkUrl))) {
+      toast({
+        title: 'Link URL required',
+        description: 'Please provide a valid link URL (http/https)',
+        variant: 'destructive'
       });
       return;
     }
 
     if (!currentUser) {
       toast({
-        title: "Authentication Required",
-        description: "Please sign in to create posts",
-        variant: "destructive"
+        title: 'Authentication Required',
+        description: 'Please sign in to create posts',
+        variant: 'destructive'
       });
       return;
     }
@@ -54,29 +86,22 @@ const CreatePostDialog: React.FC<CreatePostDialogProps> = ({
       user_name: currentUser.name || currentUser.email,
       user_badge: getUserBadge(currentUser.prefs?.plan || 'pro'),
       post_type: postType,
-      content: content.trim(),
-      image_url: postType === 'image' ? imageUrl : undefined,
-      link_url: postType === 'link' ? linkUrl : undefined,
+      content: parsed.data,
+      image_url: postType === 'image' ? imageUrl.trim() : undefined,
+      link_url: postType === 'link' ? linkUrl.trim() : undefined,
       likes: 0,
       liked_by: [],
       comments_count: 0,
       status: 'active' as const
     };
 
-    const { error } = await createPost(postData);
+    try {
+      const { error } = await createPost(postData);
+      if (error) throw error as any;
 
-    setSubmitting(false);
-
-    if (error) {
       toast({
-        title: "Error",
-        description: "Failed to create post. Please try again.",
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Your post has been shared with the community"
+        title: 'Success',
+        description: 'Your post has been shared with the community'
       });
       setContent('');
       setImageUrl('');
@@ -84,6 +109,15 @@ const CreatePostDialog: React.FC<CreatePostDialogProps> = ({
       setPostType('text');
       setOpen(false);
       onPostCreated();
+    } catch (err: any) {
+      const message = err?.message || 'Failed to create post. Please try again.';
+      toast({
+        title: 'Error',
+        description: message,
+        variant: 'destructive'
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
