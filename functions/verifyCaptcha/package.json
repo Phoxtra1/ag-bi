@@ -1,9 +1,13 @@
 {
-  "name": "verify-captcha",
+  "name": "verifyCaptcha",
   "version": "1.0.0",
+  "main": "index.js",
   "type": "module",
-  "main": "index.ts",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "start": "node index.js"
+  },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "axios": "^1.6.7"
   }
 }
