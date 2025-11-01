@@ -1,0 +1,9 @@
+{
+  "name": "verify-captcha",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
