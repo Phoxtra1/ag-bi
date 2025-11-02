@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { account } from '@/lib/appwrite';
 import { 
   User, 
   CreditCard, 
@@ -35,13 +36,41 @@ const AccountManagement = () => {
 
   const [hasPaymentHistory, setHasPaymentHistory] = useState(false); // Mock state for payment history
 
-  const currentPlan = {
-    name: 'Pro Plan',
-    price: '€15/month',
-    renewalDate: '2024-02-15',
+  // TODO: Fetch real user data from Appwrite/Supabase
+  const [userData, setUserData] = React.useState({
+    email: '',
+    name: '',
+    organization: ''
+  });
+
+  const [currentPlan, setCurrentPlan] = React.useState({
+    name: 'Free',
+    price: '€0/month',
+    renewalDate: '-',
     status: 'Active',
-    features: ['Advanced Predictions', 'Priority Support', 'API Access (Limited)', 'Export Reports']
-  };
+    features: ['Basic Features', 'Community Access']
+  });
+
+  React.useEffect(() => {
+    // Fetch real user data
+    const fetchUserData = async () => {
+      try {
+        const user = await account.get();
+        setUserData({
+          email: user.email,
+          name: user.name || '',
+          organization: user.prefs?.organization || ''
+        });
+        
+        // Fetch user subscription/plan from database
+        // TODO: Implement real plan fetching
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+    
+    fetchUserData();
+  }, []);
 
   const billingHistory = hasPaymentHistory ? [
     { id: 1, date: '2024-01-15', amount: '€15.00', status: 'Paid', invoice: 'INV-001' },
@@ -174,17 +203,25 @@ const AccountManagement = () => {
           <CardContent className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-              <Input type="email" defaultValue="john.doe@example.com" />
+              <Input type="email" value={userData.email} disabled />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-              <Input defaultValue="John Doe" />
+              <Input 
+                value={userData.name} 
+                onChange={(e) => setUserData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Enter your full name"
+              />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Organization</label>
-              <Input defaultValue="Tech Corp Inc." />
+              <Input 
+                value={userData.organization}
+                onChange={(e) => setUserData(prev => ({ ...prev, organization: e.target.value }))}
+                placeholder="Enter your organization"
+              />
             </div>
             
             <Button className="w-full">Save Changes</Button>

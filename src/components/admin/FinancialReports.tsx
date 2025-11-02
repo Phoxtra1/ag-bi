@@ -26,44 +26,25 @@ interface FinancialReportsProps {
 const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
   const [dynamicData, setDynamicData] = useState({
     subscriptionData: [
-      { tier: 'Free', revenue: 0, users: 85 },
-      { tier: 'Pro', revenue: 2100, users: 28 },
-      { tier: 'Elite', revenue: 890, users: 8 },
-      { tier: 'Institutional', revenue: 1600, users: 4 }
+      { tier: 'Free', revenue: 0, users: 1 },
+      { tier: 'Pro', revenue: 0, users: 0 },
+      { tier: 'Elite', revenue: 0, users: 0 },
+      { tier: 'Institutional', revenue: 0, users: 0 }
     ],
     monthlyRevenue: [
-      { month: 'Jan', revenue: 1200 },
-      { month: 'Feb', revenue: 1580 },
-      { month: 'Mar', revenue: 1890 },
-      { month: 'Apr', revenue: 2340 },
-      { month: 'May', revenue: 2890 },
-      { month: 'Jun', revenue: 3245 }
+      { month: 'Jan', revenue: 0 },
+      { month: 'Feb', revenue: 0 },
+      { month: 'Mar', revenue: 0 },
+      { month: 'Apr', revenue: 0 },
+      { month: 'May', revenue: 0 },
+      { month: 'Jun', revenue: 0 }
     ]
   });
 
-  // Update financial data dynamically
+  // Real data only - no dynamic updates for dummy data
   useEffect(() => {
-    const interval = setInterval(() => {
-      setDynamicData(prev => ({
-        subscriptionData: prev.subscriptionData.map(tier => ({
-          ...tier,
-          revenue: tier.tier === 'Free' ? 0 : Math.max(0, 
-            tier.revenue + Math.floor(Math.random() * 100) - 30
-          ),
-          users: Math.max(tier.tier === 'Free' ? 80 : 0, 
-            tier.users + Math.floor(Math.random() * 3) - 1
-          )
-        })),
-        monthlyRevenue: prev.monthlyRevenue.map((month, index) => ({
-          ...month,
-          revenue: index < 5 ? month.revenue : Math.max(0, 
-            month.revenue + Math.floor(Math.random() * 200) - 100
-          )
-        }))
-      }));
-    }, 60000); // Update every minute
-
-    return () => clearInterval(interval);
+    // TODO: Fetch real subscription and revenue data from database
+    // For now, data is static and reflects actual state (1 free user, no revenue)
   }, []);
 
   const pieColors = ['#94A3B8', '#3B82F6', '#8B5CF6', '#F59E0B'];

@@ -39,8 +39,8 @@ const ReportSubmissionForm = () => {
       // Get current user
       const user = await account.get();
       
-      // TODO: Get user plan from user roles/profile
-      const userPlan = 'Pro' as 'Pro' | 'Elite' | 'Institutional';
+      // Allow all users to submit for testing (no payment restrictions)
+      const userPlan = 'Free' as 'Free' | 'Pro' | 'Elite' | 'Institutional';
       
       await createReportSubmission({
         title: formData.title,
@@ -57,11 +57,7 @@ const ReportSubmissionForm = () => {
 
       toast({
         title: "Submission Successful",
-        description: userPlan === 'Pro' 
-          ? "Your report is being analyzed. You'll receive basic insights soon."
-          : userPlan === 'Elite'
-          ? "Your report is being analyzed. Deep insights will be delivered via email after admin review."
-          : "Your report is being analyzed. Comprehensive insights will be delivered via email.",
+        description: "Your report has been submitted successfully. Our team will review and analyze it soon.",
       });
 
       // Reset form

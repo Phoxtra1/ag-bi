@@ -38,26 +38,26 @@ interface DashboardOverviewProps {
 const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
   const [chartData, setChartData] = useState({
     userGrowthData: [
-      { month: 'Jan', users: 85, signups: 15 },
-      { month: 'Feb', users: 92, signups: 18 },
-      { month: 'Mar', users: 101, signups: 22 },
-      { month: 'Apr', users: 108, signups: 19 },
-      { month: 'May', users: 115, signups: 24 },
+      { month: 'Jan', users: 0, signups: 0 },
+      { month: 'Feb', users: 0, signups: 0 },
+      { month: 'Mar', users: 0, signups: 0 },
+      { month: 'Apr', users: 0, signups: 0 },
+      { month: 'May', users: 0, signups: 0 },
       { month: 'Jun', users: stats.totalUsers, signups: stats.newSignupsToday }
     ],
     subscriptionData: [
-      { name: 'Free', value: 85, color: '#94A3B8' },
-      { name: 'Pro', value: 28, color: '#3B82F6' },
-      { name: 'Elite', value: 8, color: '#8B5CF6' },
-      { name: 'Institutional', value: 4, color: '#F59E0B' }
+      { name: 'Free', value: stats.totalUsers, color: '#94A3B8' },
+      { name: 'Pro', value: 0, color: '#3B82F6' },
+      { name: 'Elite', value: 0, color: '#8B5CF6' },
+      { name: 'Institutional', value: 0, color: '#F59E0B' }
     ],
     revenueData: [
-      { day: 'Mon', revenue: 124 },
-      { day: 'Tue', revenue: 108 },
-      { day: 'Wed', revenue: 142 },
-      { day: 'Thu', revenue: 156 },
-      { day: 'Fri', revenue: 139 },
-      { day: 'Sat', revenue: 118 },
+      { day: 'Mon', revenue: 0 },
+      { day: 'Tue', revenue: 0 },
+      { day: 'Wed', revenue: 0 },
+      { day: 'Thu', revenue: 0 },
+      { day: 'Fri', revenue: 0 },
+      { day: 'Sat', revenue: 0 },
       { day: 'Sun', revenue: Math.round(stats.currentEarnings.daily) }
     ]
   });

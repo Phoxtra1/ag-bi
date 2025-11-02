@@ -161,10 +161,9 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">Select a category</option>
-                    <option value="amnewsworld">Amnewsworld</option>
                     <option value="amniva">Amniva</option>
-                    <option value="amn-news-radio">AMN News Radio</option>
-                    <option value="amnet">Amnet</option>
+                    <option value="amniva-society">Amniva Society</option>
+                    <option value="billing-plans">Billing Plans</option>
                     <option value="general">General Inquiry</option>
                     <option value="support">Support</option>
                     <option value="partnership">Partnership</option>

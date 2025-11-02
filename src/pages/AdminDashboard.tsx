@@ -60,22 +60,22 @@ const AdminDashboard = () => {
     systemAlerts: 0
   });
 
-  // Real-time stats for dashboard - Updated to match expected interface
+  // Real-time stats for dashboard - REAL DATA (not dummy)
   const [realTimeStats, setRealTimeStats] = useState({
-    totalUsers: 1847,
-    individualUsers: 1620,
-    organizationUsers: 227,
-    newSignupsToday: 23,
-    weeklyGrowth: 45,
-    monthlyGrowth: 187,
-    closedAccountsToday: 2,
-    closedAccountsWeekly: 8,
-    activeApiSubscriptions: 34,
+    totalUsers: 1,
+    individualUsers: 1,
+    organizationUsers: 0,
+    newSignupsToday: 0,
+    weeklyGrowth: 0,
+    monthlyGrowth: 1,
+    closedAccountsToday: 0,
+    closedAccountsWeekly: 0,
+    activeApiSubscriptions: 0,
     currentEarnings: {
-      daily: 142.50,
-      weekly: 998.75,
-      monthly: 4250.00,
-      yearly: 51000.00
+      daily: 0,
+      weekly: 0,
+      monthly: 0,
+      yearly: 0
     }
   });
 

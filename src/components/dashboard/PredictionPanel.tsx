@@ -135,16 +135,15 @@ const PredictionPanel = () => {
         </CardContent>
       </Card>
 
-      {/* Custom Data Submission - Placeholder for Paid Users */}
-      <Card className="border-dashed border-2 border-blue-200">
+      {/* Custom Data Submission - Now Available for Testing */}
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Upload className="w-5 h-5" />
             Submit Custom Data for Prediction
-            <Lock className="w-4 h-4 text-amber-500" />
           </CardTitle>
           <CardDescription>
-            Upload your own datasets for AI-powered prediction analysis (Premium Feature)
+            Upload your own datasets for AI-powered prediction analysis
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,13 +156,11 @@ const PredictionPanel = () => {
               <p className="text-sm text-gray-600 mb-4">
                 Submit your own data files (CSV, JSON, TXT) for personalized prediction insights
               </p>
-              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                Premium Feature - Subscription Required
-              </Badge>
             </div>
-            <Button disabled className="bg-gray-300 text-gray-500 cursor-not-allowed">
-              <Lock className="w-4 h-4 mr-2" />
-              Upgrade to Access
+            <Input type="file" accept=".csv,.json,.txt" className="max-w-md mx-auto" />
+            <Button className="w-full max-w-md">
+              <Upload className="w-4 h-4 mr-2" />
+              Upload and Analyze
             </Button>
           </div>
         </CardContent>

@@ -33,15 +33,17 @@ import NotFound from "./pages/NotFound";
 // ✅ Import centralized Odeneho AI assistant
 import OdenehoComponent from "@/components/OdenehoComponent";
 import RequireAuth from "@/components/auth/RequireAuth";
+import PageLoader from "@/components/PageLoader";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AdminDataSync />
+      <PageLoader>
+        <Toaster />
+        <Sonner />
+        <AdminDataSync />
 
       <BrowserRouter>
         <Routes>
@@ -76,6 +78,7 @@ const App = () => (
         {/* ✅ Persistent centralized Odeneho chatbot */}
         <OdenehoComponent />
       </BrowserRouter>
+      </PageLoader>
     </TooltipProvider>
   </QueryClientProvider>
 );

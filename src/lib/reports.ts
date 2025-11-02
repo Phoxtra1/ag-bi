@@ -11,7 +11,7 @@ export interface ReportSubmission {
   userId: string;
   userEmail: string;
   userName: string;
-  userPlan: 'Pro' | 'Elite' | 'Institutional';
+  userPlan: 'Free' | 'Pro' | 'Elite' | 'Institutional';
   status?: 'pending' | 'ai_processed' | 'human_reviewed' | 'delivered';
   submissionType?: 'text' | 'data' | 'observation';
 }
@@ -20,7 +20,7 @@ export interface InsightData {
   reportId: string;
   userId: string;
   userEmail: string;
-  userPlan: 'Pro' | 'Elite' | 'Institutional';
+  userPlan: 'Free' | 'Pro' | 'Elite' | 'Institutional';
   
   // AI-generated fields
   aiSummary?: string;
