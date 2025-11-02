@@ -68,11 +68,6 @@ const PostComposer: React.FC<PostComposerProps> = ({ currentUser, content, setCo
             Media
           </Button>
 
-          <Button type="button" variant="ghost" size="sm" disabled>
-            <SquareGanttChart className="h-4 w-4 mr-2" />
-            GIF
-          </Button>
-
           <Popover>
             <PopoverTrigger asChild>
               <Button type="button" variant="ghost" size="sm">
