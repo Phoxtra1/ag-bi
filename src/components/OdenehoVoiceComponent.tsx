@@ -41,13 +41,7 @@ const OdenehoVoiceComponent = () => {
 
   const startVoiceMode = async () => {
     if (!voiceConfig.agentId || !voiceConfig.elevenApiKey) {
-      toast.error("Voice not configured", {
-        description:
-          "Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.",
-      });
-      try {
-        window.open("/admin#odeneho-ai", "_self");
-      } catch {}
+      toast.error("Voice not configured");
       return;
     }
 

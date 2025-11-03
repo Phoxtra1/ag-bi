@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { databases } from '@/lib/appwrite';
+import { DATABASE_ID } from '@/lib/database';
 import { 
   Search, 
   Filter, 
@@ -22,54 +24,48 @@ import {
 const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTier, setFilterTier] = useState('all');
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    organizations: 0,
+    premiumUsers: 0,
+    verifiedUsers: 0
+  });
 
-  // Mock user data
-  const users = [
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john@example.com',
-      tier: 'Pro',
-      status: 'Active',
-      signupDate: '2024-01-15',
-      lastActive: '2024-01-20',
-      isVerified: true,
-      isOrganization: false
-    },
-    {
-      id: 2,
-      name: 'TechNews Corp',
-      email: 'admin@technews.com',
-      tier: 'Institutional',
-      status: 'Active',
-      signupDate: '2024-01-10',
-      lastActive: '2024-01-20',
-      isVerified: true,
-      isOrganization: true
-    },
-    {
-      id: 3,
-      name: 'Sarah Johnson',
-      email: 'sarah@email.com',
-      tier: 'Free',
-      status: 'Active',
-      signupDate: '2024-01-18',
-      lastActive: '2024-01-19',
-      isVerified: false,
-      isOrganization: false
-    },
-    {
-      id: 4,
-      name: 'Research Institute',
-      email: 'contact@research.edu',
-      tier: 'Elite',
-      status: 'Suspended',
-      signupDate: '2023-12-05',
-      lastActive: '2024-01-15',
-      isVerified: true,
-      isOrganization: true
+  useEffect(() => {
+    loadRealUsers();
+  }, []);
+
+  const loadRealUsers = async () => {
+    try {
+      const response = await databases.listDocuments(DATABASE_ID, 'users');
+      const realUsers = response.documents.map(doc => ({
+        id: doc.$id,
+        name: doc.name || 'N/A',
+        email: doc.email,
+        tier: doc.tier || 'Free',
+        status: doc.status || 'Active',
+        signupDate: doc.$createdAt,
+        lastActive: doc.lastActive || doc.$updatedAt,
+        isVerified: doc.emailVerification || false,
+        isOrganization: doc.isOrganization || false
+      }));
+
+      setUsers(realUsers);
+      setStats({
+        totalUsers: realUsers.length,
+        organizations: realUsers.filter(u => u.isOrganization).length,
+        premiumUsers: realUsers.filter(u => u.tier !== 'Free').length,
+        verifiedUsers: realUsers.filter(u => u.isVerified).length
+      });
+    } catch (error) {
+      console.error('Error loading users:', error);
+      setUsers([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const getTierBadge = (tier: string) => {
     const colors = {
@@ -93,6 +89,14 @@ const UserManagement = () => {
     const matchesTier = filterTier === 'all' || user.tier === filterTier;
     return matchesSearch && matchesTier;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -140,7 +144,7 @@ const UserManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold">12,547</p>
+                <p className="text-2xl font-bold">{stats.totalUsers}</p>
               </div>
               <div className="p-2 bg-blue-100 rounded-lg">
                 <UserCheck className="h-6 w-6 text-blue-600" />
@@ -154,7 +158,7 @@ const UserManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Organizations</p>
-                <p className="text-2xl font-bold">655</p>
+                <p className="text-2xl font-bold">{stats.organizations}</p>
               </div>
               <div className="p-2 bg-amber-100 rounded-lg">
                 <Building className="h-6 w-6 text-amber-600" />
@@ -168,7 +172,7 @@ const UserManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Premium Users</p>
-                <p className="text-2xl font-bold">4,047</p>
+                <p className="text-2xl font-bold">{stats.premiumUsers}</p>
               </div>
               <div className="p-2 bg-purple-100 rounded-lg">
                 <Crown className="h-6 w-6 text-purple-600" />
@@ -182,7 +186,7 @@ const UserManagement = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Verified Users</p>
-                <p className="text-2xl font-bold">8,234</p>
+                <p className="text-2xl font-bold">{stats.verifiedUsers}</p>
               </div>
               <div className="p-2 bg-green-100 rounded-lg">
                 <CheckCircle className="h-6 w-6 text-green-600" />
@@ -212,7 +216,13 @@ const UserManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    No users registered yet
+                  </TableCell>
+                </TableRow>
+              ) : filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell>
                     <div className="flex flex-col">

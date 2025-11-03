@@ -62,12 +62,7 @@ const FinancialReports: React.FC<FinancialReportsProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">€{stats.currentEarnings.daily.toFixed(2)}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary" className="bg-green-100 text-green-700">
-                <TrendingUp size={12} className="mr-1" />
-                +8.2%
-              </Badge>
-            </div>
+            <div className="text-sm text-gray-500 mt-1">Today's revenue</div>
           </CardContent>
         </Card>
 

@@ -7,6 +7,7 @@ import AccountManagement from '@/components/dashboard/AccountManagement';
 import ApiAccessSection from '@/components/dashboard/ApiAccessSection';
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import VerifyTracking from '@/components/dashboard/VerifyTracking';
+import RequestDeepAnalysisForm from '@/components/dashboard/RequestDeepAnalysisForm';
 import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
@@ -64,7 +65,18 @@ const UserDashboard = () => {
           </TabsContent>
 
           <TabsContent value="verify" className="mt-6">
-            <VerifyTracking />
+            <Tabs defaultValue="tracking" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="tracking">My Submissions</TabsTrigger>
+                <TabsTrigger value="request">Request Deep Analysis</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tracking">
+                <VerifyTracking />
+              </TabsContent>
+              <TabsContent value="request">
+                <RequestDeepAnalysisForm />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
 
           <TabsContent value="reports" className="mt-6">

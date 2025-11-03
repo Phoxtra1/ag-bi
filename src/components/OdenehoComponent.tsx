@@ -86,9 +86,7 @@ const OdenehoComponent = () => {
   const startVoiceMode = async () => {
     const cfg = voiceConfig;
     if (!cfg?.agentId || !cfg?.elevenApiKey) {
-      toast.error('Voice not configured', {
-        description: 'Add ElevenLabs API Key and Agent ID in System Settings → Odeneho Chat Bot.',
-      });
+      toast.error('Voice not configured');
       return;
     }
     try {
@@ -181,7 +179,7 @@ const OdenehoComponent = () => {
       )}
 
       {isOpen && (
-        <div className="bg-white rounded-lg shadow-2xl w-[420px] h-[600px] flex flex-col border border-gray-200">
+        <div className="bg-white rounded-lg shadow-2xl w-[400px] h-[500px] flex flex-col border border-gray-200">
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b">
             <div className="flex items-center space-x-2">

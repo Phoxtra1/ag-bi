@@ -104,19 +104,21 @@ const SystemStatus = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold">
-                  {systemData.videoUrl ? 'Configured' : 'Not Set'}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Watch Demo Page
-                </p>
+            <div>
+              <div className="text-2xl font-bold">
+                {systemData.videoUrl ? 'Configured' : 'No video set'}
               </div>
-              {getStatusIcon(!!systemData.videoUrl)}
+              <p className="text-xs text-muted-foreground">
+                Watch Demo Page
+              </p>
             </div>
-            <div className="mt-4">
-              {getStatusBadge(!!systemData.videoUrl)}
-            </div>
+            {getStatusIcon(!!systemData.videoUrl)}
+          </div>
+          <div className="mt-4">
+            <Badge variant={systemData.videoUrl ? "default" : "secondary"}>
+              {systemData.videoUrl ? "Active" : "Not configured"}
+            </Badge>
+          </div>
           </CardContent>
         </Card>
 
@@ -137,7 +139,9 @@ const SystemStatus = () => {
               <Users className="h-8 w-8 text-green-600" />
             </div>
             <div className="mt-4">
-              {getStatusBadge(!!systemData.brevoApiKey)}
+              <Badge variant={systemData.brevoApiKey ? "default" : "secondary"}>
+                {systemData.brevoApiKey ? "Active" : "Not configured"}
+              </Badge>
               <span className="text-xs text-gray-500 ml-2">Brevo Integration</span>
             </div>
           </CardContent>
@@ -174,19 +178,21 @@ const SystemStatus = () => {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold">
-                  {systemData.chatbaseApiKey ? 'Connected' : 'Not Connected'}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Chatbase API
-                </p>
+            <div>
+              <div className="text-2xl font-bold">
+                {systemData.chatbaseApiKey ? 'Connected' : 'Pending Setup'}
               </div>
-              {getStatusIcon(!!systemData.chatbaseApiKey)}
+              <p className="text-xs text-muted-foreground">
+                Chatbase API
+              </p>
             </div>
-            <div className="mt-4">
-              {getStatusBadge(!!systemData.chatbaseApiKey)}
-            </div>
+            {getStatusIcon(!!systemData.chatbaseApiKey)}
+          </div>
+          <div className="mt-4">
+            <Badge variant={systemData.chatbaseApiKey ? "default" : "secondary"}>
+              {systemData.chatbaseApiKey ? "Active" : "Not configured"}
+            </Badge>
+          </div>
           </CardContent>
         </Card>
 

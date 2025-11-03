@@ -83,28 +83,24 @@ const CommunityAnalytics = () => {
           title="Total Posts"
           value={stats.totalPosts}
           subtitle="Community discussions"
-          trend="+12%"
         />
         <StatCard
           icon={Radio}
           title="Audio Rooms"
           value={stats.audioRooms}
           subtitle="Insight talks hosted"
-          trend="+8%"
         />
         <StatCard
           icon={Video}
           title="Livestreams"
           value={stats.livestreams}
           subtitle="Live sessions"
-          trend="+15%"
         />
         <StatCard
           icon={Trophy}
           title="Active Users"
           value={stats.totalUsers}
           subtitle="Engaged members"
-          trend="+20%"
         />
         <StatCard
           icon={DollarSign}
@@ -115,9 +111,8 @@ const CommunityAnalytics = () => {
         <StatCard
           icon={TrendingUp}
           title="Revenue"
-          value={`$${stats.totalRevenue.toLocaleString()}`}
+          value={`€${stats.totalRevenue.toLocaleString()}`}
           subtitle="From sponsored content"
-          trend="+25%"
         />
       </div>
 
