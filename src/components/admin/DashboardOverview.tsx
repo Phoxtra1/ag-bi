@@ -62,35 +62,27 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
     ]
   });
 
-  // Update chart data dynamically
+  // Update chart data when stats change (no dummy distributions)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setChartData(prev => ({
-        ...prev,
-        userGrowthData: prev.userGrowthData.map((item, index) => 
-          index === prev.userGrowthData.length - 1 
-            ? { ...item, users: stats.totalUsers, signups: stats.newSignupsToday }
-            : item
-        ),
-        subscriptionData: prev.subscriptionData.map(tier => ({
-          ...tier,
-          value: tier.name === 'Free' 
-            ? Math.round(stats.totalUsers * 0.68) // 68% free users
-            : tier.name === 'Pro'
-            ? Math.round(stats.totalUsers * 0.23) // 23% pro users
-            : tier.name === 'Elite'
-            ? Math.round(stats.totalUsers * 0.06) // 6% elite users
-            : Math.round(stats.totalUsers * 0.03) // 3% institutional
-        })),
-        revenueData: prev.revenueData.map((item, index) =>
-          index === prev.revenueData.length - 1
-            ? { ...item, revenue: Math.round(stats.currentEarnings.daily) }
-            : item
-        )
-      }));
-    }, 30000); // Update every 30 seconds
-
-    return () => clearInterval(interval);
+    setChartData(prev => ({
+      ...prev,
+      userGrowthData: prev.userGrowthData.map((item, index) =>
+        index === prev.userGrowthData.length - 1
+          ? { ...item, users: stats.totalUsers, signups: stats.newSignupsToday }
+          : item
+      ),
+      subscriptionData: [
+        { name: 'Free', value: stats.totalUsers, color: '#94A3B8' },
+        { name: 'Pro', value: 0, color: '#3B82F6' },
+        { name: 'Elite', value: 0, color: '#8B5CF6' },
+        { name: 'Institutional', value: 0, color: '#F59E0B' }
+      ],
+      revenueData: prev.revenueData.map((item, index) =>
+        index === prev.revenueData.length - 1
+          ? { ...item, revenue: Math.round(stats.currentEarnings.daily) }
+          : item
+      )
+    }));
   }, [stats]);
 
   return (
@@ -106,12 +98,14 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="secondary" className="bg-green-100 text-green-700">
-                <TrendingUp size={12} className="mr-1" />
-                +{stats.weeklyGrowth} this week
-              </Badge>
-            </div>
+            {stats.weeklyGrowth > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant="secondary" className="bg-green-100 text-green-700">
+                  <TrendingUp size={12} className="mr-1" />
+                  +{stats.weeklyGrowth} this week
+                </Badge>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -124,9 +118,11 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{stats.newSignupsToday}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-gray-500">Monthly: +{stats.monthlyGrowth}</span>
-            </div>
+            {stats.monthlyGrowth > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-gray-500">Monthly: +{stats.monthlyGrowth}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -157,9 +153,11 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">€{stats.currentEarnings.daily.toFixed(2)}</div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="text-sm text-gray-500">Monthly: €{stats.currentEarnings.monthly.toFixed(2)}</span>
-            </div>
+            {stats.currentEarnings.monthly > 0 && (
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-gray-500">Monthly: €{stats.currentEarnings.monthly.toFixed(2)}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -270,9 +268,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="text-sm text-gray-600">New API requests: 3</div>
-              <div className="text-sm text-gray-600">Payment issues: 1</div>
-              <div className="text-sm text-gray-600">Content flags: 0</div>
+              <div className="text-sm text-gray-500">No notifications yet</div>
             </div>
           </CardContent>
         </Card>

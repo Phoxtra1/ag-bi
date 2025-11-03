@@ -50,6 +50,8 @@ import TrainingSystem from '@/components/admin/TrainingSystem';
 import InsightReviewPanel from '@/components/admin/InsightReviewPanel';
 import CommunityModeration from '@/components/admin/CommunityModeration';
 import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
+import { databases, DATABASE_ID } from '@/lib/database';
+import { Query } from 'appwrite';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -62,12 +64,12 @@ const AdminDashboard = () => {
 
   // Real-time stats for dashboard - REAL DATA (not dummy)
   const [realTimeStats, setRealTimeStats] = useState({
-    totalUsers: 1,
-    individualUsers: 1,
+    totalUsers: 0,
+    individualUsers: 0,
     organizationUsers: 0,
     newSignupsToday: 0,
     weeklyGrowth: 0,
-    monthlyGrowth: 1,
+    monthlyGrowth: 0,
     closedAccountsToday: 0,
     closedAccountsWeekly: 0,
     activeApiSubscriptions: 0,
@@ -91,8 +93,8 @@ const AdminDashboard = () => {
         const content = JSON.parse(localStorage.getItem('contentSubmissions') || '[]');
         const pendingContent = content.filter((sub: any) => sub.status === 'pending').length;
         
-        // API requests (mock data)
-        const pendingApiRequests = 3;
+        // API requests
+        const pendingApiRequests = 0; // real-time source not configured yet
         
         setNotifications({
           contactUnread: unreadContacts,
@@ -133,33 +135,43 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  // Realistic, smoothed real-time data updates with persistence
+  // Real-time stats from Appwrite (no dummy drift)
   useEffect(() => {
-    // Load persisted values first
-    try {
-      const saved = localStorage.getItem('adminRealTimeStats');
-      if (saved) setRealTimeStats(JSON.parse(saved));
-    } catch {}
+    const loadStats = async () => {
+      try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
-    const interval = setInterval(() => {
-      setRealTimeStats(prev => {
-        const next = {
-          ...prev,
-          newSignupsToday: Math.max(0, prev.newSignupsToday + (Math.random() < 0.6 ? 1 : 0)),
-          totalUsers: prev.totalUsers + (Math.random() < 0.7 ? 1 : 0),
-          individualUsers: prev.individualUsers + (Math.random() < 0.65 ? 1 : 0),
-          organizationUsers: prev.organizationUsers + (Math.random() < 0.35 ? 1 : 0),
-          currentEarnings: {
-            ...prev.currentEarnings,
-            // small drift +/- up to 2
-            daily: Math.max(0, parseFloat((prev.currentEarnings.daily + (Math.random() * 4 - 2)).toFixed(2)))
-          }
-        };
-        localStorage.setItem('adminRealTimeStats', JSON.stringify(next));
-        return next;
-      });
-    }, 30000); // update every 30s
+        const [allUsers, orgUsers, todayUsers] = await Promise.all([
+          databases.listDocuments(DATABASE_ID, 'users', [Query.limit(1)]),
+          databases.listDocuments(DATABASE_ID, 'users', [Query.equal('isOrganization', true), Query.limit(1)]),
+          databases.listDocuments(DATABASE_ID, 'users', [Query.greaterThan('$createdAt', startOfDay.toISOString()), Query.limit(1)])
+        ]);
 
+        const totalUsers = allUsers.total || 0;
+        const organizationUsers = orgUsers.total || 0;
+        const individualUsers = Math.max(0, totalUsers - organizationUsers);
+        const newSignupsToday = todayUsers.total || 0;
+
+        setRealTimeStats({
+          totalUsers,
+          individualUsers,
+          organizationUsers,
+          newSignupsToday,
+          weeklyGrowth: 0,
+          monthlyGrowth: 0,
+          closedAccountsToday: 0,
+          closedAccountsWeekly: 0,
+          activeApiSubscriptions: 0,
+          currentEarnings: { daily: 0, weekly: 0, monthly: 0, yearly: 0 }
+        });
+      } catch (e) {
+        console.error('Failed to load admin stats:', e);
+      }
+    };
+
+    loadStats();
+    const interval = setInterval(loadStats, 30000);
     return () => clearInterval(interval);
   }, []);
 

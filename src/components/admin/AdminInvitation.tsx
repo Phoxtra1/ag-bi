@@ -22,47 +22,9 @@ import { useToast } from '@/hooks/use-toast';
 const AdminInvitation: React.FC = () => {
   const { toast } = useToast();
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [invitations, setInvitations] = useState([
-    {
-      id: 1,
-      email: 'sarah.admin@example.com',
-      status: 'pending',
-      sentDate: '2024-01-20',
-      expiresAt: '2024-01-23',
-      role: 'supportive'
-    },
-    {
-      id: 2,
-      email: 'mike.support@example.com',
-      status: 'accepted',
-      sentDate: '2024-01-18',
-      acceptedDate: '2024-01-19',
-      role: 'supportive'
-    }
-  ]);
+  const [invitations, setInvitations] = useState<any[]>([]);
 
-  const [admins, setAdmins] = useState([
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john@amnova.com',
-      role: 'owner',
-      status: 'active',
-      lastLogin: '2024-01-20 14:30',
-      joinedDate: '2023-01-01',
-      permissions: ['all']
-    },
-    {
-      id: 2,
-      name: 'Mike Support',
-      email: 'mike.support@example.com',
-      role: 'supportive',
-      status: 'active',
-      lastLogin: '2024-01-20 09:15',
-      joinedDate: '2024-01-19',
-      permissions: ['content_moderation', 'api_management', 'user_activities']
-    }
-  ]);
+  const [admins, setAdmins] = useState<any[]>([]);
 
   const handleSendInvitation = (inviteData: { email: string; permissions: string[] }) => {
     const newInvitation = {
@@ -153,44 +115,52 @@ const AdminInvitation: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {admins.map((admin) => (
-                <TableRow key={admin.id}>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{admin.name}</span>
-                      <span className="text-sm text-gray-500">{admin.email}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getRoleBadge(admin.role)}</TableCell>
-                  <TableCell>
-                    <Badge className="bg-green-100 text-green-700">
-                      {admin.status.charAt(0).toUpperCase() + admin.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-sm">{admin.lastLogin}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {admin.role !== 'owner' && (
-                        <>
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <Settings className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                          >
-                            <Ban className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
-                    </div>
+              {admins.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-6 text-gray-500">
+                    No administrators yet
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                admins.map((admin) => (
+                  <TableRow key={admin.id}>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{admin.name}</span>
+                        <span className="text-sm text-gray-500">{admin.email}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{getRoleBadge(admin.role)}</TableCell>
+                    <TableCell>
+                      <Badge className="bg-green-100 text-green-700">
+                        {admin.status.charAt(0).toUpperCase() + admin.status.slice(1)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm">{admin.lastLogin}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {admin.role !== 'owner' && (
+                          <>
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                              <Settings className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                            >
+                              <Ban className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

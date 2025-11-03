@@ -21,7 +21,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { account } from '@/lib/appwrite';
 import { useNavigate } from 'react-router-dom';
 import ReportSubmissionForm from '@/components/ReportSubmissionForm';
-import UserInsightsDashboard from '@/components/UserInsightsDashboard';
+
 
 const ReportInsights = () => {
   const navigate = useNavigate();
@@ -114,17 +114,12 @@ const ReportInsights = () => {
         {isAuthenticated && (
           <div className="mb-12">
             <Tabs defaultValue="submit" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-1 mb-6">
                 <TabsTrigger value="submit">Submit Report</TabsTrigger>
-                <TabsTrigger value="insights">My Insights & History</TabsTrigger>
               </TabsList>
 
               <TabsContent value="submit">
                 <ReportSubmissionForm />
-              </TabsContent>
-
-              <TabsContent value="insights">
-                <UserInsightsDashboard />
               </TabsContent>
             </Tabs>
           </div>
