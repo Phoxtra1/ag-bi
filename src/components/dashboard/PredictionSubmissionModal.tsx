@@ -26,20 +26,11 @@ type FormData = {
 export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: PredictionSubmissionModalProps) => {
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<FormData>();
   const [loading, setLoading] = useState(false);
-  const [hasPaidPlan, setHasPaidPlan] = useState(false); // TODO: Connect to actual payment plan check
+  const hasPaidPlan = true; // Temporarily allow submissions without upgrade
   const { toast } = useToast();
   const category = watch('category');
 
   const onSubmit = async (data: FormData) => {
-    if (!hasPaidPlan) {
-      toast({
-        title: "Upgrade Required",
-        description: "Please upgrade to a paid plan to submit predictions.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setLoading(true);
     try {
       const user = await getCurrentUser();
@@ -90,22 +81,11 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
           </DialogDescription>
         </DialogHeader>
 
-        {!hasPaidPlan && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Prediction services are available for paid plan subscribers only. 
-              <Button variant="link" className="px-1 h-auto">Upgrade Now</Button>
-            </AlertDescription>
-          </Alert>
-        )}
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="category">Prediction Category *</Label>
             <Select 
               onValueChange={(value) => setValue('category', value as FormData['category'])}
-              disabled={!hasPaidPlan}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a category" />
@@ -133,7 +113,6 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
               })}
               placeholder={getCategoryPlaceholder(category)}
               rows={8}
-              disabled={!hasPaidPlan}
             />
             {errors.description && (
               <p className="text-sm text-destructive">{errors.description.message}</p>
@@ -164,7 +143,7 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
             </Button>
             <Button 
               type="submit" 
-              disabled={loading || !hasPaidPlan} 
+              disabled={loading} 
               className="flex-1"
             >
               {loading ? 'Submitting...' : 'Submit Request'}

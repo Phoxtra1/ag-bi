@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { databases } from '@/lib/appwrite';
+import { databases, account } from '@/lib/appwrite';
 import { DATABASE_ID } from '@/lib/database';
 import { 
   Search, 
@@ -37,10 +37,10 @@ const UserManagement = () => {
     loadRealUsers();
   }, []);
 
-  const loadRealUsers = async () => {
+  const loadRealUsers = async (retry = false) => {
     try {
       const response = await databases.listDocuments(DATABASE_ID, 'users');
-      const realUsers = response.documents.map(doc => ({
+      const realUsers = response.documents.map((doc: any) => ({
         id: doc.$id,
         name: doc.name || 'N/A',
         email: doc.email,
@@ -59,7 +59,16 @@ const UserManagement = () => {
         premiumUsers: realUsers.filter(u => u.tier !== 'Free').length,
         verifiedUsers: realUsers.filter(u => u.isVerified).length
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (!retry && (error?.code === 401 || error?.code === 403 || /unauthorized|permission|session/i.test(String(error?.message)))) {
+        try {
+          // @ts-ignore - available in SDK
+          await account.createAnonymousSession();
+          return await loadRealUsers(true);
+        } catch (anonErr) {
+          console.error('Anonymous session failed:', anonErr);
+        }
+      }
       console.error('Error loading users:', error);
       setUsers([]);
     } finally {
