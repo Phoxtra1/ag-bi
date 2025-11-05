@@ -208,14 +208,10 @@ const IntegrationsPanel = () => {
       </div>
 
       <Tabs defaultValue="demo-video" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="demo-video" className="flex items-center gap-2">
             <Video className="w-4 h-4" />
             Demo Video
-          </TabsTrigger>
-          <TabsTrigger value="chatbot" className="flex items-center gap-2">
-            <MessageCircle className="w-4 h-4" />
-            Odeneho Chat Bot
           </TabsTrigger>
           <TabsTrigger value="newsletter" className="flex items-center gap-2">
             <Mail className="w-4 h-4" />
@@ -277,132 +273,6 @@ const IntegrationsPanel = () => {
                       <p>✅ Vimeo links</p>
                       <p>✅ Google Drive video links</p>
                       <p>✅ Dropbox video links</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="chatbot">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="w-5 h-5 text-blue-600" />
-                    Odeneho Live Chat Bot
-                  </CardTitle>
-                  <CardDescription>
-                    AI-powered support bot with streaming voice capabilities and external API integration
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={settings.chatBotEnabled ? "default" : "secondary"}>
-                    {settings.chatBotEnabled ? "Active" : "Inactive"}
-                  </Badge>
-                  <Switch
-                    checked={settings.chatBotEnabled}
-                    onCheckedChange={handleChatBotToggle}
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium">Status</span>
-                  </div>
-                  <p className="text-lg font-semibold text-blue-600">
-                    {settings.chatBotEnabled ? "Online" : "Offline"}
-                  </p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium">Active Chats</span>
-                  </div>
-                  <p className="text-lg font-semibold text-green-600">
-                    {settings.chatBotEnabled ? botMetrics.activeChats : 0}
-                  </p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BarChart3 className="w-4 h-4 text-purple-600" />
-                    <span className="text-sm font-medium">Daily Queries</span>
-                  </div>
-                  <p className="text-lg font-semibold text-purple-600">
-                    {settings.chatBotEnabled ? botMetrics.dailyQueries : 0}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Internal Configuration */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Settings className="w-5 h-5" />
-                    Internal Configuration
-                  </h3>
-                  <div className="p-4 border rounded-lg space-y-4">
-                    <div>
-                      <Label htmlFor="voice-config">Voice & STT/TTS Setup</Label>
-                      <p className="text-xs text-gray-600 mb-2">Configure ElevenLabs streaming voice</p>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => window.open('/admin#odeneho-ai', '_self')}
-                        className="w-full"
-                      >
-                        Configure Voice Settings
-                      </Button>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="training-file">Internal Training Data</Label>
-                      <div className="mt-2">
-                        <Input
-                          id="training-file"
-                          type="file"
-                          accept=".txt,.csv,.json"
-                          onChange={handleFileUpload}
-                          disabled={settings.chatBotTraining}
-                          className="text-xs"
-                        />
-                        {settings.chatBotTraining && (
-                          <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                            Training in progress...
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* External Configuration */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <Key className="w-5 h-5" />
-                    External Configuration
-                  </h3>
-                  <div className="p-4 border rounded-lg space-y-4">
-                    <div>
-                      <Label>External Configuration</Label>
-                      <p className="text-xs text-gray-600 mb-2">
-                        Manage Chatbase API and external endpoints in Odeneho Chat Bot settings.
-                      </p>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => window.open('/admin#odeneho-ai', '_self')}
-                        className="w-full text-xs"
-                      >
-                        Open Odeneho Chat Bot Settings
-                      </Button>
                     </div>
                   </div>
                 </div>

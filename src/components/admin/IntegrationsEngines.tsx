@@ -52,7 +52,7 @@ const IntegrationsEngines = () => {
   const { toast } = useToast();
   const [systems, setSystems] = useState<SystemConfig[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
-  const [activeTab, setActiveTab] = useState('analytics');
+  const [activeTab, setActiveTab] = useState('engines');
 
   // Initialize systems from localStorage or defaults
   useEffect(() => {
@@ -114,8 +114,30 @@ const IntegrationsEngines = () => {
         name: 'Prediction Engine',
         status: 'needs_setup',
         enabled: false,
+        apiKey: '',
+        url: '',
         usage: 0,
         settings: { modelVersion: 'v1.0', confidence: 0.8 }
+      },
+      {
+        id: 'verify',
+        name: 'Verify Engine',
+        status: 'needs_setup',
+        enabled: false,
+        apiKey: '',
+        url: '',
+        usage: 0,
+        settings: { threshold: 0.75, autoVerify: false }
+      },
+      {
+        id: 'report',
+        name: 'Report Insight Engine',
+        status: 'needs_setup',
+        enabled: false,
+        apiKey: '',
+        url: '',
+        usage: 0,
+        settings: { analysisDepth: 'standard', language: 'en' }
       }
     ];
 
@@ -359,10 +381,10 @@ const IntegrationsEngines = () => {
   };
 
   const categoryConfigs = {
+    engines: systems.filter(s => ['prediction', 'verify', 'report'].includes(s.id)),
     analytics: systems.filter(s => s.id === 'analytics'),
     integrations: systems.filter(s => ['weather_geo', 'financial', 'notifications'].includes(s.id)),
-    automation: systems.filter(s => ['lifecycle', 'api_generator'].includes(s.id)),
-    prediction: systems.filter(s => s.id === 'prediction')
+    automation: systems.filter(s => ['lifecycle', 'api_generator'].includes(s.id))
   };
 
   return (
@@ -386,6 +408,10 @@ const IntegrationsEngines = () => {
         <div className="lg:col-span-3">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="engines" className="flex items-center gap-2">
+                <Database className="w-4 h-4" />
+                AI Engines
+              </TabsTrigger>
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
                 Analytics
@@ -397,10 +423,6 @@ const IntegrationsEngines = () => {
               <TabsTrigger value="automation" className="flex items-center gap-2">
                 <Zap className="w-4 h-4" />
                 Automation
-              </TabsTrigger>
-              <TabsTrigger value="prediction" className="flex items-center gap-2">
-                <Database className="w-4 h-4" />
-                Prediction
               </TabsTrigger>
             </TabsList>
 
