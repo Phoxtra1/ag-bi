@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, MapPin, Loader2 } from 'lucide-react';
+import { Cloud, Sun, CloudRain, Wind, Droplets, Thermometer, MapPin, Loader2, CloudSnow, CloudDrizzle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+const OPENWEATHER_API_KEY = '8d3f4ca45e3ببببببف2aefe0f63733c6c'; // Free API key for demo
 
 const WeatherWidget = () => {
   const [weather, setWeather] = useState({
@@ -22,12 +23,12 @@ const WeatherWidget = () => {
   useEffect(() => {
     getCurrentLocationWeather();
     
-    // Auto-refresh every 15 minutes
+    // Auto-refresh every 1 hour (3600000ms)
     const interval = setInterval(() => {
       if (weather.isConfigured && !weather.isLoading) {
-        updateWeatherData();
+        getCurrentLocationWeather();
       }
-    }, 15 * 60 * 1000);
+    }, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -35,112 +36,127 @@ const WeatherWidget = () => {
   const getCurrentLocationWeather = async () => {
     if (!navigator.geolocation) {
       // Default to Accra if geolocation not supported
-      setAccraWeather();
+      await fetchWeatherByCity('Accra', 'Ghana');
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        
-        // Check if coordinates are close to Accra (5.6037° N, 0.1870° W)
-        const accraLat = 5.6037;
-        const accraLng = -0.1870;
-        const distance = Math.sqrt(Math.pow(latitude - accraLat, 2) + Math.pow(longitude - accraLng, 2));
-        
-        if (distance < 1) { // Within ~111km of Accra
-          setAccraWeather();
-        } else {
-          await fetchLocationWeather(latitude, longitude);
-        }
+        await fetchWeatherByCoords(latitude, longitude);
         setLocationPermission('granted');
       },
-      (error) => {
+      async (error) => {
+        console.error('Geolocation error:', error);
         setLocationPermission('denied');
         // Fallback to Accra
-        setAccraWeather();
+        await fetchWeatherByCity('Accra', 'Ghana');
       },
       { timeout: 10000, enableHighAccuracy: true }
     );
   };
 
-  const setAccraWeather = () => {
-    // Set realistic weather for Accra, Ghana
-    const currentHour = new Date().getHours();
-    const isDay = currentHour >= 6 && currentHour < 18;
+  const fetchWeatherByCoords = async (lat: number, lon: number) => {
+    setWeather(prev => ({ ...prev, isLoading: true, error: null }));
     
-    setWeather({
-      location: 'Accra, Ghana',
-      temperature: Math.floor(Math.random() * 5) + (isDay ? 28 : 24), // 28-33°C day, 24-29°C night
-      condition: getAccraWeatherCondition(),
-      humidity: Math.floor(Math.random() * 20) + 65, // 65-85% (tropical)
-      windSpeed: Math.floor(Math.random() * 8) + 8, // 8-16 km/h
-      lastUpdated: new Date(),
-      isConfigured: true,
-      isLoading: false,
-      error: null
-    });
-  };
-
-  const getAccraWeatherCondition = () => {
-    const conditions = ['Partly Cloudy', 'Sunny', 'Cloudy', 'Hot and Humid'];
-    const currentMonth = new Date().getMonth();
-    
-    // Rainy season (April-September)
-    if (currentMonth >= 3 && currentMonth <= 8) {
-      const rainyConditions = ['Partly Cloudy', 'Light Rain', 'Cloudy', 'Heavy Clouds'];
-      return rainyConditions[Math.floor(Math.random() * rainyConditions.length)];
-    }
-    
-    return conditions[Math.floor(Math.random() * conditions.length)];
-  };
-
-  const fetchLocationWeather = async (lat: number, lon: number) => {
     try {
-      // For other locations, provide generic weather
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${OPENWEATHER_API_KEY}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch weather data');
+      }
+
+      const data = await response.json();
+      
       setWeather({
-        location: 'Current Location',
-        temperature: Math.floor(Math.random() * 25) + 10,
-        condition: getRandomCondition(),
-        humidity: Math.floor(Math.random() * 40) + 40,
-        windSpeed: Math.floor(Math.random() * 20) + 5,
+        location: `${data.name}, ${data.sys.country}`,
+        temperature: Math.round(data.main.temp),
+        condition: mapWeatherCondition(data.weather[0].main, data.weather[0].description),
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6), // Convert m/s to km/h
         lastUpdated: new Date(),
         isConfigured: true,
         isLoading: false,
         error: null
       });
     } catch (error) {
-      setAccraWeather(); // Fallback to Accra
+      console.error('Error fetching weather:', error);
+      setWeather(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to fetch weather data',
+        isConfigured: false
+      }));
     }
   };
 
-  const getRandomCondition = () => {
-    const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain'];
-    return conditions[Math.floor(Math.random() * conditions.length)];
+  const fetchWeatherByCity = async (city: string, country: string) => {
+    setWeather(prev => ({ ...prev, isLoading: true, error: null }));
+    
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${OPENWEATHER_API_KEY}`
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch weather data');
+      }
+
+      const data = await response.json();
+      
+      setWeather({
+        location: `${data.name}, ${data.sys.country}`,
+        temperature: Math.round(data.main.temp),
+        condition: mapWeatherCondition(data.weather[0].main, data.weather[0].description),
+        humidity: data.main.humidity,
+        windSpeed: Math.round(data.wind.speed * 3.6),
+        lastUpdated: new Date(),
+        isConfigured: true,
+        isLoading: false,
+        error: null
+      });
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+      setWeather(prev => ({
+        ...prev,
+        isLoading: false,
+        error: 'Failed to fetch weather data',
+        isConfigured: false
+      }));
+    }
   };
 
-  const updateWeatherData = () => {
-    setWeather(prev => ({
-      ...prev,
-      temperature: prev.temperature + Math.floor(Math.random() * 3) - 1,
-      humidity: Math.max(30, Math.min(90, prev.humidity + Math.floor(Math.random() * 5) - 2)),
-      windSpeed: Math.max(0, prev.windSpeed + Math.floor(Math.random() * 3) - 1),
-      lastUpdated: new Date()
-    }));
+  const mapWeatherCondition = (main: string, description: string): string => {
+    const conditionMap: Record<string, string> = {
+      'Clear': 'Sunny',
+      'Clouds': 'Cloudy',
+      'Rain': 'Rainy',
+      'Drizzle': 'Light Rain',
+      'Thunderstorm': 'Stormy',
+      'Snow': 'Snowy',
+      'Mist': 'Misty',
+      'Fog': 'Foggy',
+      'Haze': 'Hazy'
+    };
+    
+    return conditionMap[main] || description;
   };
 
   const getWeatherIcon = (condition: string) => {
-    switch (condition.toLowerCase()) {
-      case 'sunny':
-        return <Sun className="w-8 h-8 text-yellow-500" />;
-      case 'partly cloudy':
-      case 'cloudy':
-        return <Cloud className="w-8 h-8 text-gray-500" />;
-      case 'light rain':
-      case 'rainy':
-        return <CloudRain className="w-8 h-8 text-blue-500" />;
-      default:
-        return <Cloud className="w-8 h-8 text-gray-500" />;
+    const lowerCondition = condition.toLowerCase();
+    
+    if (lowerCondition.includes('sunny') || lowerCondition.includes('clear')) {
+      return <Sun className="w-8 h-8 text-yellow-500" />;
+    } else if (lowerCondition.includes('rain') || lowerCondition.includes('drizzle')) {
+      return <CloudRain className="w-8 h-8 text-blue-500" />;
+    } else if (lowerCondition.includes('snow')) {
+      return <CloudSnow className="w-8 h-8 text-blue-300" />;
+    } else if (lowerCondition.includes('cloud')) {
+      return <Cloud className="w-8 h-8 text-gray-500" />;
+    } else {
+      return <Cloud className="w-8 h-8 text-gray-500" />;
     }
   };
 
@@ -236,7 +252,7 @@ const WeatherWidget = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              <Wind className="w-4 w-4 text-gray-500" />
+              <Wind className="w-4 h-4 text-gray-500" />
               <div>
                 <p className="text-sm font-medium">Wind Speed</p>
                 <p className="text-sm text-gray-600">{weather.windSpeed} km/h</p>
@@ -249,7 +265,7 @@ const WeatherWidget = () => {
               Last updated: {weather.lastUpdated.toLocaleTimeString()}
             </p>
             <p className="text-xs text-gray-500">
-              Auto-refreshes every 15 minutes
+              Auto-refreshes every 1 hour
             </p>
           </div>
         </div>

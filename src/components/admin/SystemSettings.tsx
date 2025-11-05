@@ -15,7 +15,6 @@ import {
   Bot
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
-import AIEnginePanel from './AIEnginePanel';
 import IntegrationsPanel from './IntegrationsPanel';
 import ConfigureOdenehoAI from './ConfigureOdenehoAI';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +39,7 @@ const SystemSettings = () => {
   const getDefaultTab = () => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace('#','');
-      const allowed = new Set(['integrations','ai-engines','engines','odeneho-ai','general','security','database']);
+      const allowed = new Set(['integrations','engines','odeneho-ai','general','security','database']);
       if (allowed.has(hash)) return hash as string;
     }
     return 'integrations';
@@ -114,14 +113,10 @@ const SystemSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="integrations" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Integrations
-          </TabsTrigger>
-          <TabsTrigger value="ai-engines" className="flex items-center gap-2">
-            <Brain className="w-4 h-4" />
-            AI Engines
           </TabsTrigger>
           <TabsTrigger value="engines" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
@@ -147,10 +142,6 @@ const SystemSettings = () => {
 
         <TabsContent value="integrations">
           <IntegrationsPanel />
-        </TabsContent>
-
-        <TabsContent value="ai-engines">
-          <AIEnginePanel />
         </TabsContent>
 
         <TabsContent value="engines">
