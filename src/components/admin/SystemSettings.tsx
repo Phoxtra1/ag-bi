@@ -17,6 +17,7 @@ import {
 import IntegrationsEngines from './IntegrationsEngines';
 import IntegrationsPanel from './IntegrationsPanel';
 import ConfigureOdenehoAI from './ConfigureOdenehoAI';
+import EngineExternalAPIs from './engines/EngineExternalAPIs';
 import { useToast } from '@/hooks/use-toast';
 
 interface GeneralSettings {
@@ -144,9 +145,13 @@ const SystemSettings = () => {
           <IntegrationsPanel />
         </TabsContent>
 
-        <TabsContent value="engines">
-          <IntegrationsEngines />
-        </TabsContent>
+         <TabsContent value="engines" className="space-y-6">
+           {/* External API fields for engines (persisted in Appwrite) */}
+           <EngineExternalAPIs />
+
+           {/* Existing integrations/monitoring for engines */}
+           <IntegrationsEngines />
+         </TabsContent>
 
         <TabsContent value="odeneho-ai">
           <ConfigureOdenehoAI />
