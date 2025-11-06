@@ -25,6 +25,12 @@ export const CONTENT_SUBMISSIONS_COLLECTION_ID = "content-submissions-ava";
 export const REPORTS_COLLECTION_ID = "reports-ava";
 export const INSIGHTS_COLLECTION_ID = "insights-ava";
 
+// Module System Collections
+export const COMPONENT_REGISTRY_COLLECTION_ID = "component_registry";
+export const API_HEALTH_COLLECTION_ID = "api_health";
+export const SYSTEM_HEALTH_COLLECTION_ID = "system_health";
+export const INTERACTION_LOGS_COLLECTION_ID = "interaction_logs";
+
 // Storage Bucket IDs
 export const VERIFICATION_BUCKET_ID = "verification-ava";
 export const CONTENT_BUCKET_ID = "content-ava";

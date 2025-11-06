@@ -12,12 +12,14 @@ import {
   Database, 
   Brain,
   Zap,
-  Bot
+  Bot,
+  Activity
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
 import IntegrationsPanel from './IntegrationsPanel';
 import ConfigureOdenehoAI from './ConfigureOdenehoAI';
 import EngineExternalAPIs from './engines/EngineExternalAPIs';
+import SystemHealthPanel from './SystemHealthPanel';
 import { useToast } from '@/hooks/use-toast';
 
 interface GeneralSettings {
@@ -122,6 +124,10 @@ const SystemSettings = () => {
           <TabsTrigger value="engines" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Engines
+          </TabsTrigger>
+          <TabsTrigger value="health" className="flex items-center gap-2">
+            <Activity className="w-4 h-4" />
+            System Health
           </TabsTrigger>
           <TabsTrigger value="odeneho-ai" className="flex items-center gap-2">
             <Bot className="w-4 h-4" />

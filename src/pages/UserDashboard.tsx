@@ -12,6 +12,9 @@ import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
+import ModuleLoader from '@/components/ModuleLoader';
+import UniversalModuleInterface from '@/components/UniversalModuleInterface';
+import { ModuleInfo } from '@/lib/moduleRegistry';
 import { Button } from '@/components/ui/button';
 import { logoutUser } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +23,7 @@ import { LogOut } from 'lucide-react';
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [selectedModule, setSelectedModule] = useState<ModuleInfo | null>(null);
 
 
 
@@ -56,6 +60,19 @@ const UserDashboard = () => {
                 <WeatherWidget />
                 <LivePredictionPanel />
               </div>
+            </div>
+            
+            {/* Dynamic Module Loader */}
+            <div className="mt-8">
+              <h3 className="text-2xl font-bold mb-4">Your Active Modules</h3>
+              {selectedModule ? (
+                <UniversalModuleInterface 
+                  module={selectedModule} 
+                  onClose={() => setSelectedModule(null)}
+                />
+              ) : (
+                <ModuleLoader onModuleClick={(module) => setSelectedModule(module)} />
+              )}
             </div>
           </TabsContent>
 
