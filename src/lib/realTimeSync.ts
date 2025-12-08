@@ -1,7 +1,147 @@
-
 import React from 'react';
-import { databases } from './appwrite';
-import { DATABASE_ID } from './database';
+import { databases, DATABASE_ID } from './appwrite';
+import { ID, Query } from 'appwrite';
+
+// ==========================================
+// SYNC OPERATIONS & PERSISTENCE
+// ==========================================
+
+export interface SyncOperation {
+  id: string;
+  collection: string;
+  documentId?: string;
+  data: any;
+  operation: 'create' | 'update' | 'delete';
+  status: 'pending' | 'success' | 'failed';
+  timestamp: string;
+  retryCount: number;
+  error?: string;
+}
+
+/**
+ * Save with confirmation - ensures data is persisted before UI update
+ */
+export async function saveWithConfirmation<T>(
+  collection: string,
+  data: T,
+  documentId?: string
+): Promise<{ success: boolean; documentId?: string; error?: string }> {
+  try {
+    let result;
+    
+    if (documentId) {
+      result = await databases.updateDocument(DATABASE_ID, collection, documentId, data as any);
+    } else {
+      result = await databases.createDocument(DATABASE_ID, collection, ID.unique(), data as any);
+    }
+
+    return {
+      success: true,
+      documentId: result.$id
+    };
+  } catch (error: any) {
+    console.error('[Sync] Save failed:', error.message);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Validate API endpoint reachability
+ */
+export async function validateEndpoint(
+  endpoint: string,
+  apiKey?: string
+): Promise<{ reachable: boolean; responseTime: number; error?: string }> {
+  const startTime = Date.now();
+  
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    const response = await fetch(endpoint, {
+      method: 'HEAD',
+      headers,
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    return {
+      reachable: response.ok || response.status === 405 || response.status === 204,
+      responseTime: Date.now() - startTime
+    };
+  } catch (error: any) {
+    return {
+      reachable: false,
+      responseTime: Date.now() - startTime,
+      error: error.name === 'AbortError' ? 'Request timed out' : error.message
+    };
+  }
+}
+
+/**
+ * Store API health status in Appwrite
+ */
+export async function updateAPIHealth(
+  moduleName: string,
+  status: 'active' | 'delayed' | 'offline',
+  responseTime: number,
+  endpoint: string,
+  error?: string
+): Promise<boolean> {
+  const API_HEALTH_COLLECTION = 'api_health';
+  
+  try {
+    const existing = await databases.listDocuments(DATABASE_ID, API_HEALTH_COLLECTION, [
+      Query.equal('module_name', moduleName)
+    ]);
+
+    const healthData = {
+      module_name: moduleName,
+      status,
+      response_time_ms: responseTime,
+      endpoint,
+      last_check: new Date().toISOString(),
+      error_message: error || ''
+    };
+
+    if (existing.documents.length > 0) {
+      await databases.updateDocument(
+        DATABASE_ID,
+        API_HEALTH_COLLECTION,
+        existing.documents[0].$id,
+        healthData
+      );
+    } else {
+      await databases.createDocument(
+        DATABASE_ID,
+        API_HEALTH_COLLECTION,
+        ID.unique(),
+        healthData
+      );
+    }
+
+    return true;
+  } catch (err) {
+    console.error('[Sync] Failed to update API health:', err);
+    return false;
+  }
+}
+
+// ==========================================
+// REAL-TIME EVENT SYSTEM
+// ==========================================
 
 // Event system for real-time updates
 class RealTimeSyncManager {
