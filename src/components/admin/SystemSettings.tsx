@@ -13,13 +13,15 @@ import {
   Brain,
   Zap,
   Bot,
-  Activity
+  Activity,
+  Layers
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
 import IntegrationsPanel from './IntegrationsPanel';
 import ConfigureOdenehoAI from './ConfigureOdenehoAI';
 import EngineExternalAPIs from './engines/EngineExternalAPIs';
 import SystemHealthPanel from './SystemHealthPanel';
+import ComponentRegistryManager from './ComponentRegistryManager';
 import { useToast } from '@/hooks/use-toast';
 
 interface GeneralSettings {
@@ -116,10 +118,14 @@ const SystemSettings = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="integrations" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
             Integrations
+          </TabsTrigger>
+          <TabsTrigger value="registry" className="flex items-center gap-2">
+            <Layers className="w-4 h-4" />
+            Registry
           </TabsTrigger>
           <TabsTrigger value="engines" className="flex items-center gap-2">
             <Zap className="w-4 h-4" />
@@ -131,7 +137,7 @@ const SystemSettings = () => {
           </TabsTrigger>
           <TabsTrigger value="odeneho-ai" className="flex items-center gap-2">
             <Bot className="w-4 h-4" />
-            Odeneho Chat Bot
+            Odeneho AI
           </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -151,7 +157,15 @@ const SystemSettings = () => {
           <IntegrationsPanel />
         </TabsContent>
 
-         <TabsContent value="engines" className="space-y-6">
+        <TabsContent value="registry">
+          <ComponentRegistryManager />
+        </TabsContent>
+
+        <TabsContent value="health">
+          <SystemHealthPanel />
+        </TabsContent>
+
+        <TabsContent value="engines" className="space-y-6">
            {/* External API fields for engines (persisted in Appwrite) */}
            <EngineExternalAPIs />
 
