@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,50 +12,133 @@ import {
   Eye,
   Settings,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Copy,
+  Loader2,
+  Mail
 } from 'lucide-react';
 import InviteAdminModal from './InviteAdminModal';
 import UserRoleManagement from './UserRoleManagement';
 import { useToast } from '@/hooks/use-toast';
+import { 
+  createAdminInvitation, 
+  getPendingInvitations, 
+  revokeAdminInvitation,
+  getAdminSetupUrl,
+  AdminInvitation as InvitationType
+} from '@/lib/adminAuth';
 
 const AdminInvitation: React.FC = () => {
   const { toast } = useToast();
   const [showInviteModal, setShowInviteModal] = useState(false);
-  const [invitations, setInvitations] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<InvitationType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   const [admins, setAdmins] = useState<any[]>([]);
 
-  const handleSendInvitation = (inviteData: { email: string; permissions: string[] }) => {
-    const newInvitation = {
-      id: Date.now(),
-      email: inviteData.email,
-      status: 'pending',
-      sentDate: new Date().toISOString().split('T')[0],
-      expiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString().split('T')[0],
-      role: 'supportive',
-      permissions: inviteData.permissions
-    };
+  // Load invitations from database
+  useEffect(() => {
+    loadInvitations();
+  }, []);
 
-    setInvitations(prev => [...prev, newInvitation]);
-    toast({
-      title: "Invitation Sent",
-      description: `Admin invitation sent to ${inviteData.email}`,
-    });
+  const loadInvitations = async () => {
+    setLoading(true);
+    const data = await getPendingInvitations();
+    setInvitations(data);
+    setLoading(false);
   };
 
-  const handleRevokeInvitation = (invitationId: number) => {
-    setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
-    toast({
-      title: "Invitation Revoked",
-      description: "The invitation has been revoked successfully.",
-    });
+  const handleSendInvitation = async (inviteData: { email: string; permissions: string[] }) => {
+    setSending(true);
+    
+    const invitation = await createAdminInvitation(
+      inviteData.email,
+      inviteData.permissions,
+      'supportive'
+    );
+    
+    if (invitation) {
+      // Generate setup URL
+      const setupUrl = getAdminSetupUrl(invitation.token);
+      
+      setInvitations(prev => [invitation, ...prev]);
+      
+      toast({
+        title: "Invitation Created",
+        description: (
+          <div className="space-y-2">
+            <p>Admin invitation created for {inviteData.email}</p>
+            <p className="text-xs text-muted-foreground">
+              Copy the setup link and send it securely to the admin.
+            </p>
+          </div>
+        ),
+      });
+      
+      // Copy setup URL to clipboard
+      try {
+        await navigator.clipboard.writeText(setupUrl);
+        toast({
+          title: "Setup Link Copied",
+          description: "The secure setup link has been copied to your clipboard.",
+        });
+      } catch {
+        // Clipboard failed, show the URL
+        console.log('Setup URL:', setupUrl);
+      }
+    } else {
+      toast({
+        title: "Invitation Failed",
+        description: "Could not create invitation. Please try again.",
+        variant: "destructive"
+      });
+    }
+    
+    setSending(false);
+  };
+
+  const handleRevokeInvitation = async (invitationId: string) => {
+    const success = await revokeAdminInvitation(invitationId);
+    
+    if (success) {
+      setInvitations(prev => prev.filter(inv => inv.$id !== invitationId));
+      toast({
+        title: "Invitation Revoked",
+        description: "The invitation has been revoked successfully.",
+      });
+    } else {
+      toast({
+        title: "Revoke Failed",
+        description: "Could not revoke invitation. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleCopySetupLink = async (token: string) => {
+    const url = getAdminSetupUrl(token);
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({
+        title: "Link Copied",
+        description: "Setup link copied to clipboard.",
+      });
+    } catch {
+      toast({
+        title: "Copy Failed",
+        description: "Could not copy link. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       pending: { color: 'bg-yellow-100 text-yellow-700', icon: Clock },
       accepted: { color: 'bg-green-100 text-green-700', icon: CheckCircle },
-      expired: { color: 'bg-red-100 text-red-700', icon: AlertTriangle }
+      expired: { color: 'bg-red-100 text-red-700', icon: AlertTriangle },
+      revoked: { color: 'bg-gray-100 text-gray-700', icon: Ban }
     };
     
     const config = statusConfig[status as keyof typeof statusConfig];
@@ -71,10 +153,10 @@ const AdminInvitation: React.FC = () => {
   };
 
   const getRoleBadge = (role: string) => {
-    return role === 'owner' ? (
+    return role === 'admin' ? (
       <Badge className="bg-blue-100 text-blue-700">
         <ShieldCheck className="w-3 h-3 mr-1" />
-        Owner
+        Admin
       </Badge>
     ) : (
       <Badge className="bg-gray-100 text-gray-700">
@@ -89,13 +171,29 @@ const AdminInvitation: React.FC = () => {
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Admin Management</h2>
-          <p className="text-gray-600">Manage admin invitations and permissions</p>
+          <p className="text-gray-600">Pre-provision admin accounts with secure setup links</p>
         </div>
-        <Button onClick={() => setShowInviteModal(true)} className="flex items-center gap-2">
-          <UserPlus className="w-4 h-4" />
+        <Button onClick={() => setShowInviteModal(true)} className="flex items-center gap-2" disabled={sending}>
+          {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
           Invite Admin
         </Button>
       </div>
+
+      {/* Security Notice */}
+      <Card className="bg-amber-50 border-amber-200">
+        <CardContent className="pt-4">
+          <div className="flex items-start gap-3">
+            <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
+            <div>
+              <p className="font-medium text-amber-800">Secure Admin Provisioning</p>
+              <p className="text-sm text-amber-700">
+                Admin accounts are pre-provisioned with designated emails. Invited admins receive a one-time 
+                secure setup link to create their password. They cannot register through the public signup flow.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Current Admins */}
       <Card>
@@ -118,7 +216,7 @@ const AdminInvitation: React.FC = () => {
               {admins.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-6 text-gray-500">
-                    No administrators yet
+                    No administrators yet. Send an invitation to add one.
                   </TableCell>
                 </TableRow>
               ) : (
@@ -170,42 +268,64 @@ const AdminInvitation: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Pending Invitations</CardTitle>
-          <CardDescription>Track and manage admin invitations</CardDescription>
+          <CardDescription>Track and manage admin invitations with secure setup links</CardDescription>
         </CardHeader>
         <CardContent>
-          {invitations.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin mx-auto text-gray-400" />
+              <p className="text-sm text-gray-500 mt-2">Loading invitations...</p>
+            </div>
+          ) : invitations.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No pending invitations
+              <Mail className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p>No pending invitations</p>
+              <p className="text-sm">Click "Invite Admin" to send a secure setup link</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Sent Date</TableHead>
                   <TableHead>Expires</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {invitations.map((invitation) => (
-                  <TableRow key={invitation.id}>
+                  <TableRow key={invitation.$id}>
                     <TableCell className="font-medium">{invitation.email}</TableCell>
+                    <TableCell>{getRoleBadge(invitation.role)}</TableCell>
                     <TableCell>{getStatusBadge(invitation.status)}</TableCell>
-                    <TableCell className="text-sm">{invitation.sentDate}</TableCell>
-                    <TableCell className="text-sm">{invitation.expiresAt}</TableCell>
+                    <TableCell className="text-sm">
+                      {new Date(invitation.expires_at).toLocaleDateString()}
+                    </TableCell>
                     <TableCell>
-                      {invitation.status === 'pending' && (
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleRevokeInvitation(invitation.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          Revoke
-                        </Button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {invitation.status === 'pending' && (
+                          <>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleCopySetupLink(invitation.token)}
+                              className="h-8"
+                            >
+                              <Copy className="h-3 w-3 mr-1" />
+                              Copy Link
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => handleRevokeInvitation(invitation.$id!)}
+                              className="text-red-600 hover:text-red-700 h-8"
+                            >
+                              Revoke
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

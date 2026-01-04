@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Building, User } from "lucide-react";
+import { Building, User, Loader2 } from "lucide-react";
 import { handleLogin, handleSignup } from "@/lib/apiHandlers";
 import { sendPasswordRecovery } from "@/lib/auth";
+import { checkAdminRedirect } from "@/lib/adminAuth";
 import { useToast } from "@/hooks/use-toast";
-
 interface LoginFormData {
   email: string;
   password: string;
@@ -51,9 +50,16 @@ export default function Login() {
       if (result.success) {
         toast({
           title: "Welcome back!",
-          description: "You have been successfully logged in.",
+          description: "Checking your access level...",
         });
-        navigate("/dashboard");
+        
+        // Check if user is admin and redirect accordingly
+        const { isAdmin } = await checkAdminRedirect();
+        if (isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
         toast({
           title: "Login Failed",
