@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +8,7 @@ import AdminDataSync from "@/components/admin/AdminDataSync";
 // Pages & Components
 import Login from "@/components/Login";
 import Signup from "@/components/Signup";
+import AdminSetup from "@/pages/AdminSetup";
 import Index from "./pages/Index";
 import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
@@ -33,6 +33,7 @@ import NotFound from "./pages/NotFound";
 // ✅ Import centralized Odeneho AI assistant
 import OdenehoComponent from "@/components/OdenehoComponent";
 import RequireAuth from "@/components/auth/RequireAuth";
+import RequireAdmin from "@/components/auth/RequireAdmin";
 import PageLoader from "@/components/PageLoader";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/admin-setup" element={<AdminSetup />} />
 
           {/* Protected routes */}
           <Route path="/verify" element={<RequireAuth><VerifyInfo /></RequireAuth>} />
@@ -59,7 +61,9 @@ const App = () => (
           <Route path="/pricing" element={<RequireAuth><Pricing /></RequireAuth>} />
           <Route path="/api-organizations" element={<RequireAuth><ApiOrganizations /></RequireAuth>} />
           <Route path="/dashboard" element={<RequireAuth><UserDashboard /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
+          
+          {/* Admin route - requires authentication AND admin role */}
+          <Route path="/admin" element={<RequireAuth><RequireAdmin><AdminDashboard /></RequireAdmin></RequireAuth>} />
 
           {/* Other routes (optional to protect later) */}
           <Route path="/amnewsworld" element={<Amnewsworld />} />
