@@ -112,3 +112,58 @@
 -- - Admins can CRUD all invitations
 -- - Anonymous/guest users can READ invitations by token (for validation)
 -- - This allows the setup page to validate tokens without authentication
+
+-- ============================================
+-- AUDIT LOGS COLLECTION
+-- ============================================
+-- Step 3: Create 'audit_logs' Collection
+-- Collection ID: audit_logs
+-- Name: Audit Logs
+-- Permissions:
+--   - Read: role:admin
+--   - Create: role:admin
+--   - Update: none (logs are immutable)
+--   - Delete: role:admin (for maintenance only)
+
+-- Attributes for audit_logs:
+-- 1. action_type (String, Required, Size: 50) - e.g., "login", "role_change", "config_update"
+-- 2. action_category (String, Required, Size: 20) - "auth", "role", "config", "content", "system", "api"
+-- 3. user_id (String, Required, Size: 36) - ID of user performing action
+-- 4. user_email (String, Required, Size: 255) - Email of user
+-- 5. target_id (String, Optional, Size: 36) - ID of affected resource
+-- 6. target_type (String, Optional, Size: 50) - Type of affected resource
+-- 7. details (String, Required, Size: 1000) - Human-readable description
+-- 8. ip_address (String, Optional, Size: 45) - IPv4/IPv6 address
+-- 9. user_agent (String, Optional, Size: 500) - Browser/client info
+-- 10. status (String, Required, Size: 20) - "success", "failed", "warning"
+
+-- Indexes for audit_logs:
+-- 1. idx_created_at (Key): [$createdAt] (descending for recent-first queries)
+-- 2. idx_user_id (Key): [user_id]
+-- 3. idx_action_category (Key): [action_category]
+-- 4. idx_status (Key): [status]
+-- 5. idx_category_status (Key): [action_category, status]
+
+-- ============================================
+-- DESIGNATED ADMIN EMAIL SETUP
+-- ============================================
+-- The designated admin email should be stored in your environment variables
+-- or Appwrite project settings, NOT in the database for security.
+--
+-- Option 1: Environment Variable (Recommended)
+-- Set ADMIN_EMAIL in your .env file or Appwrite Function environment:
+--   ADMIN_EMAIL=youradmin@yourdomain.com
+--
+-- Option 2: Appwrite Project Settings
+-- Go to Settings > Environment Variables in Appwrite Console
+-- Add: ADMIN_EMAIL = youradmin@yourdomain.com
+--
+-- The application will check this email during login to auto-assign admin role
+-- to the first admin or validate authorized admin emails.
+
+-- BOOTSTRAPPING YOUR FIRST ADMIN:
+-- 1. Set ADMIN_EMAIL environment variable to your designated admin email
+-- 2. Create a user in Appwrite Console > Auth > Users with that email
+-- 3. Add a document to user_roles collection:
+--    { "user_id": "<user-id>", "role": "admin" }
+-- 4. OR use the /admin-setup page with an invitation token

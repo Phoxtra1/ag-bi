@@ -44,12 +44,13 @@ import ContentSubmissions from '@/components/admin/ContentSubmissions';
 import ContactInbox from '@/components/admin/ContactInbox';
 import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
 import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
-import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI'; // added
+import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI';
 import AIEnginePanel from '@/components/admin/AIEnginePanel';
 import TrainingSystem from '@/components/admin/TrainingSystem';
 import InsightReviewPanel from '@/components/admin/InsightReviewPanel';
 import CommunityModeration from '@/components/admin/CommunityModeration';
 import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
+import AuditLogPanel from '@/components/admin/AuditLogPanel';
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
 
@@ -197,6 +198,7 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
+    { id: 'audit-log', label: 'Audit Log', icon: FileText },
     { id: 'community', label: 'Community Moderation', icon: Users },
     { id: 'community-analytics', label: 'Community Analytics', icon: TrendingUp },
     { id: 'insight-review', label: 'Insight Review', icon: Bot },
@@ -299,6 +301,7 @@ const AdminDashboard = () => {
             {activeTab === 'overview' && <DashboardOverview stats={realTimeStats} />}
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'admins' && <AdminInvitation />}
+            {activeTab === 'audit-log' && <AuditLogPanel />}
             {activeTab === 'community' && <CommunityModeration />}
             {activeTab === 'community-analytics' && <CommunityAnalytics />}
             {activeTab === 'insight-review' && <InsightReviewPanel />}
