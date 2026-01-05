@@ -125,10 +125,12 @@ export default function Login() {
         if (!isAdmin && designatedAdminEmail && designatedAdminEmail === data.email.trim().toLowerCase()) {
           toast({
             title: "Admin role not found",
-            description:
-              "You are logged in, but no admin role record was found. In Appwrite → Database → user_roles, create a document for this user_id with role=admin (and ensure it is readable by the user).",
+            description: "You are logged in, but no admin role record was found. Visit /admin-bootstrap to diagnose and fix this issue.",
             variant: "destructive",
           });
+          // Redirect to bootstrap tool for the designated admin
+          navigate("/admin-bootstrap");
+          return;
         }
 
         navigate(isAdmin ? "/admin" : "/dashboard");
