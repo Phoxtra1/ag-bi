@@ -24,14 +24,21 @@ export interface AdminInvitation {
  */
 export const hasRole = async (userId: string, role: AppRole): Promise<boolean> => {
   try {
+    console.log(`[AdminAuth] Checking role "${role}" for user: ${userId}`);
     const response = await databases.listDocuments(
       DATABASE_ID,
       USER_ROLES_COLLECTION_ID,
       [Query.equal('user_id', userId), Query.equal('role', role)]
     );
-    return response.documents.length > 0;
-  } catch (error) {
-    console.error('Error checking user role:', error);
+    const found = response.documents.length > 0;
+    console.log(`[AdminAuth] Role check result: ${found ? 'FOUND' : 'NOT FOUND'}`, response.documents);
+    return found;
+  } catch (error: any) {
+    console.error('[AdminAuth] Error checking user role:', error);
+    console.error('[AdminAuth] This usually means:');
+    console.error('  1. The "user_roles" collection does not exist');
+    console.error('  2. The collection permissions do not allow reading');
+    console.error('  3. The collection attributes (user_id, role) are missing or named differently');
     return false;
   }
 };
