@@ -2,8 +2,10 @@
 import { account } from '@/lib/appwrite';
 import { OAuthProvider } from 'appwrite';
 
-// Social login redirect URL - uses current origin for flexibility
-const getRedirectUrl = () => `${window.location.origin}/dashboard`;
+// Social login redirect URLs
+// We redirect back to /login so the UI can:
+// 1) detect the authenticated session, 2) check role, and 3) route to /admin or /dashboard.
+const getRedirectUrl = () => `${window.location.origin}/login?oauth=1`;
 const getFailureUrl = () => `${window.location.origin}/login?error=oauth_failed`;
 
 /**

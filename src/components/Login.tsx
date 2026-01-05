@@ -48,7 +48,7 @@ export default function Login() {
 
   const userType = registerForm.watch('userType');
 
-  // Check for OAuth errors on mount
+  // Check for OAuth errors / success redirect on mount
   useEffect(() => {
     const error = searchParams.get('error');
     if (error === 'oauth_failed') {
@@ -59,18 +59,15 @@ export default function Login() {
       });
     }
 
-    // Check if user is already authenticated (OAuth redirect success)
+    // If user is already authenticated (e.g. after OAuth redirect), route them accordingly.
     const checkExistingSession = async () => {
       const result = await checkOAuthSession();
       if (result.success && result.user) {
         const { isAdmin } = await checkAdminRedirect();
-        if (isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/dashboard");
-        }
+        navigate(isAdmin ? "/admin" : "/dashboard");
       }
     };
+
     checkExistingSession();
   }, [searchParams, navigate, toast]);
 
@@ -117,14 +114,24 @@ export default function Login() {
           title: "Welcome back!",
           description: "Checking your access level...",
         });
-        
+
         // Check if user is admin and redirect accordingly
         const { isAdmin } = await checkAdminRedirect();
-        if (isAdmin) {
-          navigate("/admin");
-        } else {
-          navigate("/dashboard");
+
+        // Helpful hint for the designated admin email (env var does NOT grant admin by itself)
+        const designatedAdminEmail = String(import.meta.env.VITE_ADMIN_EMAIL || '')
+          .trim()
+          .toLowerCase();
+        if (!isAdmin && designatedAdminEmail && designatedAdminEmail === data.email.trim().toLowerCase()) {
+          toast({
+            title: "Admin role not found",
+            description:
+              "You are logged in, but no admin role record was found. In Appwrite → Database → user_roles, create a document for this user_id with role=admin (and ensure it is readable by the user).",
+            variant: "destructive",
+          });
         }
+
+        navigate(isAdmin ? "/admin" : "/dashboard");
       } else {
         toast({
           title: "Login Failed",
