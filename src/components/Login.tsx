@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import { handleLogin, handleSignup } from "@/lib/apiHandlers";
 import { sendPasswordRecovery } from "@/lib/auth";
 import { checkAdminRedirect } from "@/lib/adminAuth";
 import { useToast } from "@/hooks/use-toast";
+import { loginWithFacebook, loginWithGithub, loginWithMicrosoft, checkOAuthSession } from "@/lib/socialAuth";
+import { FaFacebook, FaGithub, FaMicrosoft } from "react-icons/fa";
 interface LoginFormData {
   email: string;
   password: string;
@@ -32,7 +34,9 @@ export default function Login() {
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [isResetting, setIsResetting] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
 
   const loginForm = useForm<LoginFormData>();
@@ -43,6 +47,67 @@ export default function Login() {
   });
 
   const userType = registerForm.watch('userType');
+
+  // Check for OAuth errors on mount
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error === 'oauth_failed') {
+      toast({
+        title: "Social Login Failed",
+        description: "Unable to complete social login. Please try again or use email/password.",
+        variant: "destructive"
+      });
+    }
+
+    // Check if user is already authenticated (OAuth redirect success)
+    const checkExistingSession = async () => {
+      const result = await checkOAuthSession();
+      if (result.success && result.user) {
+        const { isAdmin } = await checkAdminRedirect();
+        if (isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
+      }
+    };
+    checkExistingSession();
+  }, [searchParams, navigate, toast]);
+
+  // Social login handlers
+  const handleSocialLogin = async (provider: 'facebook' | 'github' | 'microsoft') => {
+    setIsSocialLoading(provider);
+    try {
+      let result;
+      switch (provider) {
+        case 'facebook':
+          result = await loginWithFacebook();
+          break;
+        case 'github':
+          result = await loginWithGithub();
+          break;
+        case 'microsoft':
+          result = await loginWithMicrosoft();
+          break;
+      }
+      // OAuth redirects, so we shouldn't reach here unless there's an error
+      if (!result?.success) {
+        toast({
+          title: "Login Failed",
+          description: result?.error || `Unable to connect to ${provider}`,
+          variant: "destructive"
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Login Failed",
+        description: error.message || "Social login failed. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSocialLoading(null);
+    }
+  };
 
   const onLogin = async (data: LoginFormData) => {
     try {
@@ -241,6 +306,58 @@ export default function Login() {
                     </form>
                   </DialogContent>
                 </Dialog>
+
+                {/* Social Login Section */}
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSocialLogin('facebook')}
+                    disabled={isSocialLoading !== null}
+                    className="w-full"
+                  >
+                    {isSocialLoading === 'facebook' ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <FaFacebook className="h-5 w-5 text-blue-600" />
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSocialLogin('github')}
+                    disabled={isSocialLoading !== null}
+                    className="w-full"
+                  >
+                    {isSocialLoading === 'github' ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <FaGithub className="h-5 w-5" />
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSocialLogin('microsoft')}
+                    disabled={isSocialLoading !== null}
+                    className="w-full"
+                  >
+                    {isSocialLoading === 'microsoft' ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <FaMicrosoft className="h-5 w-5 text-blue-500" />
+                    )}
+                  </Button>
+                </div>
               </form>
             </TabsContent>
 
