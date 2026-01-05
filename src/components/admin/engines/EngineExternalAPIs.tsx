@@ -21,7 +21,7 @@ interface EngineLocalState {
   dirty: boolean;
 }
 
-const ENGINES: EngineType[] = ['prediction', 'verify', 'report'];
+const ENGINES: EngineType[] = ['prediction', 'verify', 'report', 'trending'];
 
 const EngineExternalAPIs: React.FC = () => {
   const { toast } = useToast();
@@ -29,8 +29,8 @@ const EngineExternalAPIs: React.FC = () => {
     prediction: { enabled: false, mode: 'internal', confidence_threshold: ENGINE_CONFIG.prediction.default_confidence_threshold, external_api_url: ENGINE_CONFIG.prediction.external_api_url, external_api_key: '', loading: true, dirty: false },
     verify: { enabled: false, mode: 'internal', confidence_threshold: ENGINE_CONFIG.verify.default_confidence_threshold, external_api_url: ENGINE_CONFIG.verify.external_api_url, external_api_key: '', loading: true, dirty: false },
     report: { enabled: false, mode: 'internal', confidence_threshold: ENGINE_CONFIG.report.default_confidence_threshold, external_api_url: ENGINE_CONFIG.report.external_api_url, external_api_key: '', loading: true, dirty: false },
-    trending: undefined as never,
-  } as any);
+    trending: { enabled: false, mode: 'internal', confidence_threshold: ENGINE_CONFIG.trending.default_confidence_threshold, external_api_url: ENGINE_CONFIG.trending.external_api_url, external_api_key: '', loading: true, dirty: false },
+  });
 
   useEffect(() => {
     let mounted = true;

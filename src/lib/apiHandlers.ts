@@ -109,7 +109,7 @@ export const handleContactSubmission = async (data: {
   }
 };
 
-// Prediction form handler
+// Prediction form handler with improved error handling
 export const handlePredictionSubmission = async (data: {
   name: string;
   email: string;
@@ -117,8 +117,8 @@ export const handlePredictionSubmission = async (data: {
   title?: string;
   description?: string;
 }) => {
-  try {
-    const response = await databases.createDocument(
+  const create = async () =>
+    await databases.createDocument(
       DATABASE_ID,
       PREDICTIONS_COLLECTION_ID,
       ID.unique(),
@@ -133,20 +133,40 @@ export const handlePredictionSubmission = async (data: {
         submittedBy: data.email
       }
     );
+
+  try {
+    const response = await create();
     return { success: true, document: response };
-  } catch (error) {
+  } catch (error: any) {
+    const msg = error?.message || '';
+    const code = error?.code;
+    
+    // Retry with anonymous session if permission denied
+    if (code === 401 || code === 403 || /permission|unauthorized|scope/i.test(msg)) {
+      try {
+        await account.createAnonymousSession();
+        const response = await create();
+        return { success: true, document: response };
+      } catch (e2: any) {
+        console.error('Prediction submission retry failed:', e2);
+        return { 
+          success: false, 
+          error: `${e2?.message || 'Unauthorized'}. Ensure Create permission is enabled for predictions collection.` 
+        };
+      }
+    }
     console.error('Prediction submission error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: msg || 'Submission failed' };
   }
 };
 
-// Newsletter subscription handler
+// Newsletter subscription handler with improved error handling
 export const handleNewsletterSubscription = async (data: {
   email: string;
   fullName?: string;
 }) => {
-  try {
-    const response = await databases.createDocument(
+  const create = async () =>
+    await databases.createDocument(
       DATABASE_ID,
       NEWSLETTERS_COLLECTION_ID,
       ID.unique(),
@@ -157,14 +177,39 @@ export const handleNewsletterSubscription = async (data: {
         status: 'active'
       }
     );
+
+  try {
+    const response = await create();
     return { success: true, document: response };
-  } catch (error) {
+  } catch (error: any) {
+    const msg = error?.message || '';
+    const code = error?.code;
+    
+    // Handle duplicate subscription gracefully
+    if (code === 409 || /already exists|duplicate/i.test(msg)) {
+      return { success: true, message: 'Already subscribed!' };
+    }
+    
+    // Retry with anonymous session if permission denied
+    if (code === 401 || code === 403 || /permission|unauthorized|scope/i.test(msg)) {
+      try {
+        await account.createAnonymousSession();
+        const response = await create();
+        return { success: true, document: response };
+      } catch (e2: any) {
+        console.error('Newsletter subscription retry failed:', e2);
+        return { 
+          success: false, 
+          error: `${e2?.message || 'Unauthorized'}. Ensure Create permission is enabled for newsletters collection.` 
+        };
+      }
+    }
     console.error('Newsletter subscription error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: msg || 'Subscription failed' };
   }
 };
 
-// API access request handler
+// API access request handler with improved error handling
 export const handleApiAccessRequest = async (data: {
   fullName: string;
   email: string;
@@ -173,8 +218,8 @@ export const handleApiAccessRequest = async (data: {
   intendedUse: string;
   verificationDocument?: string;
 }) => {
-  try {
-    const response = await databases.createDocument(
+  const create = async () =>
+    await databases.createDocument(
       DATABASE_ID,
       API_REQUESTS_COLLECTION_ID,
       ID.unique(),
@@ -190,9 +235,29 @@ export const handleApiAccessRequest = async (data: {
         submissionDate: new Date().toISOString()
       }
     );
+
+  try {
+    const response = await create();
     return { success: true, document: response };
-  } catch (error) {
+  } catch (error: any) {
+    const msg = error?.message || '';
+    const code = error?.code;
+    
+    // Retry with anonymous session if permission denied
+    if (code === 401 || code === 403 || /permission|unauthorized|scope/i.test(msg)) {
+      try {
+        await account.createAnonymousSession();
+        const response = await create();
+        return { success: true, document: response };
+      } catch (e2: any) {
+        console.error('API access request retry failed:', e2);
+        return { 
+          success: false, 
+          error: `${e2?.message || 'Unauthorized'}. Ensure Create permission is enabled for api_requests collection.` 
+        };
+      }
+    }
     console.error('API access request error:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: msg || 'Request failed' };
   }
 };
