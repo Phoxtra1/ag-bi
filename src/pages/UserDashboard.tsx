@@ -12,9 +12,7 @@ import UserInsightsDashboard from '@/components/UserInsightsDashboard';
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
-import ModuleLoader from '@/components/ModuleLoader';
-import UniversalModuleInterface from '@/components/UniversalModuleInterface';
-import { ModuleInfo } from '@/lib/moduleRegistry';
+import TrendingNews from '@/components/dashboard/TrendingNews';
 import { Button } from '@/components/ui/button';
 import { logoutUser } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -23,9 +21,6 @@ import { LogOut } from 'lucide-react';
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedModule, setSelectedModule] = useState<ModuleInfo | null>(null);
-
-
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,7 +39,7 @@ const UserDashboard = () => {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="predictions">Predictions</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="info">Info</TabsTrigger>
             <TabsTrigger value="community">Amniva Society</TabsTrigger>
             <TabsTrigger value="api">API Access</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
@@ -62,17 +57,9 @@ const UserDashboard = () => {
               </div>
             </div>
             
-            {/* Dynamic Module Loader */}
+            {/* Trending News Section */}
             <div className="mt-8">
-              <h3 className="text-2xl font-bold mb-4">Your Active Modules</h3>
-              {selectedModule ? (
-                <UniversalModuleInterface 
-                  module={selectedModule} 
-                  onClose={() => setSelectedModule(null)}
-                />
-              ) : (
-                <ModuleLoader onModuleClick={(module) => setSelectedModule(module)} />
-              )}
+              <TrendingNews />
             </div>
           </TabsContent>
 
@@ -96,7 +83,7 @@ const UserDashboard = () => {
             </Tabs>
           </TabsContent>
 
-          <TabsContent value="reports" className="mt-6">
+          <TabsContent value="info" className="mt-6">
             <UserInsightsDashboard />
           </TabsContent>
 
