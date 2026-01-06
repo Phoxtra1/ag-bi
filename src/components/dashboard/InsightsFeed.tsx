@@ -290,7 +290,7 @@ const InsightsFeed = () => {
           <div>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5" />
-              Live Insights Feed
+              Live Feed
             </CardTitle>
             <CardDescription>
               Real-time intelligence from configured sources • {activeFeedCount} active feeds • Last updated: {lastUpdated.toLocaleTimeString()}
