@@ -48,18 +48,16 @@ const UserDashboard = () => {
 
           <TabsContent value="overview" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
+              {/* Left column: Live Feed + Trending News */}
+              <div className="lg:col-span-2 space-y-6">
                 <InsightsFeed />
+                <TrendingNews />
               </div>
-              <div className="space-y-6">
+              {/* Right column: Weather + Prediction Metrics - aligned with left */}
+              <div className="space-y-6 flex flex-col">
                 <WeatherWidget />
                 <LivePredictionPanel />
               </div>
-            </div>
-            
-            {/* Trending News Section */}
-            <div className="mt-8">
-              <TrendingNews />
             </div>
           </TabsContent>
 

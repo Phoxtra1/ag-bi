@@ -118,21 +118,7 @@ export default function Login() {
         // Check if user is admin and redirect accordingly
         const { isAdmin } = await checkAdminRedirect();
 
-        // Helpful hint for the designated admin email (env var does NOT grant admin by itself)
-        const designatedAdminEmail = String(import.meta.env.VITE_ADMIN_EMAIL || '')
-          .trim()
-          .toLowerCase();
-        if (!isAdmin && designatedAdminEmail && designatedAdminEmail === data.email.trim().toLowerCase()) {
-          toast({
-            title: "Admin role not found",
-            description: "You are logged in, but no admin role record was found. Visit /admin-bootstrap to diagnose and fix this issue.",
-            variant: "destructive",
-          });
-          // Redirect to bootstrap tool for the designated admin
-          navigate("/admin-bootstrap");
-          return;
-        }
-
+        // Redirect based on admin status
         navigate(isAdmin ? "/admin" : "/dashboard");
       } else {
         toast({
