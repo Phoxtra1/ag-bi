@@ -15,7 +15,10 @@ const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       try {
         const user = await getCurrentUser();
         if (!mounted || !user) {
-          if (mounted) setIsAdmin(false);
+          if (mounted) {
+            setIsAdmin(false);
+            setLoading(false);
+          }
           return;
         }
 

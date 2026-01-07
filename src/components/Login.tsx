@@ -115,23 +115,63 @@ export default function Login() {
           description: "Checking your access level...",
         });
 
+        // Ensure the session is actually established before routing (avoids redirect loops
+        // in environments where cookies can be delayed/blocked).
+        let currentUser: any = null;
+        for (let i = 0; i < 6; i++) {
+          try {
+            // Importing account here keeps the auth source consistent with the rest of the app.
+            const { account } = await import("@/lib/appwrite");
+            currentUser = await account.get();
+            break;
+          } catch {
+            await new Promise((r) => setTimeout(r, 200));
+          }
+        }
+
+        if (!currentUser) {
+          toast({
+            title: "Sign-in incomplete",
+            description:
+              "We couldn't confirm your session after sign-in. If you're in a strict browser or embedded preview, allow third‑party cookies for Appwrite or use a custom domain.",
+            variant: "destructive",
+          });
+          return;
+        }
+
         // Check if user is admin and redirect accordingly
         const { isAdmin } = await checkAdminRedirect();
 
-        // Redirect based on admin status
+        // If the designated admin email is logging in but role isn't found, show a clear setup hint.
+        const designatedAdminEmail = String(import.meta.env.VITE_ADMIN_EMAIL || "")
+          .trim()
+          .toLowerCase();
+        const currentEmail = String(currentUser?.email || "").trim().toLowerCase();
+
+        if (!isAdmin && designatedAdminEmail && currentEmail === designatedAdminEmail) {
+          toast({
+            title: "Admin role record not linked",
+            description:
+              `You're signed in as the designated admin email, but no 'admin' role is linked to this account. In Appwrite, create a document in user_roles with user_id = ${currentUser.$id} and role = admin (and ensure users can read their own role).`,
+            variant: "destructive",
+          });
+          navigate("/dashboard");
+          return;
+        }
+
         navigate(isAdmin ? "/admin" : "/dashboard");
       } else {
         toast({
           title: "Login Failed",
           description: result.error || "Invalid email or password.",
-          variant: "destructive"
+          variant: "destructive",
         });
       }
     } catch (error: any) {
       toast({
         title: "Login Failed",
         description: error.message || "Failed to connect to the server.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
