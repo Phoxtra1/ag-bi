@@ -13,6 +13,7 @@ import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
 import TrendingNews from '@/components/dashboard/TrendingNews';
+import PredictionRequestForm from '@/components/dashboard/PredictionRequestForm';
 import { Button } from '@/components/ui/button';
 import { logoutUser } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
@@ -63,7 +64,16 @@ const UserDashboard = () => {
 
 
           <TabsContent value="predictions" className="mt-6">
-            <LivePredictionPanel />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left column: Prediction Request Form */}
+              <div className="lg:col-span-2">
+                <PredictionRequestForm />
+              </div>
+              {/* Right column: Live Metrics */}
+              <div>
+                <LivePredictionPanel />
+              </div>
+            </div>
           </TabsContent>
 
           <TabsContent value="verify" className="mt-6">
