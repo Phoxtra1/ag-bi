@@ -13,15 +13,17 @@ import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
 import TrendingNews from '@/components/dashboard/TrendingNews';
-import PredictionRequestForm from '@/components/dashboard/PredictionRequestForm';
+import PredictionRequestDialog from '@/components/dashboard/PredictionRequestDialog';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { logoutUser } from '@/lib/auth';
 import { useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, TrendingUp } from 'lucide-react';
 
 const UserDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [predictionDialogOpen, setPredictionDialogOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -65,15 +67,48 @@ const UserDashboard = () => {
 
           <TabsContent value="predictions" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left column: Prediction Request Form */}
+              {/* Left column: Prediction Results Area */}
               <div className="lg:col-span-2">
-                <PredictionRequestForm />
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Prediction Results</CardTitle>
+                    <CardDescription>
+                      Your prediction analysis results will appear here once processed by our AI engines.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12 text-muted-foreground">
+                      <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p className="mb-2">No prediction results yet</p>
+                      <p className="text-sm">Submit a prediction request to receive AI-powered analysis</p>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              {/* Right column: Live Metrics */}
-              <div>
+              {/* Right column: Live Metrics + Request CTA */}
+              <div className="space-y-6">
                 <LivePredictionPanel />
+                <Card>
+                  <CardContent className="pt-6">
+                    <Button 
+                      onClick={() => setPredictionDialogOpen(true)} 
+                      className="w-full"
+                      size="lg"
+                    >
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Request Prediction
+                    </Button>
+                    <p className="text-xs text-muted-foreground text-center mt-3">
+                      Submit data for AI-powered predictive analysis
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
             </div>
+            <PredictionRequestDialog 
+              open={predictionDialogOpen} 
+              onOpenChange={setPredictionDialogOpen} 
+            />
           </TabsContent>
 
           <TabsContent value="verify" className="mt-6">
