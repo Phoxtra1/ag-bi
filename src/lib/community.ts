@@ -1,5 +1,5 @@
 import { databases, storage, DATABASE_ID } from './appwrite';
-import { ID, Query } from 'appwrite';
+import { ID, Query, Permission, Role } from 'appwrite';
 
 export const COMMUNITY_POSTS_COLLECTION_ID = import.meta.env.VITE_COMMUNITY_POSTS_COLLECTION_ID || 'community_posts';
 export const COMMUNITY_COMMENTS_COLLECTION_ID = import.meta.env.VITE_COMMUNITY_COMMENTS_COLLECTION_ID || 'community_comments';
@@ -58,14 +58,23 @@ export interface Ad {
 // Posts
 export const createPost = async (postData: Omit<CommunityPost, '$id' | 'created_at'>) => {
   try {
+    // Ensure the created post is readable by other authenticated users.
+    // If your collection has “Document Security” enabled, these permissions are REQUIRED.
+    const permissions = [
+      Permission.read(Role.users()),
+      Permission.update(Role.user(postData.user_id)),
+      Permission.delete(Role.user(postData.user_id)),
+    ];
+
     const response = await databases.createDocument(
       DATABASE_ID,
       COMMUNITY_POSTS_COLLECTION_ID,
       ID.unique(),
       {
         ...postData,
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      },
+      permissions
     );
     return { data: response, error: null };
   } catch (error) {
@@ -162,14 +171,21 @@ export const deletePost = async (postId: string) => {
 // Comments
 export const createComment = async (commentData: Omit<CommunityComment, '$id' | 'created_at'>) => {
   try {
+    const permissions = [
+      Permission.read(Role.users()),
+      Permission.update(Role.user(commentData.user_id)),
+      Permission.delete(Role.user(commentData.user_id)),
+    ];
+
     const response = await databases.createDocument(
       DATABASE_ID,
       COMMUNITY_COMMENTS_COLLECTION_ID,
       ID.unique(),
       {
         ...commentData,
-        created_at: new Date().toISOString()
-      }
+        created_at: new Date().toISOString(),
+      },
+      permissions
     );
 
     // Update post comments count
