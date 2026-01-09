@@ -5,9 +5,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageSquare, Heart, Flag, TrendingUp, Clock, Users, Radio, Video, Trophy } from 'lucide-react';
-import { getPosts, createPost, likePost, getUserBadge } from '@/lib/community';
+import { getPosts, likePost, COMMUNITY_POSTS_COLLECTION_ID } from '@/lib/community';
+import { client, DATABASE_ID } from '@/lib/appwrite';
 import { getCurrentUser } from '@/lib/auth';
 import { useToast } from '@/hooks/use-toast';
+
 import PostCard from './PostCard';
 import CreatePostDialog from './CreatePostDialog';
 import SponsoredContent from './SponsoredContent';
@@ -26,7 +28,31 @@ const CommunityFeed = () => {
 
   useEffect(() => {
     loadCurrentUser();
+  }, []);
+
+  useEffect(() => {
     loadPosts();
+  }, [sortBy]);
+
+  useEffect(() => {
+    const channel = `databases.${DATABASE_ID}.collections.${COMMUNITY_POSTS_COLLECTION_ID}.documents`;
+
+    console.log('[CommunityFeed] subscribing to realtime:', channel);
+    const unsubscribe = client.subscribe(channel, (event: any) => {
+      console.log('[CommunityFeed] realtime event:', event?.events);
+      // Reload on create/update/delete so all users see changes quickly
+      if (Array.isArray(event?.events) && event.events.some((e: string) => e.includes('.create') || e.includes('.update') || e.includes('.delete'))) {
+        loadPosts();
+      }
+    });
+
+    return () => {
+      try {
+        unsubscribe();
+      } catch (e) {
+        // ignore
+      }
+    };
   }, [sortBy]);
 
   const loadCurrentUser = async () => {
