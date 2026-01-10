@@ -412,7 +412,7 @@ export default function Login() {
                           <DialogTitle>Enter Your PhoxtraID</DialogTitle>
                         </div>
                         <DialogDescription>
-                          Sign in using your unified PhoxtraID. Formats accepted: PID-XXXXX-IND-XXXX (Individual) or PID-XXXXX-BIZ-XXXX (Business).
+                          Sign in using your unified PhoxtraID.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4 pt-2">
@@ -421,13 +421,46 @@ export default function Login() {
                           <Input
                             id="phoxtra-id"
                             type="text"
-                            placeholder="PID-XXXXX-IND-XXXX"
+                            placeholder="PID-**************"
                             value={phoxtraId}
-                            onChange={(e) => setPhoxtraId(e.target.value.toUpperCase())}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+                              // Auto-format with dashes: PID-XXXXX-IND/BIZ-XXXX
+                              if (!value.startsWith('PID') && value.length > 0) {
+                                value = 'PID-' + value.replace('PID', '');
+                              }
+                              if (value.length === 3 && !value.includes('-')) {
+                                value = value + '-';
+                              }
+                              if (value.length > 4 && value.charAt(3) !== '-') {
+                                value = value.slice(0, 3) + '-' + value.slice(3);
+                              }
+                              if (value.length === 9 && value.split('-').length === 2) {
+                                value = value + '-';
+                              }
+                              if (value.length > 10 && value.split('-').length === 2) {
+                                const parts = value.split('-');
+                                value = parts[0] + '-' + parts[1].slice(0, 5) + '-' + parts[1].slice(5);
+                              }
+                              if (value.length > 13 && value.split('-').length === 3) {
+                                const parts = value.split('-');
+                                if (parts[2].length > 3 && !['IND', 'BIZ'].includes(parts[2].slice(0, 3))) {
+                                  // Keep as is
+                                } else if (parts[2].length === 3) {
+                                  value = value + '-';
+                                }
+                              }
+                              if (value.length > 17 && value.split('-').length === 3) {
+                                const parts = value.split('-');
+                                value = parts[0] + '-' + parts[1] + '-' + parts[2].slice(0, 3) + '-' + parts[2].slice(3);
+                              }
+                              // Limit total length
+                              if (value.length > 19) {
+                                value = value.slice(0, 19);
+                              }
+                              setPhoxtraId(value);
+                            }}
                           />
-                          <p className="text-xs text-muted-foreground">
-                            IND = Individual Account | BIZ = Business Account
-                          </p>
                         </div>
                         <Button 
                           className="w-full" 
@@ -441,9 +474,6 @@ export default function Login() {
                         >
                           Sign In with PhoxtraID
                         </Button>
-                        <p className="text-xs text-center text-muted-foreground">
-                          Phoxtra API integration coming soon
-                        </p>
                       </div>
                     </DialogContent>
                   </Dialog>
