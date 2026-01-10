@@ -14,6 +14,7 @@ import { checkAdminRedirect } from "@/lib/adminAuth";
 import { useToast } from "@/hooks/use-toast";
 import { loginWithFacebook, loginWithGithub, loginWithMicrosoft, checkOAuthSession } from "@/lib/socialAuth";
 import { FaFacebook, FaGithub, FaMicrosoft } from "react-icons/fa";
+import phoxtraLogo from "@/assets/phoxtra-logo.png";
 interface LoginFormData {
   email: string;
   password: string;
@@ -35,6 +36,8 @@ export default function Login() {
   const [resetEmail, setResetEmail] = useState('');
   const [isResetting, setIsResetting] = useState(false);
   const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
+  const [phoxtraDialogOpen, setPhoxtraDialogOpen] = useState(false);
+  const [phoxtraId, setPhoxtraId] = useState('');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -352,7 +355,7 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-4 gap-3">
                   <Button
                     type="button"
                     variant="outline"
@@ -392,6 +395,58 @@ export default function Login() {
                       <FaMicrosoft className="h-5 w-5 text-blue-500" />
                     )}
                   </Button>
+                  <Dialog open={phoxtraDialogOpen} onOpenChange={setPhoxtraDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full p-1"
+                      >
+                        <img src={phoxtraLogo} alt="Phoxtra" className="h-5 w-5 rounded-full object-cover" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <div className="flex items-center gap-3 mb-2">
+                          <img src={phoxtraLogo} alt="Phoxtra" className="h-10 w-10 rounded-full" />
+                          <DialogTitle>Enter Your PhoxtraID</DialogTitle>
+                        </div>
+                        <DialogDescription>
+                          Sign in using your unified PhoxtraID. Formats accepted: PID-XXXXX-IND-XXXX (Individual) or PID-XXXXX-BIZ-XXXX (Business).
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 pt-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="phoxtra-id">PhoxtraID</Label>
+                          <Input
+                            id="phoxtra-id"
+                            type="text"
+                            placeholder="PID-XXXXX-IND-XXXX"
+                            value={phoxtraId}
+                            onChange={(e) => setPhoxtraId(e.target.value.toUpperCase())}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            IND = Individual Account | BIZ = Business Account
+                          </p>
+                        </div>
+                        <Button 
+                          className="w-full" 
+                          disabled
+                          onClick={() => {
+                            toast({
+                              title: "Phoxtra Integration Pending",
+                              description: "PhoxtraID login will be available once the Phoxtra API is integrated.",
+                            });
+                          }}
+                        >
+                          Sign In with PhoxtraID
+                        </Button>
+                        <p className="text-xs text-center text-muted-foreground">
+                          Phoxtra API integration coming soon
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </form>
             </TabsContent>
