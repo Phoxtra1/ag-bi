@@ -474,6 +474,24 @@ export default function Login() {
                         >
                           Sign In with PhoxtraID
                         </Button>
+                        <div className="flex items-center justify-between pt-2">
+                          <a 
+                            href="https://www.phoxtra.com" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            www.phoxtra.com
+                          </a>
+                          <a 
+                            href="https://www.phoxtra.com" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline font-medium"
+                          >
+                            Sign Up for PhoxtraID →
+                          </a>
+                        </div>
                       </div>
                     </DialogContent>
                   </Dialog>
