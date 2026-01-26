@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const platformLinks = [
-    { name: 'Trending', href: '/trending' },
-    { name: 'Checks', href: '/verify' },
-    { name: 'Reports', href: '/reports' },
+    { name: 'Business Trends', href: '/trending' },
+    { name: 'Verify', href: '/verify' },
+    { name: 'Info', href: '/reports' },
     { name: 'Pricing', href: '/pricing' }
   ];
 
@@ -18,7 +17,7 @@ const Footer = () => {
   ];
 
   const companyLinks = [
-    { name: 'Amnewsworld', href: '/amnewsworld' },
+    { name: 'Amineva', href: 'https://amineva.com', external: true },
     { name: 'About Amniva', href: '/about' },
     { name: 'Careers', href: '/careers' },
     { name: 'Contact Us', href: '/contact' }
@@ -27,12 +26,12 @@ const Footer = () => {
   const connectLinks = [
     { name: 'Register', href: '/login' },
     { name: 'Newsletter', href: '/newsletter' },
-    { name: 'Privacy Policy', href: '/privacy' },
-    { name: 'Terms of Service', href: '/terms' }
+    { name: 'Privacy Policy', href: 'https://hub.amineva.com/privacy-policy/', external: true },
+    { name: 'Terms of Service', href: 'https://hub.amineva.com/term-of-service/', external: true }
   ];
 
   return (
-    <footer className="bg-[#002A5C] text-white mt-20">
+    <footer className="bg-[#0a1628] text-white mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Platform Column */}
@@ -43,9 +42,9 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link 
                     to={link.href}
-                    className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
+                    className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
                   >
-                    <span className="text-[#F59E0B]">🔸</span>
+                    <span className="text-amber-500">•</span>
                     {link.name}
                   </Link>
                 </li>
@@ -61,9 +60,9 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link 
                     to={link.href}
-                    className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
+                    className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
                   >
-                    <span className="text-[#F59E0B]">🔸</span>
+                    <span className="text-amber-500">•</span>
                     {link.name}
                   </Link>
                 </li>
@@ -77,13 +76,25 @@ const Footer = () => {
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.name}>
-                  <Link 
-                    to={link.href}
-                    className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
-                  >
-                    <span className="text-[#F59E0B]">🔸</span>
-                    {link.name}
-                  </Link>
+                  {link.external ? (
+                    <a 
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
+                    >
+                      <span className="text-amber-500">•</span>
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link 
+                      to={link.href}
+                      className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
+                    >
+                      <span className="text-amber-500">•</span>
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -95,13 +106,25 @@ const Footer = () => {
             <ul className="space-y-3">
               {connectLinks.map((link) => (
                 <li key={link.name}>
-                  <Link 
-                    to={link.href}
-                    className="text-gray-300 hover:text-[#F59E0B] transition-colors duration-200 text-sm flex items-center gap-2"
-                  >
-                    <span className="text-[#F59E0B]">🔸</span>
-                    {link.name}
-                  </Link>
+                  {link.external ? (
+                    <a 
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
+                    >
+                      <span className="text-amber-500">•</span>
+                      {link.name}
+                    </a>
+                  ) : (
+                    <Link 
+                      to={link.href}
+                      className="text-slate-400 hover:text-amber-400 transition-colors duration-200 text-sm flex items-center gap-2"
+                    >
+                      <span className="text-amber-500">•</span>
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -109,10 +132,10 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-[#F59E0B]/30">
+        <div className="mt-12 pt-8 border-t border-amber-500/20">
           <div className="text-center">
-            <p className="text-sm text-gray-400">
-              © 2025 Amniva. All rights reserved. Powered by Amnewsworld.
+            <p className="text-sm text-slate-500">
+              © 2025 Amniva. All rights reserved. Powered by Amineva Global.
             </p>
           </div>
         </div>

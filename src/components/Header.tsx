@@ -1,58 +1,58 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import amnivaLogo from '@/assets/amniva-logo.png';
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-border">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
             <img 
-              src="/lovable-uploads/ea0bb535-fc7d-44f0-80e1-abd03b1a3317.png" 
+              src={amnivaLogo}
               alt="Amniva Logo" 
-              className="h-8 w-8"
+              className="h-9 w-9 rounded-lg"
             />
-            <span className="text-xl font-bold text-[#1D4ED8]">Amniva</span>
+            <span className="text-xl font-bold text-foreground">Amniva</span>
           </Link>
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/verify" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
-              Verify Info
-            </Link>
-            <Link 
-              to="/trending" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
-            >
-              Trending
-            </Link>
-            <Link 
-              to="/predictions" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
-            >
-              Predictions
+              Verify
             </Link>
             <Link 
               to="/reports" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
-              Reports
+              Info
+            </Link>
+            <Link 
+              to="/predictions" 
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
+            >
+              Prediction
+            </Link>
+            <Link 
+              to="/trending" 
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
+            >
+              Business Trends
             </Link>
             <Link 
               to="/pricing" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
               Pricing
             </Link>
             <Link 
               to="/api-organizations" 
-              className="text-gray-700 hover:text-[#1D4ED8] font-medium transition-colors"
+              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
             >
               API
             </Link>
@@ -61,14 +61,14 @@ const Header = () => {
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
             <Link to="/login">
-              <Button className="bg-[#F59E0B] hover:bg-[#D97706] text-white">
+              <Button className="bg-amber-500 hover:bg-amber-600 text-white font-semibold">
                 Get Started
               </Button>
             </Link>
           </div>
         </div>
 
-        {/* Mobile menu button - you can expand this later */}
+        {/* Mobile menu button */}
         <div className="md:hidden">
           {/* Mobile navigation can be added here */}
         </div>

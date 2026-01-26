@@ -1,66 +1,73 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ✅ Added for navigation
+import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { CheckCircle, Play, ArrowRight, Shield, Zap, Globe, ExternalLink } from 'lucide-react';
+import { CheckCircle, Play, ArrowRight, Shield, Zap, TrendingUp, FileText } from 'lucide-react';
 import VideoPlayerModal from './VideoPlayerModal';
 
 const HeroSection = () => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const navigate = useNavigate(); // ✅ Added navigate hook
-
-  const trustedOrganizations = [
-    { name: 'TrustLaw', url: 'https://www.trust.org/trustlaw/' },
-    { name: 'SJN', url: 'https://www.solutionsjournalism.org/' },
-    { name: 'Amnewsworld', url: 'https://www.amnewsworld.com/' },
-    { name: 'Project Shield', url: 'https://projectshield.google/landing' },
-    { name: 'Phoxtra', url: 'https://www.phoxtra.com/' }
-  ];
+  const navigate = useNavigate();
 
   const handleStartFreeTrial = () => {
-    navigate('/signup'); // ✅ Replaced window.location.href
+    navigate('/signup');
   };
 
   return (
-    <section id="home" className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent"></div>
+    <section id="home" className="min-h-screen bg-gradient-to-br from-[#0a1628] via-[#0f2847] to-[#0a1628] text-white relative overflow-hidden">
+      {/* Grid background */}
+      <div 
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(212, 175, 55, 0.2) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(212, 175, 55, 0.2) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }}
+      />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
           {/* Left Column - Content */}
           <div className="space-y-8">
             {/* Badge */}
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-              <Shield className="w-4 h-4 mr-2" />
-              <span className="text-sm font-medium">Trusted by 10,000+ Organizations</span>
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-amber-500/10 backdrop-blur-sm border border-amber-500/30">
+              <Shield className="w-4 h-4 mr-2 text-amber-400" />
+              <span className="text-sm font-medium text-amber-200">Business Intelligence Platform</span>
             </div>
             
             {/* Main Headline */}
             <div className="space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                Real-time Media Intelligence
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-                  Tool
+              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+                Turn Data into Insight.
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-300">
+                  Verify What Matters.
+                </span>
+                <span className="block text-slate-300">
+                  Predict What's Next.
                 </span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-blue-100 leading-relaxed max-w-2xl">
-                Combat misinformation with AI-powered verification. Get instant fact-checks, 
-                source validation, and intelligence insights before you share or publish.
+              <p className="text-lg lg:text-xl text-slate-300 leading-relaxed max-w-2xl">
+                A platform that verifies information, transforms existing data into insight, 
+                delivers business-focused prediction and trend analysis.
               </p>
             </div>
 
-            {/* Features List */}
-            <div className="space-y-3">
+            {/* Primary Capabilities */}
+            <div className="grid grid-cols-2 gap-4">
               {[
-                "Real-time fact verification",
-                "AI-powered source analysis", 
-                "Global misinformation tracking",
-                "Enterprise-grade security"
-              ].map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
-                  <span className="text-blue-50">{feature}</span>
+                { icon: Shield, label: "Verify", desc: "Validate claims & data" },
+                { icon: FileText, label: "Info", desc: "Transform data to insights" },
+                { icon: TrendingUp, label: "Prediction", desc: "Forecast outcomes" },
+                { icon: Zap, label: "Business Trends", desc: "Market intelligence" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center space-x-3 p-3 rounded-lg bg-white/5 border border-white/10">
+                  <item.icon className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                  <div>
+                    <span className="text-white font-medium block">{item.label}</span>
+                    <span className="text-slate-400 text-sm">{item.desc}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -69,10 +76,10 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button 
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8 py-4 text-lg"
-                onClick={handleStartFreeTrial} // ✅ Linked to navigate()
+                className="bg-amber-500 text-slate-900 hover:bg-amber-400 font-semibold px-8 py-4 text-lg"
+                onClick={handleStartFreeTrial}
               >
-                Start Free Trial
+                Get Started
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
               
@@ -86,35 +93,16 @@ const HeroSection = () => {
                 Watch Demo
               </Button>
             </div>
-
-            {/* Social Proof */}
-            <div className="pt-8 border-t border-white/20">
-              <p className="text-blue-200 text-sm mb-4">Trusted by leading organizations worldwide</p>
-              <div className="flex items-center flex-wrap gap-6 opacity-80">
-                {trustedOrganizations.map((org, index) => (
-                  <a
-                    key={index}
-                    href={org.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white font-semibold hover:text-blue-200 transition-colors flex items-center gap-1 group"
-                  >
-                    {org.name}
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </a>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Right Column - Visual Elements */}
           <div className="relative">
-            <div className="relative bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
+            <div className="relative bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 shadow-2xl">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                    <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
                     <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                   </div>
                   <div className="text-white/60 text-sm">Amniva Dashboard</div>
@@ -125,41 +113,41 @@ const HeroSection = () => {
                     <div className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-green-400" />
                       <div>
-                        <div className="text-white font-medium">Claim Verified</div>
+                        <div className="text-white font-medium">Data Verified</div>
                         <div className="text-green-100 text-sm">98% confidence score</div>
                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-amber-500/20 rounded-lg p-4 border border-amber-400/30">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-white font-medium">Insights Generated</div>
+                        <div className="text-amber-100 text-sm">2,847 processed today</div>
+                      </div>
+                      <FileText className="w-6 h-6 text-amber-400" />
                     </div>
                   </div>
                   
                   <div className="bg-blue-500/20 rounded-lg p-4 border border-blue-400/30">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="text-white font-medium">Daily Verifications</div>
-                        <div className="text-blue-100 text-sm">2,847 processed</div>
+                        <div className="text-white font-medium">Forecast Outlook</div>
+                        <div className="text-blue-100 text-sm">Market trends positive</div>
                       </div>
-                      <Zap className="w-6 h-6 text-blue-400" />
-                    </div>
-                  </div>
-                  
-                  <div className="bg-purple-500/20 rounded-lg p-4 border border-purple-400/30">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-white font-medium">Global Coverage</div>
-                        <div className="text-purple-100 text-sm">180+ countries</div>
-                      </div>
-                      <Globe className="w-6 h-6 text-purple-400" />
+                      <TrendingUp className="w-6 h-6 text-blue-400" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="absolute -top-6 -right-6 bg-yellow-400 rounded-full p-4 shadow-lg animate-bounce">
-              <Shield className="w-6 h-6 text-yellow-900" />
+            <div className="absolute -top-6 -right-6 bg-amber-400 rounded-full p-4 shadow-lg animate-bounce">
+              <Shield className="w-6 h-6 text-slate-900" />
             </div>
             
             <div className="absolute -bottom-4 -left-4 bg-green-400 rounded-full p-3 shadow-lg animate-pulse">
-              <CheckCircle className="w-5 h-5 text-green-900" />
+              <CheckCircle className="w-5 h-5 text-slate-900" />
             </div>
           </div>
         </div>
