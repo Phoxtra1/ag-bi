@@ -3,54 +3,54 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Link } from 'react-router-dom';
-import { Shield, TrendingUp, AlertTriangle, BarChart3, Globe, Users, Zap } from 'lucide-react';
+import { Shield, TrendingUp, FileText, BarChart3, Building2, Briefcase, Users, Zap } from 'lucide-react';
 
 const MainContent = () => {
   const features = [
     {
-      title: "Misinformation Detection",
-      description: "Real-time verification of news, claims, and viral content using AI-powered fact-checking.",
-      icon: <Shield className="h-6 w-6 text-blue-600" />,
-      buttonText: "Verify Info Now"
+      title: "Verify",
+      description: "Cross-check and validate datasets, reports, claims, and submitted information with credibility assessment.",
+      icon: <Shield className="h-6 w-6 text-green-600" />,
+      buttonText: "Submit for Verification"
     },
     {
-      title: "Crisis Prediction",
-      description: "Early warning system for natural disasters, political instability, and economic shifts.",
-      icon: <AlertTriangle className="h-6 w-6 text-red-600" />,
-      buttonText: "View Predictions"
+      title: "Info",
+      description: "Transform existing data and research into structured insights, summaries, and interpretations.",
+      icon: <FileText className="h-6 w-6 text-blue-600" />,
+      buttonText: "Generate Insight"
     },
     {
-      title: "Trending Analysis",
-      description: "Track real-time verified trends and emerging stories from trusted sources.",
-      icon: <TrendingUp className="h-6 w-6 text-green-600" />,
-      buttonText: "Explore Trends"
+      title: "Prediction",
+      description: "Business, market, economic, and risk forecasting based on verified data and trend analysis.",
+      icon: <TrendingUp className="h-6 w-6 text-amber-600" />,
+      buttonText: "Run Prediction"
     },
     {
-      title: "Data Insights",
-      description: "Comprehensive reports and analytics for organizations and decision-makers.",
+      title: "Business Trends",
+      description: "Track real-time business, market, trade, and investment trends from verified sources.",
       icon: <BarChart3 className="h-6 w-6 text-purple-600" />,
-      buttonText: "View Reports"
+      buttonText: "View Trends"
     }
   ];
 
   const useCases = [
     {
-      title: "Media Organizations",
-      description: "Verify sources, detect misinformation, and access real-time trend analysis.",
-      icon: <Globe className="h-5 w-5" />,
-      price: "Custom pricing"
-    },
-    {
-      title: "Government Agencies",
-      description: "Early warning systems for crisis management and public safety.",
-      icon: <Shield className="h-5 w-5" />,
+      title: "Financial Institutions",
+      description: "Risk assessment, market forecasting, and data validation for informed decisions.",
+      icon: <Building2 className="h-5 w-5" />,
       price: "Enterprise"
     },
     {
+      title: "Corporate Strategy",
+      description: "Business intelligence, trend analysis, and competitive insights.",
+      icon: <Briefcase className="h-5 w-5" />,
+      price: "Custom pricing"
+    },
+    {
       title: "Research Institutions",
-      description: "Access to comprehensive data sets and predictive analytics.",
+      description: "Data verification, structured insights, and predictive analytics.",
       icon: <Users className="h-5 w-5" />,
-      price: "Academic rates"
+      price: "Institutional rates"
     }
   ];
 
@@ -59,15 +59,15 @@ const MainContent = () => {
       {/* Main Features Grid */}
       <section>
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Core Features</h2>
-          <p className="text-lg text-gray-600">
-            Leverage AI-powered intelligence to make informed decisions
+          <h2 className="text-3xl font-bold text-foreground mb-4">Core Capabilities</h2>
+          <p className="text-lg text-muted-foreground">
+            Transform data into actionable intelligence with our comprehensive platform
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {features.map((feature, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow">
+            <Card key={index} className="hover:shadow-lg transition-shadow border-border">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   {feature.icon}
@@ -78,7 +78,7 @@ const MainContent = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700" disabled>
+                <Button className="w-full bg-primary hover:bg-primary/90" disabled>
                   {feature.buttonText}
                 </Button>
               </CardContent>
@@ -90,17 +90,17 @@ const MainContent = () => {
       {/* Use Cases Section */}
       <section>
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Who We Serve</h2>
-          <p className="text-lg text-gray-600">
-            Tailored solutions for different organizational needs
+          <h2 className="text-3xl font-bold text-foreground mb-4">Who We Serve</h2>
+          <p className="text-lg text-muted-foreground">
+            Intelligence solutions for business and institutional needs
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {useCases.map((useCase, index) => (
-            <Card key={index} className="text-center hover:shadow-md transition-shadow">
+            <Card key={index} className="text-center hover:shadow-md transition-shadow border-border">
               <CardHeader>
-                <div className="mx-auto w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                <div className="mx-auto w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center mb-4">
                   {useCase.icon}
                 </div>
                 <CardTitle className="text-lg">{useCase.title}</CardTitle>
@@ -122,10 +122,10 @@ const MainContent = () => {
       </section>
 
       {/* Quick Access Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
+      <section className="bg-gradient-to-r from-slate-50 to-amber-50 dark:from-slate-900 dark:to-amber-950/20 rounded-2xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Quick Access</h2>
-          <p className="text-lg text-gray-600">
+          <h2 className="text-3xl font-bold text-foreground mb-4">Quick Access</h2>
+          <p className="text-lg text-muted-foreground">
             Jump straight to the tools you need
           </p>
         </div>
@@ -134,25 +134,25 @@ const MainContent = () => {
           <Link to="/verify">
             <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
               <Shield className="h-5 w-5" />
-              <span>Verify Information</span>
-            </Button>
-          </Link>
-          <Link to="/predictions">
-            <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
-              <AlertTriangle className="h-5 w-5" />
-              <span>Crisis Predictions</span>
-            </Button>
-          </Link>
-          <Link to="/trending">
-            <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
-              <TrendingUp className="h-5 w-5" />
-              <span>Trending Alerts</span>
+              <span>Verify Data</span>
             </Button>
           </Link>
           <Link to="/reports">
             <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
+              <FileText className="h-5 w-5" />
+              <span>Generate Insight</span>
+            </Button>
+          </Link>
+          <Link to="/predictions">
+            <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
+              <TrendingUp className="h-5 w-5" />
+              <span>Run Prediction</span>
+            </Button>
+          </Link>
+          <Link to="/trending">
+            <Button variant="outline" className="w-full h-16 text-left flex items-center gap-3">
               <BarChart3 className="h-5 w-5" />
-              <span>Data Reports</span>
+              <span>View Trends</span>
             </Button>
           </Link>
         </div>
@@ -160,39 +160,39 @@ const MainContent = () => {
 
       {/* API Integration Section */}
       <section>
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+        <Card className="bg-gradient-to-r from-slate-50 to-amber-50 dark:from-slate-900 dark:to-amber-950/20 border-amber-200 dark:border-amber-800">
           <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-              <Zap className="h-8 w-8 text-purple-600" />
+            <div className="mx-auto w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mb-4">
+              <Zap className="h-8 w-8 text-amber-600" />
             </div>
-            <CardTitle className="text-2xl text-purple-900">API for Organizations</CardTitle>
-            <CardDescription className="text-purple-700 text-lg">
+            <CardTitle className="text-2xl">API for Organizations</CardTitle>
+            <CardDescription className="text-lg">
               Integrate Amniva's intelligence directly into your systems
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="p-4 bg-white rounded-lg">
-                <h4 className="font-semibold text-purple-900 mb-2">Real-time Verification</h4>
-                <p className="text-sm text-gray-600">Instant fact-checking API</p>
+              <div className="p-4 bg-white dark:bg-slate-800 rounded-lg">
+                <h4 className="font-semibold mb-2">Verification API</h4>
+                <p className="text-sm text-muted-foreground">Instant data validation</p>
               </div>
-              <div className="p-4 bg-white rounded-lg">
-                <h4 className="font-semibold text-purple-900 mb-2">Trend Analysis</h4>
-                <p className="text-sm text-gray-600">Emerging story detection</p>
+              <div className="p-4 bg-white dark:bg-slate-800 rounded-lg">
+                <h4 className="font-semibold mb-2">Trend Analysis</h4>
+                <p className="text-sm text-muted-foreground">Market intelligence feeds</p>
               </div>
-              <div className="p-4 bg-white rounded-lg">
-                <h4 className="font-semibold text-purple-900 mb-2">Prediction Models</h4>
-                <p className="text-sm text-gray-600">Crisis forecasting engine</p>
+              <div className="p-4 bg-white dark:bg-slate-800 rounded-lg">
+                <h4 className="font-semibold mb-2">Prediction Models</h4>
+                <p className="text-sm text-muted-foreground">Forecasting engine access</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/api-organizations">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Button className="bg-amber-500 hover:bg-amber-600 text-slate-900">
                   Explore API Documentation
                 </Button>
               </Link>
               <Link to="/pricing">
-                <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+                <Button variant="outline">
                   View Pricing Plans
                 </Button>
               </Link>
@@ -203,16 +203,16 @@ const MainContent = () => {
 
       {/* Call to Action */}
       <section className="text-center py-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+        <h2 className="text-3xl font-bold text-foreground mb-4">
           Ready to Get Started?
         </h2>
-        <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-          Join organizations worldwide that trust Amniva for accurate, real-time intelligence.
+        <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+          Join organizations worldwide that trust Amniva for verified intelligence and data-driven insights.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/verify">
-            <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-              Try Verification Tool
+            <Button size="lg" variant="outline">
+              Submit for Verification
             </Button>
           </Link>
         </div>
