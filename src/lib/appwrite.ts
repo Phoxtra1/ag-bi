@@ -6,7 +6,7 @@ const client = new Client();
 
 // Use environment variables with fallbacks for safety
 const APPWRITE_ENDPOINT =
-  import.meta.env.VITE_APPWRITE_ENDPOINT || "https://nyc.cloud.appwrite.io/v1";
+  import.meta.env.VITE_APPWRITE_ENDPOINT || "https://auth.amniva.io/v1";
 const APPWRITE_PROJECT_ID =
   import.meta.env.VITE_APPWRITE_PROJECT_ID || "amniva-ri03";
 
