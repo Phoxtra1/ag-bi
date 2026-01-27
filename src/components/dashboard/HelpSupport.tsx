@@ -39,7 +39,7 @@ Thank you for your assistance.
 Best regards,
 [Your Name]`);
     
-    window.open(`mailto:ana@amnewsworld.com?subject=${subject}&body=${body}`, '_self');
+    window.open(`mailto:support@amniva.io?subject=${subject}&body=${body}`, '_self');
     
     toast({
       title: "Email Client Opened",
@@ -54,7 +54,7 @@ Best regards,
       icon: MessageCircle,
       action: handleStartLiveChat,
       badge: "Instant",
-      color: "bg-green-50 border-green-200 hover:bg-green-100"
+      color: "bg-primary/5 border-primary/20 hover:bg-primary/10"
     },
     {
       title: "Phone Support",
@@ -62,7 +62,7 @@ Best regards,
       icon: Phone,
       action: handleCallSupport,
       badge: "9AM-6PM GMT",
-      color: "bg-blue-50 border-blue-200 hover:bg-blue-100"
+      color: "bg-primary/5 border-primary/20 hover:bg-primary/10"
     },
     {
       title: "Email Support",
@@ -70,7 +70,7 @@ Best regards,
       icon: Mail,
       action: handleEmailSupport,
       badge: "5 Business Days",
-      color: "bg-purple-50 border-purple-200 hover:bg-purple-100"
+      color: "bg-primary/5 border-primary/20 hover:bg-primary/10"
     }
   ];
 
@@ -103,20 +103,20 @@ Best regards,
 
   const faq = [
     {
-      question: "How does Amniva's fact-checking work?",
-      answer: "Our AI analyzes content against multiple verified sources in real-time, providing credibility scores and source verification."
+      question: "How does Amniva's verification work?",
+      answer: "Our AI analyzes submitted data against multiple verified sources, providing credibility scores, evidence summaries, and confidence levels."
     },
     {
       question: "Can I integrate Amniva with my existing workflow?",
       answer: "Yes, we provide comprehensive APIs and webhooks for seamless integration with your current tools and platforms."
     },
     {
-      question: "What types of media can Amniva analyze?",
-      answer: "We support text, images, videos, and audio content across multiple languages and formats."
+      question: "What types of data can Amniva process?",
+      answer: "We support documents, datasets, research reports, claims, and structured information for verification and insight generation."
     },
     {
       question: "Is there a free trial available?",
-      answer: "Yes, we offer a 14-day free trial with full access to our core features. No credit card required."
+      answer: "Yes, we offer a free tier with core features. No credit card required to get started."
     }
   ];
 
@@ -130,15 +130,15 @@ Best regards,
             <Card key={index} className={`cursor-pointer transition-all duration-200 ${option.color}`}>
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-white rounded-lg shadow-sm">
-                    <IconComponent className="w-6 h-6 text-gray-700" />
+                  <div className="p-3 bg-background rounded-lg shadow-sm">
+                    <IconComponent className="w-6 h-6 text-foreground" />
                   </div>
                   <Badge variant="secondary" className="text-xs">
                     {option.badge}
                   </Badge>
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{option.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{option.description}</p>
+                <p className="text-muted-foreground text-sm mb-4">{option.description}</p>
                 <Button 
                   onClick={option.action}
                   className="w-full"
@@ -169,16 +169,16 @@ Best regards,
             {quickHelp.map((item, index) => {
               const IconComponent = item.icon;
               return (
-                <div key={index} className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-gray-50 cursor-pointer transition-colors">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <IconComponent className="w-5 h-5 text-blue-600" />
+                <div key={index} className="flex items-start space-x-3 p-4 rounded-lg border hover:bg-muted cursor-pointer transition-colors">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <IconComponent className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-medium text-gray-900">{item.title}</h4>
+                      <h4 className="font-medium text-foreground">{item.title}</h4>
                       <Badge variant="outline" className="text-xs">{item.category}</Badge>
                     </div>
-                    <p className="text-sm text-gray-600">{item.description}</p>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
                   </div>
                 </div>
               );
@@ -201,9 +201,9 @@ Best regards,
         <CardContent>
           <div className="space-y-6">
             {faq.map((item, index) => (
-              <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
-                <h4 className="font-medium text-gray-900 mb-2">{item.question}</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">{item.answer}</p>
+              <div key={index} className="border-b border-border pb-4 last:border-b-0">
+                <h4 className="font-medium text-foreground mb-2">{item.question}</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">{item.answer}</p>
               </div>
             ))}
           </div>
@@ -215,19 +215,19 @@ Best regards,
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-50 rounded-lg">
+              <div className="p-2 bg-green-500/10 rounded-lg">
                 <Clock className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h4 className="font-medium text-gray-900">Support Hours</h4>
-                <p className="text-sm text-gray-600">Monday - Friday, 9:00 AM - 6:00 PM GMT</p>
+                <h4 className="font-medium text-foreground">Support Hours</h4>
+                <p className="text-sm text-muted-foreground">Monday - Friday, 9:00 AM - 6:00 PM GMT</p>
               </div>
             </div>
             <div className="text-right">
-              <Badge className="bg-green-100 text-green-800 border-green-200">
+              <Badge className="bg-green-500/10 text-green-700 border-green-500/20">
                 Currently Online
               </Badge>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Odeneho AI is available 24/7
               </p>
             </div>

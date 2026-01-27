@@ -240,7 +240,7 @@ const IntegrationsPanel = () => {
                   <Input
                     id="video-url"
                     type="url"
-                    placeholder="https://www.amnewsworld.com/wp-content/uploads/2025/07/amniva-1.mp4"
+                    placeholder="https://amniva.io/demo-video.mp4"
                     value={settings.demoVideoUrl}
                     onChange={(e) => updateSetting('demoVideoUrl', e.target.value)}
                   />

@@ -72,14 +72,14 @@ const CustomFeedManager = () => {
         const feeds = JSON.parse(savedFeeds) as FeedSource[];
         setFeedSources(feeds);
       } else {
-        // Initialize with default feeds including Amnewsworld
+        // Initialize with default business intelligence feeds
         const defaultFeeds: FeedSource[] = [
           {
             id: '1',
-            name: 'Amnewsworld Spotlite',
-            url: 'https://www.amnewsworld.com/spotlite/',
+            name: 'Bloomberg Markets',
+            url: 'https://www.bloomberg.com/markets',
             type: 'news',
-            category: 'Breaking News',
+            category: 'Markets',
             isActive: true,
             lastUpdated: new Date().toISOString(),
             isValidated: true,

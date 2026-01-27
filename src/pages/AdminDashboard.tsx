@@ -30,7 +30,7 @@ import {
   Inbox,
   Building,
   Rss,
-  Bot // added
+  Bot
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -196,46 +196,46 @@ const AdminDashboard = () => {
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
-    { id: 'users', label: 'Users', icon: Users },
+    { id: 'users', label: 'User Management', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'audit-log', label: 'Audit Log', icon: FileText },
     { id: 'community', label: 'Community Moderation', icon: Users },
     { id: 'community-analytics', label: 'Community Analytics', icon: TrendingUp },
     { id: 'insight-review', label: 'Insight Review', icon: Bot },
     { id: 'api-requests', label: 'API Requests', icon: Building },
-    { id: 'feed-sources', label: 'Feed Sources', icon: Rss },
-    { id: 'content-inbox', label: 'Content Inbox', icon: FileText, badge: notifications.contentPending },
+    { id: 'feed-sources', label: 'Data Sources', icon: Rss },
+    { id: 'content-inbox', label: 'Submission Queue', icon: FileText, badge: notifications.contentPending },
     { id: 'contact-inbox', label: 'Contact Inbox', icon: Mail, badge: notifications.contactUnread },
     { id: 'financials', label: 'Financials', icon: DollarSign },
     { id: 'api-management', label: 'API Management', icon: Database },
-    { id: 'content-oversight', label: 'Content Oversight', icon: Eye },
+    { id: 'content-oversight', label: 'Verification Oversight', icon: Eye },
     { id: 'system-status', label: 'System Status', icon: Activity },
-    { id: 'ai-engines', label: 'AI Engine Management', icon: Zap },
+    { id: 'ai-engines', label: 'Prediction Controls', icon: Zap },
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const totalNotifications = Object.values(notifications).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-blue-600" />
-                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                <Shield className="h-8 w-8 text-primary" />
+                <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
               </div>
               {totalNotifications > 0 && (
-                <Badge className="bg-red-500 text-white">
+                <Badge className="bg-destructive text-destructive-foreground">
                   {totalNotifications} alerts
                 </Badge>
               )}
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <div className="flex items-center space-x-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   <span>System Healthy</span>
@@ -247,7 +247,7 @@ const AdminDashboard = () => {
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
                 {totalNotifications > 0 && (
-                  <Badge className="ml-2 bg-red-500 text-white text-xs">
+                  <Badge className="ml-2 bg-destructive text-destructive-foreground text-xs">
                     {totalNotifications}
                   </Badge>
                 )}
@@ -275,8 +275,8 @@ const AdminDashboard = () => {
                         onClick={() => setActiveTab(item.id)}
                         className={`w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                           isActive
-                            ? 'bg-blue-100 text-blue-700'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -284,7 +284,7 @@ const AdminDashboard = () => {
                           <span>{item.label}</span>
                         </div>
                         {item.badge && item.badge > 0 && (
-                          <Badge className="bg-red-500 text-white text-xs">
+                          <Badge className="bg-destructive text-destructive-foreground text-xs">
                             {item.badge}
                           </Badge>
                         )}
