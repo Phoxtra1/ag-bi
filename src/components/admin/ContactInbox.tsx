@@ -92,13 +92,13 @@ const ContactInbox = () => {
 
   const getCategoryBadge = (category: string) => {
     const colors: Record<string, string> = {
-      'amnewsworld': 'bg-blue-100 text-blue-700',
-      'amniva': 'bg-purple-100 text-purple-700',
-      'amn-news-radio': 'bg-green-100 text-green-700',
-      'amnet': 'bg-orange-100 text-orange-700',
-      'general': 'bg-gray-100 text-gray-700',
-      'support': 'bg-red-100 text-red-700',
-      'partnership': 'bg-yellow-100 text-yellow-700'
+      'amniva': 'bg-primary/10 text-primary',
+      'amniva-society': 'bg-primary/10 text-primary',
+      'billing': 'bg-accent/10 text-accent-foreground',
+      'general': 'bg-muted text-muted-foreground',
+      'support': 'bg-destructive/10 text-destructive',
+      'partnership': 'bg-accent/10 text-accent-foreground',
+      'api': 'bg-primary/10 text-primary'
     };
     
     return (

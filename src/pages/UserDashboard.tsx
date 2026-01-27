@@ -26,7 +26,7 @@ const UserDashboard = () => {
   const [predictionDialogOpen, setPredictionDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -40,7 +40,7 @@ const UserDashboard = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
           <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="predictions">Predictions</TabsTrigger>
+            <TabsTrigger value="predictions">Prediction</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="info">Info</TabsTrigger>
             <TabsTrigger value="community">Amniva Society</TabsTrigger>
@@ -51,12 +51,12 @@ const UserDashboard = () => {
 
           <TabsContent value="overview" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left column: Live Feed + Trending News */}
+              {/* Left column: Live Feed + Business Trends */}
               <div className="lg:col-span-2 space-y-6">
                 <InsightsFeed />
                 <TrendingNews />
               </div>
-              {/* Right column: Weather + Prediction Metrics - aligned with left */}
+              {/* Right column: Weather + Prediction Metrics */}
               <div className="space-y-6 flex flex-col">
                 <WeatherWidget />
                 <LivePredictionPanel />
@@ -71,16 +71,16 @@ const UserDashboard = () => {
               <div className="lg:col-span-2">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Prediction Results</CardTitle>
+                    <CardTitle>Predictions</CardTitle>
                     <CardDescription>
-                      Your prediction analysis results will appear here once processed by our AI engines.
+                      Your forecast analysis results will appear here once processed by our engines.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="text-center py-12 text-muted-foreground">
                       <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
                       <p className="mb-2">No prediction results yet</p>
-                      <p className="text-sm">Submit a prediction request to receive AI-powered analysis</p>
+                      <p className="text-sm">Submit a prediction request to receive AI-powered forecasting</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -96,10 +96,10 @@ const UserDashboard = () => {
                       size="lg"
                     >
                       <TrendingUp className="w-4 h-4 mr-2" />
-                      Request Prediction
+                      Run Prediction
                     </Button>
                     <p className="text-xs text-muted-foreground text-center mt-3">
-                      Submit data for AI-powered predictive analysis
+                      Submit data for AI-powered forecast analysis
                     </p>
                   </CardContent>
                 </Card>
@@ -115,7 +115,7 @@ const UserDashboard = () => {
             <Tabs defaultValue="tracking" className="space-y-6">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="tracking">My Submissions</TabsTrigger>
-                <TabsTrigger value="request">Request Deep Analysis</TabsTrigger>
+                <TabsTrigger value="request">Submit for Verification</TabsTrigger>
               </TabsList>
               <TabsContent value="tracking">
                 <VerifyTracking />

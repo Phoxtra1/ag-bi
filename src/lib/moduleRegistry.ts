@@ -33,7 +33,7 @@ const DEFAULT_MODULES: ModuleInfo[] = [
     id: 'odeneho_chatbot',
     name: 'odeneho_chatbot',
     displayName: 'Odeneho AI',
-    description: 'Intelligent AI assistant for media insights and analysis',
+    description: 'Intelligent AI assistant for business intelligence guidance',
     category: 'ai',
     icon: 'message-square',
     endpoint: 'amniva-odeneho-engine',
