@@ -18,7 +18,7 @@ import Pricing from "./pages/Pricing";
 import ApiOrganizations from "./pages/ApiOrganizations";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
-import Amnewsworld from "./pages/Amnewsworld";
+
 import About from "./pages/About";
 import Careers from "./pages/Careers";
 import Privacy from "./pages/Privacy";
@@ -66,7 +66,7 @@ const App = () => (
           <Route path="/admin" element={<RequireAuth><RequireAdmin><AdminDashboard /></RequireAdmin></RequireAuth>} />
 
           {/* Other routes (optional to protect later) */}
-          <Route path="/amnewsworld" element={<Amnewsworld />} />
+          
           <Route path="/about" element={<About />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/privacy" element={<Privacy />} />
