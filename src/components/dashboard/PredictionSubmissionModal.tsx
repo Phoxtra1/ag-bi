@@ -74,16 +74,16 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary" />
-            Submit Prediction Request
+            Request Forecast Analysis
           </DialogTitle>
           <DialogDescription>
-            Get AI-powered insights and predictions for your specific needs. Responses delivered via email.
+            Get AI-powered market forecasts and business predictions. Responses delivered via email.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="category">Prediction Category *</Label>
+            <Label htmlFor="category">Forecast Category *</Label>
             <Select 
               onValueChange={(value) => setValue('category', value as FormData['category'])}
             >
@@ -91,11 +91,11 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Environment">Environment</SelectItem>
-                <SelectItem value="Political Climate">Political Climate</SelectItem>
-                <SelectItem value="Weather">Weather</SelectItem>
-                <SelectItem value="Business Forecast">Business Forecast</SelectItem>
-                <SelectItem value="Disaster">Disaster</SelectItem>
+                <SelectItem value="Business Forecast">Market Forecast</SelectItem>
+                <SelectItem value="Environment">Industry Trends</SelectItem>
+                <SelectItem value="Political Climate">Economic Policy</SelectItem>
+                <SelectItem value="Weather">Risk Scenarios</SelectItem>
+                <SelectItem value="Disaster">Crisis Assessment</SelectItem>
               </SelectContent>
             </Select>
             {errors.category && (
@@ -104,11 +104,11 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Prediction Details *</Label>
+            <Label htmlFor="description">Forecast Details *</Label>
             <Textarea
               id="description"
               {...register('description', { 
-                required: 'Please provide details for your prediction request',
+                required: 'Please provide details for your forecast request',
                 minLength: { value: 50, message: 'Please provide at least 50 characters' }
               })}
               placeholder={getCategoryPlaceholder(category)}
@@ -118,16 +118,16 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
               <p className="text-sm text-destructive">{errors.description.message}</p>
             )}
             <p className="text-xs text-muted-foreground">
-              Provide detailed information about what you'd like us to predict or analyze.
+              Provide detailed information about the market, trend, or scenario you'd like us to forecast.
             </p>
           </div>
 
           <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-            <h4 className="font-medium text-sm">What to Expect:</h4>
+            <h4 className="font-medium text-sm">Forecast Outlook:</h4>
             <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-              <li>AI-powered analysis using advanced prediction models</li>
-              <li>Detailed insights and actionable recommendations</li>
-              <li>Response delivered to your email within 24-48 hours</li>
+              <li>AI-powered analysis using advanced forecasting models</li>
+              <li>Data-driven insights and actionable recommendations</li>
+              <li>Forecast delivered to your email within 24-48 hours</li>
               <li>Follow-up support for clarifications</li>
             </ul>
           </div>
@@ -158,16 +158,16 @@ export const PredictionSubmissionModal = ({ open, onOpenChange, onSuccess }: Pre
 function getCategoryPlaceholder(category?: string): string {
   switch (category) {
     case 'Environment':
-      return 'Describe the environmental trend or pattern you want us to analyze (e.g., climate patterns, deforestation trends, pollution levels)...';
+      return 'Describe the industry trend or sector you want us to analyze (e.g., fintech growth, manufacturing shifts, supply chain dynamics)...';
     case 'Political Climate':
-      return 'Describe the political scenario you want us to analyze (e.g., election outcomes, policy impacts, regional stability)...';
+      return 'Describe the economic policy scenario you want us to analyze (e.g., regulatory impacts, fiscal policy changes, trade agreements)...';
     case 'Weather':
-      return 'Specify the weather pattern or forecast you need (e.g., seasonal predictions, extreme weather events, agricultural planning)...';
+      return 'Specify the risk scenario you need assessed (e.g., market volatility, currency fluctuation, commodity price risk)...';
     case 'Business Forecast':
-      return 'Describe the business trend or market you want us to analyze (e.g., market trends, industry forecasts, economic indicators)...';
+      return 'Describe the market or business trend you want us to forecast (e.g., market growth, competitive landscape, economic indicators)...';
     case 'Disaster':
-      return 'Describe the disaster scenario you want us to assess (e.g., risk assessment, preparedness planning, impact analysis)...';
+      return 'Describe the crisis scenario you want us to assess (e.g., market crash, supply chain disruption, liquidity crisis)...';
     default:
-      return 'Provide detailed information about your prediction request...';
+      return 'Provide detailed information about your forecast request...';
   }
 }

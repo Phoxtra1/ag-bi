@@ -86,49 +86,49 @@ const ReportSubmissionForm = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="w-5 h-5" />
-          Submit Information for Insights
+          Submit Data for Insight Generation
         </CardTitle>
         <CardDescription>
-          Submit your observations, reports, or data for AI analysis and expert review
+          Submit your data, research, or documents for AI-powered analysis and expert review
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Report Title *</Label>
+            <Label htmlFor="title">Submission Title *</Label>
             <Input
               id="title"
               value={formData.title}
               onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., Rising flood patterns in coastal areas"
+              placeholder="e.g., Q3 Market Performance Analysis"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
+            <Label htmlFor="category">Analysis Category *</Label>
             <Select value={formData.category} onValueChange={(value: any) => setFormData(prev => ({ ...prev, category: value }))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Environment">Environment</SelectItem>
-                <SelectItem value="Political">Political Climate</SelectItem>
-                <SelectItem value="Weather">Weather</SelectItem>
-                <SelectItem value="Business">Business Forecast</SelectItem>
-                <SelectItem value="Disaster">Disaster</SelectItem>
+                <SelectItem value="Business">Market Analysis</SelectItem>
+                <SelectItem value="Environment">Industry Research</SelectItem>
+                <SelectItem value="Political">Economic Policy</SelectItem>
+                <SelectItem value="Weather">Risk Assessment</SelectItem>
+                <SelectItem value="Disaster">Competitive Intelligence</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Detailed Information *</Label>
+            <Label htmlFor="content">Data & Analysis Details *</Label>
             <Textarea
               id="content"
               value={formData.content}
               onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              placeholder="Provide detailed information, observations, or data..."
+              placeholder="Provide detailed data, research findings, market observations, or business intelligence..."
               rows={6}
               required
             />
@@ -136,12 +136,12 @@ const ReportSubmissionForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="location">Location (Optional)</Label>
+              <Label htmlFor="location">Region/Market (Optional)</Label>
               <Input
                 id="location"
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
-                placeholder="e.g., Lagos, Nigeria"
+                placeholder="e.g., West Africa, EMEA, Global"
               />
             </div>
 
@@ -151,7 +151,7 @@ const ReportSubmissionForm = () => {
                 id="tags"
                 value={formData.tags}
                 onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                placeholder="e.g., climate, flooding, urgent"
+                placeholder="e.g., finance, investment, risk"
               />
               <p className="text-xs text-muted-foreground">Separate tags with commas</p>
             </div>
