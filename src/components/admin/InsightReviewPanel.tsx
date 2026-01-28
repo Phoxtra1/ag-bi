@@ -114,12 +114,12 @@ const InsightReviewPanel = () => {
 
   const getPlanBadge = (plan: string) => {
     const planColors: Record<string, string> = {
-      Pro: 'bg-blue-100 text-blue-700',
-      Elite: 'bg-purple-100 text-purple-700',
-      Institutional: 'bg-indigo-100 text-indigo-700'
+      Pro: 'bg-primary/10 text-primary',
+      Elite: 'bg-accent/20 text-accent-foreground',
+      Institutional: 'bg-secondary text-secondary-foreground'
     };
     
-    return <Badge className={planColors[plan] || 'bg-gray-100 text-gray-700'}>{plan}</Badge>;
+    return <Badge className={planColors[plan] || 'bg-muted text-muted-foreground'}>{plan}</Badge>;
   };
 
   if (loading) {
@@ -141,7 +141,7 @@ const InsightReviewPanel = () => {
                 <p className="text-sm text-muted-foreground">Pending Review</p>
                 <p className="text-2xl font-bold">{pendingInsights.length}</p>
               </div>
-              <Clock className="h-8 w-8 text-amber-500" />
+              <Clock className="h-8 w-8 text-accent" />
             </div>
           </CardContent>
         </Card>
@@ -153,7 +153,7 @@ const InsightReviewPanel = () => {
                 <p className="text-sm text-muted-foreground">Total Reports</p>
                 <p className="text-2xl font-bold">{allReports.length}</p>
               </div>
-              <FileText className="h-8 w-8 text-blue-500" />
+              <FileText className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ const InsightReviewPanel = () => {
                   {pendingInsights.filter(i => i.userPlan === 'Elite' || i.userPlan === 'Institutional').length}
                 </p>
               </div>
-              <Lightbulb className="h-8 w-8 text-purple-500" />
+              <Lightbulb className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -187,7 +187,7 @@ const InsightReviewPanel = () => {
         <CardContent>
           {pendingInsights.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-green-500" />
+              <CheckCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
               <p>All insights reviewed! No pending items.</p>
             </div>
           ) : (
@@ -209,7 +209,7 @@ const InsightReviewPanel = () => {
                       </div>
                       <div className="flex gap-2">
                         {getPlanBadge(insight.userPlan)}
-                        <Badge className="bg-amber-100 text-amber-700">
+                        <Badge className="bg-accent/20 text-accent-foreground">
                           <Clock className="w-3 h-3 mr-1" />
                           Pending Review
                         </Badge>
@@ -217,7 +217,7 @@ const InsightReviewPanel = () => {
                     </div>
 
                     {/* AI Analysis Preview */}
-                    <div className="bg-gray-50 rounded p-3 mb-3 space-y-2">
+                    <div className="bg-muted rounded p-3 mb-3 space-y-2">
                       <p className="text-sm font-medium flex items-center gap-2">
                         <TrendingUp className="w-4 h-4" />
                         AI Analysis Summary
@@ -260,13 +260,13 @@ const InsightReviewPanel = () => {
                         {selectedInsight && (
                           <div className="space-y-4">
                             {/* Original Report */}
-                            <div className="border rounded p-3 bg-gray-50">
+                            <div className="border rounded p-3 bg-muted">
                               <h4 className="font-semibold mb-2">Original Report</h4>
                               <p className="text-sm text-muted-foreground">{report?.content}</p>
                             </div>
 
                             {/* AI Analysis */}
-                            <div className="border rounded p-3 bg-blue-50">
+                            <div className="border rounded p-3 bg-primary/5">
                               <h4 className="font-semibold mb-2">AI Analysis</h4>
                               <p className="text-sm mb-2"><strong>Summary:</strong> {selectedInsight.aiSummary}</p>
                               {selectedInsight.aiKeyObservations && (

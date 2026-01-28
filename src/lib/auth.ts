@@ -1,5 +1,8 @@
-import { account } from '@/lib/appwrite';
-import { ID } from 'appwrite';
+import { account, databases, DATABASE_ID } from '@/lib/appwrite';
+import { ID, Query } from 'appwrite';
+
+// Role collection ID - matches your existing Appwrite collection
+const ROLES_COLLECTION_ID = 'user_roles';
 
 export interface LoginCredentials {
   email: string;
@@ -11,6 +14,8 @@ export interface RegisterCredentials {
   password: string;
   name: string;
 }
+
+export type UserRole = 'admin' | 'user';
 
 export const loginUser = async (credentials: LoginCredentials) => {
   try {
@@ -95,6 +100,77 @@ export const getCurrentUser = async () => {
   } catch (error) {
     console.error('Get current user error:', error);
     return null;
+  }
+};
+
+/**
+ * Fetch the role for a given user ID from the roles collection.
+ * Returns 'admin' or 'user'. Defaults to 'user' if no role found.
+ */
+export const getCurrentUserRole = async (userId: string): Promise<UserRole> => {
+  try {
+    if (import.meta.env.DEV) {
+      console.log('[Auth] Fetching role for user:', userId);
+    }
+    
+    const response = await databases.listDocuments(
+      DATABASE_ID,
+      ROLES_COLLECTION_ID,
+      [Query.equal('user_id', userId)]
+    );
+
+    if (import.meta.env.DEV) {
+      console.log('[Auth] Role query result:', response.documents.length, 'documents found');
+    }
+
+    if (response.documents.length > 0) {
+      const roleDoc = response.documents[0];
+      const role = roleDoc.role as UserRole;
+      
+      if (import.meta.env.DEV) {
+        console.log('[Auth] User role found:', role);
+      }
+      
+      if (role === 'admin') {
+        return 'admin';
+      }
+    } else {
+      if (import.meta.env.DEV) {
+        console.log('[Auth] No role record found, defaulting to user');
+      }
+    }
+
+    return 'user';
+  } catch (error) {
+    console.error('[Auth] Error fetching user role:', error);
+    return 'user';
+  }
+};
+
+/**
+ * Check if the current user has admin role
+ */
+export const isAdmin = async (): Promise<boolean> => {
+  try {
+    const user = await getCurrentUser();
+    if (!user) {
+      if (import.meta.env.DEV) {
+        console.log('[Auth] isAdmin: No user session');
+      }
+      return false;
+    }
+    
+    const role = await getCurrentUserRole(user.$id);
+    const result = role === 'admin';
+    
+    if (import.meta.env.DEV) {
+      console.log('[Auth] isAdmin result:', result);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('[Auth] isAdmin error:', error);
+    return false;
   }
 };
 

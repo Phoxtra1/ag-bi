@@ -135,11 +135,22 @@ class VerifyEngine {
    * Simulate source verification
    */
   async verifySourceCredibility(sources = []) {
-    // In production, this would check against a database of credible sources
+    // Business and financial credible sources
     const credibleDomains = [
-      'bbc.com', 'reuters.com', 'ap.org', 'cnn.com', 'npr.org',
-      'bankofghana.gov.gh', 'myjoyonline.com', 'graphic.com.gh',
-      'gna.org.gh', 'citinewsroom.com', 'peacefmonline.com'
+      // Global Financial & Business Sources
+      'bloomberg.com', 'reuters.com', 'wsj.com', 'ft.com', 'economist.com',
+      'cnbc.com', 'marketwatch.com', 'forbes.com', 'barrons.com', 'investing.com',
+      // Data & Research
+      'statista.com', 'worldbank.org', 'imf.org', 'wto.org', 'oecd.org',
+      'tradingeconomics.com', 'fred.stlouisfed.org', 'bls.gov',
+      // African Financial Sources
+      'bankofghana.gov.gh', 'afdb.org', 'africanews.com',
+      'nairametrics.com', 'businessday.ng', 'thebftonline.com',
+      // Government & Regulatory
+      'sec.gov', 'federalreserve.gov', 'ecb.europa.eu', 'bis.org',
+      // Academic & Research
+      'hbr.org', 'mckinsey.com', 'bcg.com', 'bain.com', 'deloitte.com',
+      'pwc.com', 'ey.com', 'kpmg.com', 'accenture.com'
     ];
     
     const verifiedSources = [];

@@ -1,5 +1,5 @@
-// Amniva Report Engine - Internal AI-powered attribution and source analysis
-// Determines source and context of user-submitted insights using similarity detection
+// Amniva Info Engine - Internal AI-powered data analysis and insight generation
+// Transforms user-submitted data into structured insights using pattern recognition
 
 import { Client, Databases, Storage } from 'node-appwrite';
 
@@ -14,132 +14,136 @@ const storage = new Storage(client);
 const DATABASE_ID = process.env.APPWRITE_DATABASE_ID || 'amniva-db03';
 
 /**
- * AI-powered report attribution and source analysis engine
+ * AI-powered data analysis and insight generation engine
  */
-class ReportEngine {
+class InfoEngine {
   constructor() {
     this.modelVersion = 'v1.5.0';
     this.confidenceThreshold = 0.70;
     
-    // Known credible sources database for Ghana/Africa
+    // Known credible sources database for business intelligence
     this.credibleSources = {
+      financial: {
+        'Bloomberg': {
+          domain: 'bloomberg.com',
+          credibility: 0.98,
+          expertise: ['markets', 'finance', 'economics', 'commodities'],
+          verification_mechanism: 'market_data'
+        },
+        'Wall Street Journal': {
+          domain: 'wsj.com',
+          credibility: 0.96,
+          expertise: ['business', 'finance', 'markets', 'economics'],
+          verification_mechanism: 'institutional_analysis'
+        },
+        'Financial Times': {
+          domain: 'ft.com',
+          credibility: 0.95,
+          expertise: ['global finance', 'markets', 'trade', 'economics'],
+          verification_mechanism: 'institutional_analysis'
+        },
+        'Reuters': {
+          domain: 'reuters.com',
+          credibility: 0.94,
+          expertise: ['markets', 'commodities', 'business', 'finance'],
+          verification_mechanism: 'market_data'
+        }
+      },
+      research: {
+        'World Bank': {
+          domain: 'worldbank.org',
+          credibility: 0.97,
+          expertise: ['development economics', 'global trade', 'investment'],
+          verification_mechanism: 'research_publication'
+        },
+        'IMF': {
+          domain: 'imf.org',
+          credibility: 0.96,
+          expertise: ['monetary policy', 'global economics', 'fiscal policy'],
+          verification_mechanism: 'institutional_report'
+        },
+        'McKinsey': {
+          domain: 'mckinsey.com',
+          credibility: 0.92,
+          expertise: ['strategy', 'market analysis', 'industry trends'],
+          verification_mechanism: 'research_methodology'
+        },
+        'Deloitte': {
+          domain: 'deloitte.com',
+          credibility: 0.91,
+          expertise: ['industry analysis', 'risk assessment', 'market research'],
+          verification_mechanism: 'research_methodology'
+        }
+      },
       government: {
         'Bank of Ghana': {
           domain: 'bog.gov.gh',
-          credibility: 0.98,
+          credibility: 0.95,
           expertise: ['monetary policy', 'banking', 'finance', 'economy'],
           verification_mechanism: 'official_statement'
         },
-        'Ghana Statistical Service': {
-          domain: 'statsghana.gov.gh', 
-          credibility: 0.95,
-          expertise: ['statistics', 'census', 'demographics', 'economic data'],
+        'SEC': {
+          domain: 'sec.gov',
+          credibility: 0.98,
+          expertise: ['securities', 'regulations', 'filings', 'compliance'],
+          verification_mechanism: 'regulatory_filing'
+        },
+        'Federal Reserve': {
+          domain: 'federalreserve.gov',
+          credibility: 0.98,
+          expertise: ['monetary policy', 'banking', 'interest rates'],
+          verification_mechanism: 'official_statement'
+        }
+      },
+      data: {
+        'Statista': {
+          domain: 'statista.com',
+          credibility: 0.89,
+          expertise: ['statistics', 'market data', 'industry metrics'],
           verification_mechanism: 'official_data'
         },
-        'Ministry of Finance': {
-          domain: 'mofep.gov.gh',
-          credibility: 0.92,
-          expertise: ['budget', 'taxation', 'fiscal policy', 'public finance'],
-          verification_mechanism: 'policy_document'
-        },
-        'Electoral Commission': {
-          domain: 'ec.gov.gh',
-          credibility: 0.94,
-          expertise: ['elections', 'voter registration', 'electoral processes'],
-          verification_mechanism: 'electoral_data'
-        }
-      },
-      financial: {
-        'Ghana Stock Exchange': {
-          domain: 'gse.com.gh',
-          credibility: 0.91,
-          expertise: ['stock market', 'securities', 'listed companies'],
-          verification_mechanism: 'market_data'
-        },
-        'Securities and Exchange Commission': {
-          domain: 'sec.gov.gh',
-          credibility: 0.89,
-          expertise: ['securities regulation', 'capital markets'],
-          verification_mechanism: 'regulatory_filing'
-        }
-      },
-      media: {
-        'Ghana News Agency': {
-          domain: 'gna.org.gh',
-          credibility: 0.85,
-          expertise: ['general news', 'government announcements'],
-          verification_mechanism: 'press_release'
-        },
-        'Graphic Communications': {
-          domain: 'graphic.com.gh',
-          credibility: 0.82,
-          expertise: ['general news', 'politics', 'business'],
-          verification_mechanism: 'journalism_standards'
-        },
-        'Joy News': {
-          domain: 'myjoyonline.com',
-          credibility: 0.80,
-          expertise: ['current affairs', 'politics', 'entertainment'],
-          verification_mechanism: 'editorial_review'
-        }
-      },
-      international: {
-        'Bank of Ethiopia': {
-          domain: 'nbe.gov.et',
-          credibility: 0.93,
-          expertise: ['Ethiopian monetary policy', 'banking regulation'],
-          verification_mechanism: 'central_bank_statement'
-        },
-        'African Development Bank': {
-          domain: 'afdb.org',
-          credibility: 0.90,
-          expertise: ['African development', 'infrastructure', 'economics'],
-          verification_mechanism: 'institutional_report'
-        },
-        'World Bank Africa': {
-          domain: 'worldbank.org',
-          credibility: 0.92,
-          expertise: ['development economics', 'poverty reduction', 'governance'],
-          verification_mechanism: 'research_publication'
-        }
-      },
-      academic: {
-        'University of Ghana': {
-          domain: 'ug.edu.gh',
-          credibility: 0.87,
-          expertise: ['research', 'academic studies', 'policy analysis'],
-          verification_mechanism: 'peer_review'
-        },
-        'Institute of Economic Affairs': {
-          domain: 'ieagh.org',
-          credibility: 0.84,
-          expertise: ['economic policy', 'governance', 'public policy'],
-          verification_mechanism: 'research_methodology'
+        'Trading Economics': {
+          domain: 'tradingeconomics.com',
+          credibility: 0.88,
+          expertise: ['economic indicators', 'forecasts', 'market data'],
+          verification_mechanism: 'official_data'
         }
       }
     };
     
-    // Content patterns for different verification mechanisms
-    this.verificationPatterns = {
+    // Content patterns for different analysis mechanisms
+    this.analysisPatterns = {
       official_statement: {
         indicators: ['according to', 'statement from', 'announced by', 'confirmed by'],
         confidence_boost: 0.2
       },
       official_data: {
-        indicators: ['statistics show', 'data indicates', 'figures reveal', 'census data'],
+        indicators: ['statistics show', 'data indicates', 'figures reveal', 'quarterly results'],
         confidence_boost: 0.25
       },
-      press_release: {
-        indicators: ['press release', 'media statement', 'official communication'],
-        confidence_boost: 0.15
+      institutional_analysis: {
+        indicators: ['analysis shows', 'report indicates', 'assessment reveals'],
+        confidence_boost: 0.18
       },
       market_data: {
-        indicators: ['trading data', 'market figures', 'stock prices', 'exchange rates'],
-        confidence_boost: 0.2
+        indicators: ['trading data', 'market figures', 'price movements', 'exchange rates', 'yield curve'],
+        confidence_boost: 0.22
       },
       research_publication: {
         indicators: ['study shows', 'research indicates', 'analysis reveals', 'findings suggest'],
         confidence_boost: 0.18
+      },
+      research_methodology: {
+        indicators: ['methodology', 'peer-reviewed', 'systematic analysis', 'data-driven'],
+        confidence_boost: 0.15
+      },
+      regulatory_filing: {
+        indicators: ['SEC filing', 'regulatory disclosure', 'compliance report', 'annual report'],
+        confidence_boost: 0.2
+      },
+      institutional_report: {
+        indicators: ['institutional report', 'quarterly outlook', 'annual review', 'market commentary'],
+        confidence_boost: 0.17
       }
     };
   }

@@ -42,9 +42,9 @@ const PredictionForm = () => {
       <div className="max-w-2xl mx-auto px-4">
         <Card>
           <CardHeader>
-            <CardTitle>Submit a Prediction Request</CardTitle>
+            <CardTitle>Submit a Forecast Request</CardTitle>
             <CardDescription>
-              Get AI-powered predictions and insights across multiple categories
+              Get AI-powered market forecasts and business predictions
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -73,7 +73,7 @@ const PredictionForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="category">Forecast Category</Label>
                 <Select 
                   onValueChange={(value) => setValue('category', value as PredictionData['category'])}
                 >
@@ -81,11 +81,11 @@ const PredictionForm = () => {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Environment">Environment</SelectItem>
-                    <SelectItem value="Political Climate">Political Climate</SelectItem>
-                    <SelectItem value="Weather">Weather</SelectItem>
-                    <SelectItem value="Business Forecast">Business Forecast</SelectItem>
-                    <SelectItem value="Disaster">Disaster</SelectItem>
+                    <SelectItem value="Business Forecast">Market Forecast</SelectItem>
+                    <SelectItem value="Environment">Industry Trends</SelectItem>
+                    <SelectItem value="Political Climate">Economic Policy</SelectItem>
+                    <SelectItem value="Weather">Risk Scenarios</SelectItem>
+                    <SelectItem value="Disaster">Crisis Assessment</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors.category && (
@@ -94,11 +94,11 @@ const PredictionForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Prediction Details</Label>
+                <Label htmlFor="description">Forecast Details</Label>
                 <Textarea
                   id="description"
                   {...register('description', { required: 'Description is required' })}
-                  placeholder="Describe what you'd like us to predict or analyze..."
+                  placeholder="Describe the market, trend, or scenario you'd like us to forecast..."
                   rows={6}
                 />
                 {errors.description && (
@@ -108,19 +108,19 @@ const PredictionForm = () => {
 
               <div className="bg-muted p-4 rounded-lg">
                 <p className="text-sm text-muted-foreground">
-                  <strong>Available Categories:</strong>
+                  <strong>Forecast Categories:</strong>
                 </p>
                 <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                  <li>• <strong>Environment:</strong> Climate patterns, deforestation, pollution trends</li>
-                  <li>• <strong>Political Climate:</strong> Elections, policy impacts, regional stability</li>
-                  <li>• <strong>Weather:</strong> Seasonal forecasts, extreme events, agricultural planning</li>
-                  <li>• <strong>Business Forecast:</strong> Market trends, industry outlook, economic indicators</li>
-                  <li>• <strong>Disaster:</strong> Risk assessment, preparedness, impact analysis</li>
+                  <li>• <strong>Market Forecast:</strong> Market trends, industry outlook, economic indicators</li>
+                  <li>• <strong>Industry Trends:</strong> Sector analysis, competitive dynamics, growth patterns</li>
+                  <li>• <strong>Economic Policy:</strong> Policy impacts, regulatory changes, fiscal outlook</li>
+                  <li>• <strong>Risk Scenarios:</strong> Risk assessment, scenario planning, volatility analysis</li>
+                  <li>• <strong>Crisis Assessment:</strong> Crisis preparedness, impact analysis, recovery forecasts</li>
                 </ul>
               </div>
 
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Submitting...' : 'Submit Prediction Request'}
+                {loading ? 'Submitting...' : 'Run Prediction'}
               </Button>
             </form>
           </CardContent>

@@ -54,7 +54,7 @@ const AIEnginePanel = () => {
   const [engines, setEngines] = useState<EngineStatus[]>([
     {
       id: 'verify',
-      name: 'Verify Engine',
+      name: 'Verification Engine',
       type: 'verify',
       mode: 'external',
       enabled: false,
@@ -70,7 +70,7 @@ const AIEnginePanel = () => {
     },
     {
       id: 'prediction',
-      name: 'Prediction Engine',
+      name: 'Forecast Engine',
       type: 'prediction',
       mode: 'internal',
       enabled: true,
@@ -86,7 +86,7 @@ const AIEnginePanel = () => {
     },
     {
       id: 'trending',
-      name: 'Trending Engine',
+      name: 'Business Trends Engine',
       type: 'trending',
       mode: 'merge',
       enabled: true,
@@ -101,8 +101,8 @@ const AIEnginePanel = () => {
       }
     },
     {
-      id: 'report',
-      name: 'Report Engine',
+      id: 'info',
+      name: 'Insight Generation Engine',
       type: 'report',
       mode: 'external',
       enabled: false,
@@ -131,10 +131,10 @@ const AIEnginePanel = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-600';
-      case 'error': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-600';
+      case 'active': return 'bg-emerald-500/10 text-emerald-600';
+      case 'inactive': return 'bg-muted text-muted-foreground';
+      case 'error': return 'bg-destructive/10 text-destructive';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -142,8 +142,8 @@ const AIEnginePanel = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">AI Engine Management</h2>
-          <p className="text-gray-600">Configure and monitor internal AI engines with toggle controls</p>
+          <h2 className="text-2xl font-bold text-foreground">Prediction Controls</h2>
+          <p className="text-muted-foreground">Configure and monitor business intelligence engines</p>
         </div>
       </div>
 
@@ -170,19 +170,19 @@ const AIEnginePanel = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-600">Requests Today:</span>
+                  <span className="text-muted-foreground">Requests Today:</span>
                   <div className="font-semibold">{engine.performance_metrics.requests_today}</div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Success Rate:</span>
+                  <span className="text-muted-foreground">Success Rate:</span>
                   <div className="font-semibold">{Math.round(engine.performance_metrics.success_rate * 100)}%</div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Avg Confidence:</span>
+                  <span className="text-muted-foreground">Avg Confidence:</span>
                   <div className="font-semibold">{Math.round(engine.performance_metrics.avg_confidence * 100)}%</div>
                 </div>
                 <div>
-                  <span className="text-gray-600">Response Time:</span>
+                  <span className="text-muted-foreground">Response Time:</span>
                   <div className="font-semibold">{engine.performance_metrics.avg_response_time}ms</div>
                 </div>
               </div>
@@ -220,8 +220,8 @@ const AIEnginePanel = () => {
       <Alert>
         <Brain className="w-4 h-4" />
         <AlertDescription>
-          AI engines are now configured and ready. Use toggles to switch between internal AI models and external APIs. 
-          The system automatically routes requests based on your settings.
+          Business intelligence engines are configured and ready. Use toggles to switch between internal analysis models and external data APIs. 
+          The system automatically routes requests based on your settings for verification, insights, and forecasting.
         </AlertDescription>
       </Alert>
     </div>
