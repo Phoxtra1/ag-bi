@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MessageSquare, Heart, Flag, TrendingUp, Clock, Users, Radio, Video, Trophy } from 'lucide-react';
+import { MessageSquare, Heart, Flag, TrendingUp, Clock, Users, Radio, Video, Trophy, Lightbulb, Building2 } from 'lucide-react';
 import { getPosts, likePost, COMMUNITY_POSTS_COLLECTION_ID } from '@/lib/community';
 import { client, DATABASE_ID } from '@/lib/appwrite';
 import { getCurrentUser } from '@/lib/auth';
@@ -37,10 +36,7 @@ const CommunityFeed = () => {
   useEffect(() => {
     const channel = `databases.${DATABASE_ID}.collections.${COMMUNITY_POSTS_COLLECTION_ID}.documents`;
 
-    console.log('[CommunityFeed] subscribing to realtime:', channel);
     const unsubscribe = client.subscribe(channel, (event: any) => {
-      console.log('[CommunityFeed] realtime event:', event?.events);
-      // Reload on create/update/delete so all users see changes quickly
       if (Array.isArray(event?.events) && event.events.some((e: string) => e.includes('.create') || e.includes('.update') || e.includes('.delete'))) {
         loadPosts();
       }
@@ -77,13 +73,12 @@ const CommunityFeed = () => {
     if (!currentUser) {
       toast({
         title: "Authentication Required",
-        description: "Please sign in to like posts",
+        description: "Please sign in to engage with posts",
         variant: "destructive"
       });
       return;
     }
 
-    // Optimistic update for snappy UI
     setPosts((prev) => prev.map((p) => {
       if (p.$id !== postId) return p;
       const liked = (p.liked_by || []).includes(currentUser.$id);
@@ -97,7 +92,6 @@ const CommunityFeed = () => {
       const { error } = await likePost(postId, currentUser.$id);
       if (error) throw error as any;
     } catch (e: any) {
-      // Revert on error
       setPosts((prev) => prev.map((p) => {
         if (p.$id !== postId) return p;
         const liked = (p.liked_by || []).includes(currentUser.$id);
@@ -108,7 +102,7 @@ const CommunityFeed = () => {
       }));
 
       toast({
-        title: "Failed to like",
+        title: "Failed to engage",
         description: e?.message || "Please try again",
         variant: "destructive"
       });
@@ -118,14 +112,13 @@ const CommunityFeed = () => {
   const handlePostCreated = async () => {
     loadPosts();
     toast({
-      title: "Post Created",
-      description: "Your post has been shared with the community"
+      title: "Insight Shared",
+      description: "Your business insight has been shared with the community"
     });
     
-    // Award points for creating a post
     if (currentUser) {
       try {
-        await awardPoints(currentUser.$id, 10, 'post_created', 'Created a new community post');
+        await awardPoints(currentUser.$id, 10, 'post_created', 'Shared a new business insight');
       } catch (error) {
         console.error('Error awarding points:', error);
       }
@@ -142,11 +135,11 @@ const CommunityFeed = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-2">
                 <CardTitle className="text-3xl font-bold flex items-center gap-3">
-                  <Users className="h-8 w-8 text-primary" />
-                  Amniva Society
+                  <Building2 className="h-8 w-8 text-primary" />
+                  Amniva Business Network
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  Connect, share insights, and build community with verified professionals
+                  Connect with business professionals, share market insights, and discuss investment strategies
                 </p>
               </div>
               <CreatePostDialog 
@@ -170,25 +163,23 @@ const CommunityFeed = () => {
             </TabsTrigger>
             <TabsTrigger value="rooms" className="flex items-center gap-2">
               <Radio className="h-4 w-4" />
-              Audio Rooms
+              Expert Rooms
             </TabsTrigger>
             <TabsTrigger value="streams" className="flex items-center gap-2">
               <Video className="h-4 w-4" />
-              Livestreams
+              Webinars
             </TabsTrigger>
             <TabsTrigger value="leaderboard" className="flex items-center gap-2">
               <Trophy className="h-4 w-4" />
-              Leaderboard
+              Leaders
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="newest" className="space-y-4 mt-6">
-            {/* Posts Feed */}
             {renderPostsFeed()}
           </TabsContent>
 
           <TabsContent value="trending" className="space-y-4 mt-6">
-            {/* Trending Posts */}
             {renderPostsFeed()}
           </TabsContent>
 
@@ -221,16 +212,16 @@ const CommunityFeed = () => {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-            <p className="text-muted-foreground">Loading community posts...</p>
+            <p className="text-muted-foreground">Loading business insights...</p>
           </CardContent>
         </Card>
       ) : posts.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No posts yet</h3>
+            <Lightbulb className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No insights yet</h3>
             <p className="text-muted-foreground mb-4">
-              Be the first to share something with the community!
+              Be the first to share a business insight with the community!
             </p>
             {currentUser && (
               <CreatePostDialog 
@@ -251,7 +242,6 @@ const CommunityFeed = () => {
                 onLike={handleLikePost}
                 onPostUpdated={loadPosts}
               />
-              {/* Insert sponsored content every 5-8 posts */}
               {(index + 1) % 6 === 0 && <SponsoredContent type="post" />}
             </React.Fragment>
           ))}
@@ -262,14 +252,14 @@ const CommunityFeed = () => {
       <Card className="border-primary/20 bg-primary/5 mt-6">
         <CardContent className="p-6">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" />
+            <Building2 className="h-5 w-5 text-primary" />
             Community Guidelines
           </h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• Be respectful and professional in all interactions</li>
-            <li>• Share accurate information and cite sources when possible</li>
-            <li>• Report inappropriate content to help maintain community standards</li>
-            <li>• Engage constructively and contribute meaningful insights</li>
+            <li>• Share actionable business insights and market analysis</li>
+            <li>• Discuss entrepreneurship, innovations, and investment strategies</li>
+            <li>• Cite sources when sharing market data or forecasts</li>
+            <li>• Maintain professional discourse and constructive feedback</li>
           </ul>
         </CardContent>
       </Card>
