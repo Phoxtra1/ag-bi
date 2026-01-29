@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Shield, Search, CheckCircle, Upload, AlertCircle } from 'lucide-react';
+import { Shield, Search, CheckCircle, Upload, AlertCircle, Building2, BarChart3, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,18 +30,16 @@ const VerifyInfo = () => {
   const onSubmit = async (data: VerificationForm) => {
     setIsSubmitting(true);
     
-    // Simulate form submission
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       toast({
         title: "Submission Successful!",
-        description: "Thanks for your submission. Log in or create an account to track the status.",
+        description: "Your data verification request has been submitted. Log in to track the status.",
       });
       
       reset();
       
-      // Redirect to login page after successful submission
       setTimeout(() => {
         window.location.href = '/login';
       }, 2000);
@@ -58,49 +56,49 @@ const VerifyInfo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-indigo-100 py-16">
+      <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex justify-center mb-6 space-x-4">
-            <Shield className="h-12 w-12 text-blue-600 animate-pulse" />
-            <Search className="h-12 w-12 text-green-600 animate-bounce" />
-            <CheckCircle className="h-12 w-12 text-blue-600 animate-pulse" />
+            <Shield className="h-12 w-12 text-primary animate-pulse" />
+            <BarChart3 className="h-12 w-12 text-green-600 animate-bounce" />
+            <CheckCircle className="h-12 w-12 text-primary animate-pulse" />
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Verify Information Before You Share
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Verify Business Data Before You Act
           </h1>
           
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Protect yourself and your network from false claims, hoaxes, and disinformation. 
-            Submit any news item, photo, or video for verification.
+          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Protect your investments and decisions from unreliable data, misleading reports, and market misinformation.
+            Submit any financial report, market claim, or business data for verification.
           </p>
           
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2">
+            <div className="bg-card px-6 py-3 rounded-full shadow-lg flex items-center space-x-2 border">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              <span className="text-gray-700 font-medium">Verified by Amniva Tool</span>
+              <span className="text-foreground font-medium">Verified by Amniva Intelligence Engine</span>
             </div>
           </div>
           
           <Button 
             size="lg" 
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+            className="px-8 py-3 text-lg"
             onClick={() => document.getElementById('submission-form')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Submit a Claim for Verification
+            Submit Data for Verification
           </Button>
         </div>
       </section>
 
       {/* Info Banner */}
-      <div className="bg-blue-600 text-white py-3">
+      <div className="bg-primary text-primary-foreground py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-sm md:text-base">
-            Amniva's Fact Verification Service helps you check the credibility of any media content or claim.
+            Amniva's Data Verification Service helps you validate the credibility of financial reports, market data, and business claims.
           </p>
         </div>
       </div>
@@ -113,9 +111,9 @@ const VerifyInfo = () => {
           <div id="submission-form">
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
-                  <Upload className="h-6 w-6 mr-2 text-blue-600" />
-                  Submit Your Claim
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center">
+                  <Upload className="h-6 w-6 mr-2 text-primary" />
+                  Submit Data for Verification
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -131,7 +129,7 @@ const VerifyInfo = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="email">Email Address *</Label>
+                    <Label htmlFor="email">Business Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -142,75 +140,76 @@ const VerifyInfo = () => {
                           message: 'Please enter a valid email'
                         }
                       })}
-                      placeholder="your.email@example.com"
+                      placeholder="your.email@company.com"
                       className="mt-1"
                     />
                     {errors.email && (
-                      <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                      <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="contentType">Type of Content to Verify *</Label>
+                    <Label htmlFor="contentType">Type of Data to Verify *</Label>
                     <select
                       id="contentType"
-                      {...register('contentType', { required: 'Please select content type' })}
-                      className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 bg-white"
+                      {...register('contentType', { required: 'Please select data type' })}
+                      className="mt-1 w-full rounded-md border border-input px-3 py-2 bg-background"
                     >
-                      <option value="">Select content type</option>
-                      <option value="text">Text</option>
-                      <option value="image">Image</option>
-                      <option value="video">Video</option>
-                      <option value="url">URL</option>
-                      <option value="audio">Audio</option>
+                      <option value="">Select data type</option>
+                      <option value="financial_report">Financial Report</option>
+                      <option value="market_data">Market Data</option>
+                      <option value="company_claims">Company Claims</option>
+                      <option value="investment_data">Investment Data</option>
+                      <option value="trade_statistics">Trade Statistics</option>
+                      <option value="economic_indicators">Economic Indicators</option>
                     </select>
                     {errors.contentType && (
-                      <p className="text-red-500 text-sm mt-1">{errors.contentType.message}</p>
+                      <p className="text-destructive text-sm mt-1">{errors.contentType.message}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="claimDescription">Claim Description *</Label>
+                    <Label htmlFor="claimDescription">Data Description *</Label>
                     <Textarea
                       id="claimDescription"
-                      {...register('claimDescription', { required: 'Please describe the claim' })}
-                      placeholder="Describe the information you want to verify..."
+                      {...register('claimDescription', { required: 'Please describe the data to verify' })}
+                      placeholder="Describe the business data, market claim, or financial report you want to verify..."
                       rows={4}
                       className="mt-1"
                     />
                     {errors.claimDescription && (
-                      <p className="text-red-500 text-sm mt-1">{errors.claimDescription.message}</p>
+                      <p className="text-destructive text-sm mt-1">{errors.claimDescription.message}</p>
                     )}
                   </div>
 
                   <div>
-                    <Label htmlFor="file">Upload Supporting File (Optional)</Label>
+                    <Label htmlFor="file">Upload Supporting Document (Optional)</Label>
                     <Input
                       id="file"
                       type="file"
                       {...register('file')}
-                      accept=".pdf,.png,.jpg,.jpeg,.mp4,.mp3"
+                      accept=".pdf,.xlsx,.csv,.doc,.docx,.png,.jpg,.jpeg"
                       className="mt-1"
                     />
-                    <p className="text-sm text-gray-500 mt-1">
-                      Accepted formats: PDF, PNG, JPG, MP4, MP3
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Accepted formats: PDF, Excel, CSV, Word, PNG, JPG
                     </p>
                   </div>
 
                   <div>
-                    <Label htmlFor="externalLink">External Link (Optional)</Label>
+                    <Label htmlFor="externalLink">Source Link (Optional)</Label>
                     <Input
                       id="externalLink"
                       type="url"
                       {...register('externalLink')}
-                      placeholder="https://example.com"
+                      placeholder="https://source-website.com/report"
                       className="mt-1"
                     />
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? 'Submitting...' : 'Submit for Verification'}
@@ -224,42 +223,42 @@ const VerifyInfo = () => {
           <div className="space-y-6">
             <Card className="shadow-lg">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center">
+                <CardTitle className="text-2xl font-bold text-foreground flex items-center">
                   <Search className="h-6 w-6 mr-2 text-green-600" />
-                  How the Verification Works
+                  How Verification Works
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <div className="bg-blue-100 rounded-full p-2">
-                    <Shield className="h-5 w-5 text-blue-600" />
+                  <div className="bg-primary/10 rounded-full p-2">
+                    <Shield className="h-5 w-5 text-primary" />
                   </div>
-                  <p className="text-gray-700">
-                    Your submission will be reviewed by our team using a mix of expert analysis and AI tools.
+                  <p className="text-muted-foreground">
+                    Your submission is analyzed using AI cross-referencing against credible financial sources including Bloomberg, Reuters, Financial Times, and World Bank data.
                   </p>
                 </div>
                 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-green-100 rounded-full p-2">
+                  <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-2">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                   </div>
-                  <p className="text-gray-700">
-                    Results will be delivered to your user dashboard.
+                  <p className="text-muted-foreground">
+                    Results are delivered to your dashboard with confidence scores and source citations.
                   </p>
                 </div>
                 
                 <div className="flex items-start space-x-3">
-                  <div className="bg-yellow-100 rounded-full p-2">
-                    <AlertCircle className="h-5 w-5 text-yellow-600" />
+                  <div className="bg-amber-100 dark:bg-amber-900/30 rounded-full p-2">
+                    <Building2 className="h-5 w-5 text-amber-600" />
                   </div>
-                  <p className="text-gray-700">
-                    Verification results are private and only accessible to Premium users.
+                  <p className="text-muted-foreground">
+                    Elite and Institutional plans include human expert review for high-stakes verification.
                   </p>
                 </div>
                 
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-blue-800 font-medium">
-                    Upgrade after submission to receive your full verification report.
+                <div className="bg-primary/5 p-4 rounded-lg border border-primary/20">
+                  <p className="text-primary font-medium">
+                    Upgrade to unlock full verification reports with detailed source analysis.
                   </p>
                 </div>
               </CardContent>
@@ -269,10 +268,10 @@ const VerifyInfo = () => {
             <Card className="shadow-lg">
               <Collapsible open={isAboutOpen} onOpenChange={setIsAboutOpen}>
                 <CollapsibleTrigger className="w-full">
-                  <CardHeader className="hover:bg-gray-50 cursor-pointer">
-                    <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
+                  <CardHeader className="hover:bg-muted/50 cursor-pointer">
+                    <CardTitle className="text-lg font-bold text-foreground flex items-center justify-between">
                       About Our Verification Service
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {isAboutOpen ? '−' : '+'}
                       </span>
                     </CardTitle>
@@ -280,16 +279,11 @@ const VerifyInfo = () => {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent>
-                    <p className="text-gray-700 leading-relaxed">
-                      At Amniva, our verification service is not limited to fact-checking breaking news or viral content. 
-                      We provide a comprehensive and intelligent claim validation system that empowers individuals, 
-                      researchers, and organizations to test the truth and accuracy of any information be it a trending 
-                      report, a historical claim, a scientific fact, a political statement, or a widely circulated belief.
+                    <p className="text-muted-foreground leading-relaxed">
+                      Amniva's verification service is designed for business professionals, analysts, and institutions who need to validate the accuracy of financial data, market claims, and business intelligence before making critical decisions.
                     </p>
-                    <p className="text-gray-700 leading-relaxed mt-4">
-                      Whether you're investigating misinformation, tracing the origin of a cultural myth, or validating 
-                      content before publication, our system provides contextual analysis, factual citations, and 
-                      intelligent feedback ensuring what you share, believe, or publish is based on truth, not trends.
+                    <p className="text-muted-foreground leading-relaxed mt-4">
+                      We cross-reference your submissions against authoritative sources including Bloomberg, Wall Street Journal, Financial Times, Reuters, World Bank, IMF, SEC filings, and verified industry databases to provide comprehensive credibility assessments.
                     </p>
                   </CardContent>
                 </CollapsibleContent>
@@ -300,10 +294,10 @@ const VerifyInfo = () => {
             <Card className="shadow-lg">
               <Collapsible open={isGuidelinesOpen} onOpenChange={setIsGuidelinesOpen}>
                 <CollapsibleTrigger className="w-full">
-                  <CardHeader className="hover:bg-gray-50 cursor-pointer">
-                    <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
+                  <CardHeader className="hover:bg-muted/50 cursor-pointer">
+                    <CardTitle className="text-lg font-bold text-foreground flex items-center justify-between">
                       Guidelines & Disclaimer
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-muted-foreground">
                         {isGuidelinesOpen ? '−' : '+'}
                       </span>
                     </CardTitle>
@@ -312,24 +306,21 @@ const VerifyInfo = () => {
                 <CollapsibleContent>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-2">Guidelines for Using the Verify Information Feature:</h4>
-                      <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                        <li><strong>Submit Accurate Details:</strong> Ensure the information you're submitting for verification is complete, including links, documents, or screenshots where necessary.</li>
-                        <li><strong>No Fake or Harmful Submissions:</strong> Requests intended to spread falsehoods or target individuals will be rejected.</li>
-                        <li><strong>Verification Timeframe:</strong> Most requests are processed within 24–72 hours, depending on complexity.</li>
-                        <li><strong>Sign In Required to View Results:</strong> You must sign in or create an account to view your verification results.</li>
-                        <li><strong>Paid Feature:</strong> This is a premium feature. A valid payment or subscription is required to access the final verification report.</li>
-                        <li><strong>Email Notification:</strong> You will receive an email alert once your verification report is ready and accessible via your dashboard.</li>
+                      <h4 className="font-semibold text-foreground mb-2">Guidelines for Data Verification:</h4>
+                      <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                        <li><strong>Submit Complete Data:</strong> Include all relevant documents, links, and context for accurate verification.</li>
+                        <li><strong>Business Use Only:</strong> This service is for legitimate business intelligence purposes.</li>
+                        <li><strong>Processing Time:</strong> Most requests are processed within 24–72 hours, depending on complexity.</li>
+                        <li><strong>Sign In Required:</strong> You must sign in to view your verification results.</li>
+                        <li><strong>Premium Feature:</strong> Full verification reports require a paid subscription.</li>
+                        <li><strong>Email Notification:</strong> You'll receive an email when your verification report is ready.</li>
                       </ol>
                     </div>
                     
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                      <h4 className="font-semibold text-yellow-800 mb-2">Disclaimer:</h4>
-                      <p className="text-sm text-yellow-700">
-                        The verification results provided by AMNIVA are based on publicly available data, expert analysis, 
-                        and internal fact-checking processes. While we strive for accuracy and integrity, AMNIVA does not 
-                        guarantee absolute truth in complex or evolving matters. Users are advised to exercise personal 
-                        discretion in interpreting results.
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-4">
+                      <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">Disclaimer:</h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-300">
+                        Verification results are based on publicly available data, expert analysis, and AI-powered cross-referencing. While we strive for accuracy, Amniva does not guarantee absolute accuracy for time-sensitive or rapidly changing market data. Users should exercise professional judgment.
                       </p>
                     </div>
                   </CardContent>
@@ -340,13 +331,13 @@ const VerifyInfo = () => {
         </div>
 
         {/* Bottom Message */}
-        <div className="text-center mt-12 p-6 bg-gray-100 rounded-lg">
-          <p className="text-gray-700">
-            Already submitted a claim? 
-            <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium ml-1">
+        <div className="text-center mt-12 p-6 bg-muted rounded-lg">
+          <p className="text-muted-foreground">
+            Already submitted a verification request? 
+            <a href="/login" className="text-primary hover:text-primary/80 font-medium ml-1">
               Log In
             </a> 
-            {" "}to track or receive your result.
+            {" "}to track or receive your results.
           </p>
         </div>
       </div>

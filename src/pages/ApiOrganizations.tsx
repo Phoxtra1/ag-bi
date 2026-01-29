@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
-  Building, 
+  Building2, 
   Shield, 
   Code, 
   Database, 
@@ -14,49 +14,51 @@ import {
   BookOpen,
   Mail,
   MessageCircle,
-  FileText
+  FileText,
+  TrendingUp,
+  BarChart3,
+  LineChart
 } from 'lucide-react';
 
 const ApiOrganizations = () => {
   const features = [
-    { icon: <Database className="w-6 h-6" />, title: 'Breaking News & Trends', description: 'Real-time access to verified breaking news and trending topics' },
-    { icon: <Globe className="w-6 h-6" />, title: 'Predictive Intelligence', description: 'AI-powered political and climate insights with forecasting capabilities' },
-    { icon: <Shield className="w-6 h-6" />, title: 'Live Disaster Reports', description: 'Real-time weather and disaster monitoring with alert systems' },
-    { icon: <CheckCircle className="w-6 h-6" />, title: 'Verified Story Flags', description: 'Automated verification and trend validation for content accuracy' }
+    { icon: <TrendingUp className="w-6 h-6" />, title: 'Market Intelligence', description: 'Real-time access to verified market data and business trends' },
+    { icon: <BarChart3 className="w-6 h-6" />, title: 'Predictive Analytics', description: 'AI-powered economic forecasting and risk assessment capabilities' },
+    { icon: <Shield className="w-6 h-6" />, title: 'Data Verification', description: 'Cross-referenced business data validation and credibility scoring' },
+    { icon: <LineChart className="w-6 h-6" />, title: 'Investment Signals', description: 'Automated trend detection and investment opportunity alerts' }
   ];
 
   const organizationTypes = [
-    { icon: <Building className="w-8 h-8" />, title: 'Media Houses', description: 'News organizations and broadcasting companies' },
-    { icon: <Shield className="w-8 h-8" />, title: 'Government Agencies', description: 'Public sector and governmental institutions' },
-    { icon: <BookOpen className="w-8 h-8" />, title: 'Research Labs & Universities', description: 'Academic institutions and research facilities' },
-    { icon: <Users className="w-8 h-8" />, title: 'Civic Institutions', description: 'Non-profits and civic organizations' }
+    { icon: <Building2 className="w-8 h-8" />, title: 'Financial Institutions', description: 'Banks, investment firms, and asset managers' },
+    { icon: <Shield className="w-8 h-8" />, title: 'Enterprise Organizations', description: 'Corporate strategy and risk management teams' },
+    { icon: <BookOpen className="w-8 h-8" />, title: 'Research & Analytics', description: 'Market research firms and economic think tanks' },
+    { icon: <Users className="w-8 h-8" />, title: 'Consulting Firms', description: 'Management and financial advisory services' }
   ];
 
   const apiEndpoints = [
-    { method: 'GET', endpoint: '/v1/trends', description: 'Retrieve current trending topics and news' },
-    { method: 'GET', endpoint: '/v1/predict', description: 'Access predictive insights for specific regions/sectors' },
-    { method: 'GET', endpoint: '/v1/verify', description: 'Verify content authenticity and get reliability scores' },
-    { method: 'GET', endpoint: '/v1/weather', description: 'Real-time weather and disaster monitoring data' },
-    { method: 'POST', endpoint: '/v1/submit', description: 'Submit content for verification and analysis' }
+    { method: 'GET', endpoint: '/v1/trends', description: 'Retrieve current market trends and business signals' },
+    { method: 'GET', endpoint: '/v1/forecast', description: 'Access economic predictions for specific sectors/regions' },
+    { method: 'GET', endpoint: '/v1/verify', description: 'Validate business data and get credibility scores' },
+    { method: 'GET', endpoint: '/v1/risk', description: 'Real-time risk assessment and market volatility data' },
+    { method: 'POST', endpoint: '/v1/analyze', description: 'Submit data for comprehensive analysis and insights' }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-12">
         {/* Header Section */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Institutional Access to Amniva's API
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+            Enterprise API Access
           </h1>
-          <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
-            Get real-time data, insights, and predictive intelligence via secure API endpoints designed for enterprise-grade applications.
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto mb-8">
+            Integrate Amniva's business intelligence, market forecasting, and data verification capabilities directly into your enterprise systems.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
-              className="bg-blue-600 hover:bg-blue-700"
               onClick={() => window.location.href = '/login'}
             >
               Apply for API Access
@@ -69,13 +71,13 @@ const ApiOrganizations = () => {
 
         {/* Who Is This For Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Who Is This For?</h2>
-          <p className="text-center text-gray-600 mb-8">Verified organizations only. Individuals should use our free or pro plans.</p>
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Who Is This For?</h2>
+          <p className="text-center text-muted-foreground mb-8">Enterprise organizations requiring institutional-grade business intelligence.</p>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {organizationTypes.map((type, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="flex justify-center text-blue-600 mb-2">
+                  <div className="flex justify-center text-primary mb-2">
                     {type.icon}
                   </div>
                   <CardTitle className="text-lg">{type.title}</CardTitle>
@@ -90,26 +92,26 @@ const ApiOrganizations = () => {
 
         {/* What You'll Get Section */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What You'll Get</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">What You'll Get</h2>
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             {features.map((feature, index) => (
               <Card key={index} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className="text-blue-600">{feature.icon}</div>
+                    <div className="text-primary">{feature.icon}</div>
                     <CardTitle className="text-xl">{feature.title}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600">{feature.description}</CardDescription>
+                  <CardDescription className="text-muted-foreground">{feature.description}</CardDescription>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="bg-primary/5 border-primary/20">
             <CardHeader>
-              <CardTitle className="text-center text-blue-800">API Access Includes</CardTitle>
+              <CardTitle className="text-center text-primary">Enterprise API Includes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
@@ -124,7 +126,7 @@ const ApiOrganizations = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span>API usage dashboard</span>
+                    <span>Real-time usage analytics dashboard</span>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -138,7 +140,7 @@ const ApiOrganizations = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-green-600" />
-                    <span>Monthly usage analytics</span>
+                    <span>Custom integration assistance</span>
                   </div>
                 </div>
               </div>
@@ -148,7 +150,7 @@ const ApiOrganizations = () => {
 
         {/* API Documentation */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Developer Documentation</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Developer Documentation</h2>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -162,16 +164,16 @@ const ApiOrganizations = () => {
             <CardContent>
               <div className="space-y-4">
                 {apiEndpoints.map((endpoint, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-4 bg-muted rounded-lg">
                     <div className="flex items-center gap-4">
                       <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        endpoint.method === 'GET' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                        endpoint.method === 'GET' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                       }`}>
                         {endpoint.method}
                       </span>
                       <code className="font-mono text-sm">{endpoint.endpoint}</code>
                     </div>
-                    <span className="text-sm text-gray-600">{endpoint.description}</span>
+                    <span className="text-sm text-muted-foreground">{endpoint.description}</span>
                   </div>
                 ))}
               </div>
@@ -179,7 +181,7 @@ const ApiOrganizations = () => {
               <div className="mt-8 p-4 bg-gray-900 rounded-lg text-white">
                 <h4 className="font-semibold mb-2">Example Request:</h4>
                 <code className="text-sm">
-                  GET /v1/predict?region=Europe&sector=Politics<br/>
+                  GET /v1/forecast?region=Europe&sector=Technology<br/>
                   Authorization: Bearer YOUR_API_KEY<br/>
                   Content-Type: application/json
                 </code>
@@ -188,21 +190,21 @@ const ApiOrganizations = () => {
               <div className="mt-6 grid md:grid-cols-2 gap-4">
                 <div>
                   <h4 className="font-semibold mb-2">Key Resources:</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
+                  <ul className="space-y-1 text-sm text-muted-foreground">
                     <li>• Authentication Guide</li>
                     <li>• Available Endpoints</li>
-                    <li>• Rate Limits & Usage</li>
+                    <li>• Rate Limits & Quotas</li>
                     <li>• Response Formats</li>
                     <li>• SDKs (Python, JavaScript)</li>
                   </ul>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">Developer Support:</h4>
-                  <ul className="space-y-1 text-sm text-gray-600">
+                  <ul className="space-y-1 text-sm text-muted-foreground">
                     <li>• Code Examples</li>
                     <li>• Error Handling</li>
                     <li>• Best Practices</li>
-                    <li>• Troubleshooting</li>
+                    <li>• Integration Patterns</li>
                     <li>• Changelog Updates</li>
                   </ul>
                 </div>
@@ -223,7 +225,7 @@ const ApiOrganizations = () => {
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span>GDPR & Data Compliance</span>
+                <span>GDPR & SOC 2 Compliant</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
@@ -231,11 +233,11 @@ const ApiOrganizations = () => {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span>Abuse Detection & Auto-suspension</span>
+                <span>Anomaly Detection & Auto-suspension</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-green-600" />
-                <span>Endpoint SSL/TLS Encryption</span>
+                <span>End-to-end SSL/TLS Encryption</span>
               </div>
             </CardContent>
           </Card>
@@ -244,24 +246,24 @@ const ApiOrganizations = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="w-6 h-6" />
-                Support & Resources
+                Enterprise Support
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-blue-600" />
-                <span>Live Chat for Verified Organizations</span>
+                <Mail className="w-5 h-5 text-primary" />
+                <span>Priority Support for Enterprise Clients</span>
               </div>
               <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-600" />
+                <FileText className="w-5 h-5 text-primary" />
                 <span>Comprehensive API Documentation</span>
               </div>
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-blue-600" />
+                <Users className="w-5 h-5 text-primary" />
                 <span>Dedicated Account Manager</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <CheckCircle className="w-5 h-5 text-primary" />
                 <span>99.9% Uptime SLA Guarantee</span>
               </div>
             </CardContent>
