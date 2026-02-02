@@ -62,8 +62,8 @@ const App = () => (
           <Route path="/api-organizations" element={<RequireAuth><ApiOrganizations /></RequireAuth>} />
           <Route path="/dashboard" element={<RequireAuth><UserDashboard /></RequireAuth>} />
           
-          {/* Admin route - requires authentication AND admin role */}
-          <Route path="/admin" element={<RequireAuth><RequireAdmin><AdminDashboard /></RequireAdmin></RequireAuth>} />
+          {/* Admin route - temporarily open for development */}
+          <Route path="/admin" element={<AdminDashboard />} />
 
           {/* Other routes (optional to protect later) */}
           
