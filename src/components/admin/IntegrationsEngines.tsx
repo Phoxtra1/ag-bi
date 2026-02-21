@@ -60,7 +60,7 @@ const IntegrationsEngines = () => {
     const defaultSystems: SystemConfig[] = [
       {
         id: 'analytics',
-        name: 'Real-Time Analytics Engine',
+        name: 'Real-Time BI Analytics Engine',
         status: 'inactive',
         enabled: false,
         usage: 0,
@@ -68,7 +68,7 @@ const IntegrationsEngines = () => {
       },
       {
         id: 'lifecycle',
-        name: 'User Lifecycle Automation',
+        name: 'Client Lifecycle Automation',
         status: 'inactive',
         enabled: false,
         usage: 0,
@@ -76,7 +76,7 @@ const IntegrationsEngines = () => {
       },
       {
         id: 'financial',
-        name: 'Financial Metrics Engine',
+        name: 'Financial Data Pipeline',
         status: 'needs_setup',
         enabled: false,
         usage: 0,
@@ -92,26 +92,26 @@ const IntegrationsEngines = () => {
         settings: { keyExpiration: 365, rateLimit: 1000 }
       },
       {
-        id: 'weather_geo',
-        name: 'Weather & Geo APIs',
+        id: 'market_data',
+        name: 'Market Data Feed API',
         status: 'needs_setup',
         enabled: false,
         apiKey: '',
-        url: 'https://api.openweathermap.org/data/2.5',
+        url: 'https://api.marketdata.example.com/v1',
         usage: 0,
-        settings: { updateInterval: 15, units: 'metric' }
+        settings: { updateInterval: 15, dataFormat: 'json' }
       },
       {
         id: 'notifications',
-        name: 'Admin Notification System',
+        name: 'Admin Alert System',
         status: 'inactive',
         enabled: false,
         usage: 0,
         settings: { emailNotifications: true, slackWebhook: '' }
       },
       {
-        id: 'prediction',
-        name: 'Prediction Engine',
+        id: 'forecast',
+        name: 'Forecast Engine',
         status: 'needs_setup',
         enabled: false,
         apiKey: '',
@@ -121,7 +121,7 @@ const IntegrationsEngines = () => {
       },
       {
         id: 'verify',
-        name: 'Verify Engine',
+        name: 'Verification Engine',
         status: 'needs_setup',
         enabled: false,
         apiKey: '',
@@ -130,14 +130,24 @@ const IntegrationsEngines = () => {
         settings: { threshold: 0.75, autoVerify: false }
       },
       {
-        id: 'report',
-        name: 'Report Insight Engine',
+        id: 'info_to_insights',
+        name: 'Info-to-Insights Engine',
         status: 'needs_setup',
         enabled: false,
         apiKey: '',
         url: '',
         usage: 0,
         settings: { analysisDepth: 'standard', language: 'en' }
+      },
+      {
+        id: 'market_trends',
+        name: 'Market Trends Engine',
+        status: 'needs_setup',
+        enabled: false,
+        apiKey: '',
+        url: '',
+        usage: 0,
+        settings: { regions: 'global', sectors: 'all' }
       }
     ];
 
@@ -381,9 +391,9 @@ const IntegrationsEngines = () => {
   };
 
   const categoryConfigs = {
-    engines: systems.filter(s => ['prediction', 'verify', 'report'].includes(s.id)),
+    engines: systems.filter(s => ['forecast', 'verify', 'info_to_insights', 'market_trends'].includes(s.id)),
     analytics: systems.filter(s => s.id === 'analytics'),
-    integrations: systems.filter(s => ['weather_geo', 'financial', 'notifications'].includes(s.id)),
+    integrations: systems.filter(s => ['market_data', 'financial', 'notifications'].includes(s.id)),
     automation: systems.filter(s => ['lifecycle', 'api_generator'].includes(s.id))
   };
 
@@ -391,8 +401,8 @@ const IntegrationsEngines = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Integrations & Engines</h2>
-          <p className="text-gray-600">Configure and monitor system components</p>
+          <h2 className="text-2xl font-bold text-foreground">Integrations & BI Engines</h2>
+          <p className="text-muted-foreground">Configure real-time business intelligence systems and external data sources</p>
         </div>
         <Button 
           variant="outline" 
@@ -410,7 +420,7 @@ const IntegrationsEngines = () => {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="engines" className="flex items-center gap-2">
                 <Database className="w-4 h-4" />
-                AI Engines
+                BI Engines
               </TabsTrigger>
               <TabsTrigger value="analytics" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
@@ -418,7 +428,7 @@ const IntegrationsEngines = () => {
               </TabsTrigger>
               <TabsTrigger value="integrations" className="flex items-center gap-2">
                 <Cloud className="w-4 h-4" />
-                Integrations
+                Data Sources
               </TabsTrigger>
               <TabsTrigger value="automation" className="flex items-center gap-2">
                 <Zap className="w-4 h-4" />

@@ -165,10 +165,10 @@ const Trending = () => {
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
                   <TrendingUp className="h-8 w-8 text-primary" />
-                  <h1 className="text-4xl font-bold text-foreground">Business Trends & Innovations</h1>
+                  <h1 className="text-4xl font-bold text-foreground">Market Trends & Intelligence</h1>
                 </div>
                 <p className="text-lg text-muted-foreground max-w-3xl">
-                  Curated market intelligence from verified financial sources to help you make informed business decisions.
+                  Real-time market signals for investors, innovators, and entrepreneurs — curated from verified financial sources.
                 </p>
               </div>
 
@@ -268,10 +268,10 @@ const Trending = () => {
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    Live Market Trends
-                  </CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                      Live Market Signals
+                    </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {loading ? (
