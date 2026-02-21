@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, Building2, Leaf, Cpu, FlaskConical, Landmark, Zap, DollarSign } from 'lucide-react';
+import { TrendingUp, Building2, Landmark, Cpu, DollarSign, Zap, Lightbulb, BarChart3, Globe } from 'lucide-react';
 import { executeTrending } from '@/lib/moduleRegistry';
 
-interface TrendingTopic {
+interface MarketTrend {
   id: string;
   topic: string;
   category: string;
@@ -13,30 +13,33 @@ interface TrendingTopic {
 }
 
 const categoryIcons: Record<string, any> = {
-  Business: Building2,
   Markets: DollarSign,
-  Trade: TrendingUp,
   Investment: Landmark,
-  Risk: FlaskConical,
+  Trade: Globe,
+  Risk: BarChart3,
+  Innovation: Lightbulb,
+  Entrepreneurship: Building2,
   Technology: Cpu,
   default: TrendingUp
 };
 
 const categoryColors: Record<string, string> = {
-  Business: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  Markets: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  Trade: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  Markets: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
   Investment: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  Trade: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
   Risk: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  Technology: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  Innovation: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+  Entrepreneurship: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
+  Technology: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300',
   default: 'bg-muted text-muted-foreground'
 };
 
-const TrendingNews = () => {
-  const [trends, setTrends] = useState<TrendingTopic[]>([]);
+const MarketTrends = () => {
+  const [trends, setTrends] = useState<MarketTrend[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
 
   const fetchTrends = useCallback(async () => {
     try {
@@ -46,35 +49,40 @@ const TrendingNews = () => {
         const topics = response.data.trending_topics.map((item: any, idx: number) => ({
           id: `trend-${idx}-${Date.now()}`,
           topic: item.topic,
-          category: item.category || 'Business',
+          category: item.category || 'Markets',
           score: item.score || 0,
           velocity: item.velocity || 0
         }));
         setTrends(topics);
       } else {
+        // BI-focused fallback data
         setTrends([
-          { id: '1', topic: 'Global Markets Rally on Economic Data', category: 'Markets', score: 95, velocity: 12 },
-          { id: '2', topic: 'Tech Sector Investment Surge', category: 'Investment', score: 92, velocity: 8 },
-          { id: '3', topic: 'International Trade Policy Reforms', category: 'Trade', score: 88, velocity: 15 },
-          { id: '4', topic: 'Emerging Market Risk Assessment', category: 'Risk', score: 85, velocity: 6 },
-          { id: '5', topic: 'Corporate M&A Activity Increases', category: 'Business', score: 82, velocity: 10 }
+          { id: '1', topic: 'Global Equity Markets Rally on Central Bank Signals', category: 'Markets', score: 95, velocity: 12 },
+          { id: '2', topic: 'Venture Capital Flows Shift to AI Infrastructure', category: 'Investment', score: 92, velocity: 8 },
+          { id: '3', topic: 'Cross-Border Trade Agreements Reshape Supply Chains', category: 'Trade', score: 88, velocity: 15 },
+          { id: '4', topic: 'Emerging Market Sovereign Risk Indicators Rising', category: 'Risk', score: 85, velocity: 6 },
+          { id: '5', topic: 'Fintech Innovation Disrupts Traditional Banking', category: 'Innovation', score: 82, velocity: 10 },
+          { id: '6', topic: 'Startup Ecosystem Growth in Developing Economies', category: 'Entrepreneurship', score: 79, velocity: 9 }
         ]);
       }
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch (error) {
-      console.error('Error fetching trending data:', error);
+      console.error('Error fetching market trends:', error);
       setTrends([
-        { id: '1', topic: 'Global Markets Rally on Economic Data', category: 'Markets', score: 95, velocity: 12 },
-        { id: '2', topic: 'Tech Sector Investment Surge', category: 'Investment', score: 92, velocity: 8 },
-        { id: '3', topic: 'International Trade Policy Reforms', category: 'Trade', score: 88, velocity: 15 }
+        { id: '1', topic: 'Global Equity Markets Rally on Central Bank Signals', category: 'Markets', score: 95, velocity: 12 },
+        { id: '2', topic: 'Venture Capital Flows Shift to AI Infrastructure', category: 'Investment', score: 92, velocity: 8 },
+        { id: '3', topic: 'Cross-Border Trade Agreements Reshape Supply Chains', category: 'Trade', score: 88, velocity: 15 }
       ]);
+      setLastUpdated(new Date().toLocaleTimeString());
     } finally {
       setIsLoading(false);
     }
   }, []);
 
+  // Real-time refresh every 60 seconds
   useEffect(() => {
     fetchTrends();
-    const refreshInterval = setInterval(() => fetchTrends(), 300000);
+    const refreshInterval = setInterval(() => fetchTrends(), 60000);
     return () => clearInterval(refreshInterval);
   }, [fetchTrends]);
 
@@ -99,7 +107,7 @@ const TrendingNews = () => {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg">
             <Zap className="w-5 h-5 text-amber-500" />
-            Business Trends
+            Market Trends
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -115,7 +123,7 @@ const TrendingNews = () => {
   if (trends.length === 0) return null;
 
   const currentTrend = trends[currentIndex];
-  const visibleTrends = trends.slice(0, 5);
+  const visibleTrends = trends.slice(0, 6);
 
   return (
     <Card 
@@ -127,9 +135,11 @@ const TrendingNews = () => {
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-500 animate-pulse" />
-            Business Trends
+            Market Trends
           </div>
-          <span className="text-xs font-normal text-muted-foreground">Live updates</span>
+          <span className="text-xs font-normal text-muted-foreground">
+            Live • Updated {lastUpdated || '—'}
+          </span>
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4 space-y-4">
@@ -144,7 +154,7 @@ const TrendingNews = () => {
                 <Badge variant="outline" className={getCategoryColor(currentTrend.category)}>{currentTrend.category}</Badge>
                 {currentTrend.velocity > 10 && (
                   <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
-                    <TrendingUp className="w-3 h-3 mr-1" />Trending
+                    <TrendingUp className="w-3 h-3 mr-1" />High Velocity
                   </Badge>
                 )}
               </div>
@@ -171,9 +181,13 @@ const TrendingNews = () => {
             </div>
           ))}
         </div>
+
+        <div className="text-xs text-muted-foreground text-center pt-2 border-t">
+          For investors, innovators & entrepreneurs • Refreshes every 60s
+        </div>
       </CardContent>
     </Card>
   );
 };
 
-export default TrendingNews;
+export default MarketTrends;

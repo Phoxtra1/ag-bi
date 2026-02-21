@@ -45,15 +45,15 @@ const DEFAULT_MODULES: ModuleInfo[] = [
   {
     id: 'prediction',
     name: 'prediction',
-    displayName: 'Prediction Engine',
-    description: 'AI-powered predictive analytics for trends and events',
+    displayName: 'Forecast Engine',
+    description: 'Business, market, economic, and risk forecasting based on verified data',
     category: 'analysis',
-    icon: 'trending-up',
+    icon: 'bar-chart-3',
     endpoint: 'amniva-prediction-engine',
     inputFormat: { 
-      topic: { type: 'text', label: 'Topic', placeholder: 'Enter topic to predict...' },
-      timeframe: { type: 'text', label: 'Timeframe', placeholder: 'e.g., 30 days' },
-      category: { type: 'text', label: 'Category', placeholder: 'e.g., politics, economy' }
+      topic: { type: 'text', label: 'Topic', placeholder: 'e.g., S&P 500 outlook, commodity prices' },
+      timeframe: { type: 'text', label: 'Timeframe', placeholder: 'e.g., 30 days, Q2 2026' },
+      category: { type: 'text', label: 'Category', placeholder: 'e.g., markets, trade, investment' }
     },
     outputFormat: { prediction: 'string', probability: 'number', confidence: 'number' },
     apiType: 'internal',
@@ -62,14 +62,14 @@ const DEFAULT_MODULES: ModuleInfo[] = [
   {
     id: 'verify',
     name: 'verify',
-    displayName: 'Verify Engine',
-    description: 'Fact-checking and content verification system',
+    displayName: 'Verification Engine',
+    description: 'Credibility assessment and validation of datasets, reports, and business claims',
     category: 'analysis',
     icon: 'shield',
     endpoint: 'amniva-verify-engine',
     inputFormat: { 
-      content: { type: 'text', label: 'Content', multiline: true, placeholder: 'Paste content to verify...' },
-      sources: { type: 'text', label: 'Sources (optional)', placeholder: 'Comma-separated URLs' }
+      content: { type: 'text', label: 'Content', multiline: true, placeholder: 'Paste dataset, report, or claim to verify...' },
+      sources: { type: 'text', label: 'Reference Sources (optional)', placeholder: 'Bloomberg, WSJ, FT URLs' }
     },
     outputFormat: { is_authentic: 'boolean', authenticity_score: 'number', evidence: 'array' },
     apiType: 'internal',
@@ -78,13 +78,13 @@ const DEFAULT_MODULES: ModuleInfo[] = [
   {
     id: 'report',
     name: 'report',
-    displayName: 'Report Engine',
-    description: 'Comprehensive insight reports and attribution analysis',
+    displayName: 'Info-to-Insights Engine',
+    description: 'Transform raw research, documents, and data into structured business insights',
     category: 'reporting',
     icon: 'file-text',
     endpoint: 'amniva-report-engine',
     inputFormat: { 
-      content: { type: 'text', label: 'Content', multiline: true, placeholder: 'Enter content for analysis...' }
+      content: { type: 'text', label: 'Content', multiline: true, placeholder: 'Enter raw data, research, or documents for analysis...' }
     },
     outputFormat: { primary_source: 'string', attribution_confidence: 'number', context: 'string' },
     apiType: 'internal',
@@ -93,14 +93,14 @@ const DEFAULT_MODULES: ModuleInfo[] = [
   {
     id: 'trending',
     name: 'trending',
-    displayName: 'Trending Engine',
-    description: 'Real-time trend detection and topic analysis',
+    displayName: 'Market Trends Engine',
+    description: 'Real-time market signals for investors, innovators, and entrepreneurs',
     category: 'analysis',
-    icon: 'zap',
+    icon: 'trending-up',
     endpoint: 'amniva-trending-engine',
     inputFormat: { 
-      category: { type: 'text', label: 'Category (optional)', placeholder: 'e.g., politics, sports' },
-      region: { type: 'text', label: 'Region (optional)', placeholder: 'e.g., ghana, africa' }
+      category: { type: 'text', label: 'Sector', placeholder: 'e.g., markets, investment, trade, innovation' },
+      region: { type: 'text', label: 'Region (optional)', placeholder: 'e.g., global, EMEA, APAC' }
     },
     outputFormat: { trending_topics: 'array', trend_analysis: 'object' },
     apiType: 'internal',

@@ -242,20 +242,24 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span>API Status</span>
-                <Badge className="bg-green-100 text-green-700">Online</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Database</span>
-                <Badge className="bg-green-100 text-green-700">Healthy</Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Prediction Engine</span>
-                <Badge className="bg-green-100 text-green-700">Active</Badge>
-              </div>
-            </div>
+             <div className="space-y-2">
+               <div className="flex justify-between items-center">
+                 <span>API Status</span>
+                 <Badge className="bg-green-100 text-green-700">Online</Badge>
+               </div>
+               <div className="flex justify-between items-center">
+                 <span>Database</span>
+                 <Badge className="bg-green-100 text-green-700">Healthy</Badge>
+               </div>
+               <div className="flex justify-between items-center">
+                 <span>Forecast Engine</span>
+                 <Badge className="bg-green-100 text-green-700">Active</Badge>
+               </div>
+               <div className="flex justify-between items-center">
+                 <span>Market Trends</span>
+                 <Badge className="bg-green-100 text-green-700">Live</Badge>
+               </div>
+             </div>
           </CardContent>
         </Card>
 
