@@ -8,8 +8,8 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthed, setIsAuthed] = useState(false);
 
   useEffect(() => {
-    // Allow admin dashboard access in preview mode without authentication
-    if (location.pathname === '/admin' && window.location.hostname.includes('lovable')) {
+    // Allow all protected routes in preview mode without authentication
+    if (window.location.hostname.includes('lovable')) {
       setIsAuthed(true);
       setLoading(false);
       return;
