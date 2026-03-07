@@ -54,6 +54,7 @@ import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
 import AuditLogPanel from '@/components/admin/AuditLogPanel';
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
+import { logoutUser } from '@/lib/auth';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
