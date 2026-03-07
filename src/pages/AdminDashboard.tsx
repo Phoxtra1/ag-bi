@@ -30,7 +30,8 @@ import {
   Inbox,
   Building,
   Rss,
-  Bot
+  Bot,
+  LogOut
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
