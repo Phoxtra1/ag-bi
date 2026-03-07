@@ -30,7 +30,8 @@ import {
   Inbox,
   Building,
   Rss,
-  Bot
+  Bot,
+  LogOut
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -53,6 +54,7 @@ import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
 import AuditLogPanel from '@/components/admin/AuditLogPanel';
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
+import { logoutUser } from '@/lib/auth';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -251,6 +253,21 @@ const AdminDashboard = () => {
                     {totalNotifications}
                   </Badge>
                 )}
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await logoutUser();
+                    window.location.href = '/login';
+                  } catch (error) {
+                    console.error('Logout error:', error);
+                  }
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
               </Button>
             </div>
           </div>
