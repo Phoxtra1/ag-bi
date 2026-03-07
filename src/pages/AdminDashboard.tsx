@@ -254,6 +254,21 @@ const AdminDashboard = () => {
                   </Badge>
                 )}
               </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await logoutUser();
+                    window.location.href = '/login';
+                  } catch (error) {
+                    console.error('Logout error:', error);
+                  }
+                }}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
             </div>
           </div>
         </div>
