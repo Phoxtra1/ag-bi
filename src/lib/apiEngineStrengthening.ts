@@ -290,7 +290,7 @@ export class AmnivaAPIEngine {
 // API Health Monitor
 export class APIHealthMonitor {
   private healthChecks: Map<string, { status: string; lastCheck: number; responseTime: number }> = new Map();
-  private monitoringInterval: NodeJS.Timeout | null = null;
+  private monitoringInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.startMonitoring();
