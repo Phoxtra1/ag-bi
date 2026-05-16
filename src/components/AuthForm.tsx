@@ -119,43 +119,9 @@ export const AuthForm = () => {
           return;
         }
 
-        // Employee guard — kicks them out of the owner login flow.
-        if (await isActiveEmployee(session.user.id)) {
-          if (cancelled) return;
-          await supabase.auth.signOut();
-          toast({
-            variant: "destructive",
-            title: "Employee Account Detected",
-            description:
-              "Employees must access AGStock through their workspace invite link. Contact your shop owner.",
-          });
-          setCheckingSession(false);
-          return;
-        }
-
-        // Shop owner check — never let RLS errors block UI.
-        try {
-          const { data: shop, error: shopErr } = await supabase
-            .from("shops")
-            .select("id")
-            .eq("owner_id", session.user.id)
-            .maybeSingle();
-
-          if (cancelled) return;
-          if (shopErr) {
-            console.warn("[AuthForm] shops lookup failed:", shopErr.message);
-            setCheckingSession(false);
-            return;
-          }
-          if (shop) {
-            window.location.href = "/shop";
-            return;
-          }
-        } catch (e: any) {
-          console.warn("[AuthForm] shop check threw:", e?.message);
-        }
-
-        setCheckingSession(false);
+        // Already signed in — go straight to the shop. Any employee/shop
+        // validation runs on the destination page so it cannot hang here.
+        window.location.href = "/shop";
       } catch (e: any) {
         console.warn("[AuthForm] session check failed:", e?.message);
         if (!cancelled) setCheckingSession(false);
@@ -218,65 +184,33 @@ export const AuthForm = () => {
       const email = normalizeEmail(formData.email);
 
       if (mode === "login") {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        // Auth call with a hard timeout so a hanging network never freezes UI.
+        const signInPromise = supabase.auth.signInWithPassword({
           email,
           password: formData.password,
         });
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Sign-in timed out. Please try again.")),
+            15000
+          )
+        );
+        const { data, error } = (await Promise.race([
+          signInPromise,
+          timeoutPromise,
+        ])) as Awaited<typeof signInPromise>;
 
         if (error) throw error;
         if (!data?.session || !data?.user) {
           throw new Error("Login failed — no session returned.");
         }
 
-        // Employee guard
-        if (await isActiveEmployee(data.user.id)) {
-          await supabase.auth.signOut();
-          toast({
-            variant: "destructive",
-            title: "Employee Account Detected",
-            description:
-              "Employees must access AGStock through their workspace invite link. Contact your shop owner.",
-          });
-          return;
-        }
-
-        // Ensure a shop record exists for this owner. Failures here are
-        // non-fatal — we still redirect so the dashboard can recover.
-        try {
-          const { data: existingShop, error: shopErr } = await supabase
-            .from("shops")
-            .select("id")
-            .eq("owner_id", data.user.id)
-            .maybeSingle();
-
-          if (shopErr) {
-            console.warn("[AuthForm] shop lookup failed:", shopErr.message);
-          } else if (!existingShop) {
-            const meta = data.user.user_metadata || {};
-            const shopName =
-              meta.name || meta.businessName || email.split("@")[0];
-            const { error: insertErr } = await supabase.from("shops").insert({
-              owner_id: data.user.id,
-              name: shopName,
-              email: data.user.email ?? email,
-              country: meta.country || "",
-              currency: meta.currency || "",
-              status: "trial",
-            });
-            if (insertErr) {
-              console.warn(
-                "[AuthForm] auto-create shop failed:",
-                insertErr.message
-              );
-            }
-          }
-        } catch (e: any) {
-          console.warn("[AuthForm] shop bootstrap threw:", e?.message);
-        }
-
+        // Redirect IMMEDIATELY on successful auth. All employee/shop checks
+        // happen on the destination page — they previously could hang here
+        // (RLS / network) and leave the button stuck on "Signing In…".
         toast({
           title: "Login Successful",
-          description: "Redirecting to dashboard…",
+          description: "Redirecting…",
         });
         window.location.href = "/shop";
         return;
