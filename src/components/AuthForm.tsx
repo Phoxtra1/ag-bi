@@ -119,43 +119,9 @@ export const AuthForm = () => {
           return;
         }
 
-        // Employee guard — kicks them out of the owner login flow.
-        if (await isActiveEmployee(session.user.id)) {
-          if (cancelled) return;
-          await supabase.auth.signOut();
-          toast({
-            variant: "destructive",
-            title: "Employee Account Detected",
-            description:
-              "Employees must access AGStock through their workspace invite link. Contact your shop owner.",
-          });
-          setCheckingSession(false);
-          return;
-        }
-
-        // Shop owner check — never let RLS errors block UI.
-        try {
-          const { data: shop, error: shopErr } = await supabase
-            .from("shops")
-            .select("id")
-            .eq("owner_id", session.user.id)
-            .maybeSingle();
-
-          if (cancelled) return;
-          if (shopErr) {
-            console.warn("[AuthForm] shops lookup failed:", shopErr.message);
-            setCheckingSession(false);
-            return;
-          }
-          if (shop) {
-            window.location.href = "/shop";
-            return;
-          }
-        } catch (e: any) {
-          console.warn("[AuthForm] shop check threw:", e?.message);
-        }
-
-        setCheckingSession(false);
+        // Already signed in — go straight to the shop. Any employee/shop
+        // validation runs on the destination page so it cannot hang here.
+        window.location.href = "/shop";
       } catch (e: any) {
         console.warn("[AuthForm] session check failed:", e?.message);
         if (!cancelled) setCheckingSession(false);
