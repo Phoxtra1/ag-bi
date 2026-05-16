@@ -124,7 +124,7 @@ const AIEnginePanel = () => {
   const { toast } = useToast();
   const [engines, setEngines] = useState<EngineStatus[]>([]);
   const [activeTab, setActiveTab] = useState('overview');
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timer | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 
   // Load from localStorage on mount
   useEffect(() => {

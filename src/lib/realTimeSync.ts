@@ -146,7 +146,7 @@ export async function updateAPIHealth(
 // Event system for real-time updates
 class RealTimeSyncManager {
   private eventListeners: Map<string, Set<(data: any) => void>> = new Map();
-  private pollingIntervals: Map<string, NodeJS.Timeout> = new Map();
+  private pollingIntervals: Map<string, ReturnType<typeof setInterval>> = new Map();
   private isInitialized = false;
 
   // Subscribe to real-time updates

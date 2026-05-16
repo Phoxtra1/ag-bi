@@ -4,7 +4,7 @@ import { realTimeSync } from './realTimeSync';
 // News Feed Engine
 export class NewsFeedEngine {
   private feeds: any[] = [];
-  private updateInterval: NodeJS.Timeout | null = null;
+  private updateInterval: ReturnType<typeof setInterval> | null = null;
   private cache: Map<string, { data: any[]; expiry: number }> = new Map();
 
   constructor() {
