@@ -28,7 +28,7 @@ import Help from "./pages/Help";
 import Contact from "./pages/Contact";
 import Newsletter from "./pages/Newsletter";
 import WatchDemo from "./pages/WatchDemo";
-import OdenehoAIPage from "./pages/OdenehoAIPage";
+
 import NotFound from "./pages/NotFound";
 
 // ✅ Import centralized Odeneho AI assistant
@@ -77,7 +77,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/newsletter" element={<Newsletter />} />
           <Route path="/watch-demo" element={<WatchDemo />} />
-          <Route path="/odeneho-ai" element={<OdenehoAIPage />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
 
