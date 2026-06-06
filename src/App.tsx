@@ -14,6 +14,8 @@ import VerifyInfo from "./pages/VerifyInfo";
 import Trending from "./pages/Trending";
 import Predictions from "./pages/Predictions";
 import ReportInsights from "./pages/ReportInsights";
+import Reports from "./pages/Reports";
+import Explore from "./pages/Explore";
 import Pricing from "./pages/Pricing";
 import ApiOrganizations from "./pages/ApiOrganizations";
 import UserDashboard from "./pages/UserDashboard";
@@ -58,8 +60,10 @@ const App = () => (
           <Route path="/verify" element={<RequireAuth><VerifyInfo /></RequireAuth>} />
           <Route path="/trending" element={<RequireAuth><Trending /></RequireAuth>} />
           <Route path="/predictions" element={<RequireAuth><Predictions /></RequireAuth>} />
-          <Route path="/reports" element={<RequireAuth><ReportInsights /></RequireAuth>} />
-          <Route path="/pricing" element={<RequireAuth><Pricing /></RequireAuth>} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/reports/insights" element={<RequireAuth><ReportInsights /></RequireAuth>} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/api-organizations" element={<RequireAuth><ApiOrganizations /></RequireAuth>} />
           <Route path="/dashboard" element={<RequireAuth><UserDashboard /></RequireAuth>} />
           
