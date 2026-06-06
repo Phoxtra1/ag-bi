@@ -12,7 +12,7 @@ interface Plan {
   price: string;
   period?: string;
   description: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   features: string[];
   cta: string;
   ctaTo: string;
