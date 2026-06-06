@@ -56,12 +56,6 @@ const Header = () => {
             >
               API
             </Link>
-            <Link 
-              to="/odeneho-ai" 
-              className="text-muted-foreground hover:text-foreground font-medium transition-colors"
-            >
-              Odeneho AI
-            </Link>
           </div>
 
           {/* Action Buttons */}
