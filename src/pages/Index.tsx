@@ -75,13 +75,13 @@ const Index: React.FC = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-semibold uppercase tracking-wider">
-              <Sparkles size={14} /> Intelligence Operating System
+              <Sparkles size={14} /> ABI · Amineva Business Intelligence
             </span>
             <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
               Transform information into <span className="text-accent">actionable intelligence</span>.
             </h1>
             <p className="mt-5 text-lg text-primary-foreground/80 leading-relaxed">
-              Amniva powers businesses, investors, governments, and entrepreneurs with AI-driven
+              ABI powers businesses, investors, governments, and entrepreneurs with AI-driven
               Business, Market, Competitor, Verification, Opportunity, Predictive and Decision Intelligence —
               globally accessible, with deep coverage across Africa and emerging markets.
             </p>
