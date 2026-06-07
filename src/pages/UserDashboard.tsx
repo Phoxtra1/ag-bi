@@ -15,6 +15,10 @@ import CommunityFeed from '@/components/community/CommunityFeed';
 import TrendingNews from '@/components/dashboard/TrendingNews';
 import ExecutiveOverview from '@/components/dashboard/ExecutiveOverview';
 import BusinessIntelligenceModule from '@/components/dashboard/BusinessIntelligenceModule';
+import MarketIntelligenceModule from '@/components/dashboard/MarketIntelligenceModule';
+import CompetitorIntelligenceModule from '@/components/dashboard/CompetitorIntelligenceModule';
+import OpportunityIntelligenceModule from '@/components/dashboard/OpportunityIntelligenceModule';
+import BuyerSellerIntelligenceModule from '@/components/dashboard/BuyerSellerIntelligenceModule';
 import PredictionRequestDialog from '@/components/dashboard/PredictionRequestDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -40,9 +44,13 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
+          <TabsList className="flex w-full flex-wrap h-auto">
             <TabsTrigger value="overview">Executive</TabsTrigger>
             <TabsTrigger value="business">Business</TabsTrigger>
+            <TabsTrigger value="market">Market</TabsTrigger>
+            <TabsTrigger value="competitor">Competitor</TabsTrigger>
+            <TabsTrigger value="opportunity">Opportunity</TabsTrigger>
+            <TabsTrigger value="trade">Buyer/Seller</TabsTrigger>
             <TabsTrigger value="predictions">Prediction</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="info">Info</TabsTrigger>
@@ -59,6 +67,22 @@ const UserDashboard = () => {
 
           <TabsContent value="business" className="mt-6">
             <BusinessIntelligenceModule />
+          </TabsContent>
+
+          <TabsContent value="market" className="mt-6">
+            <MarketIntelligenceModule />
+          </TabsContent>
+
+          <TabsContent value="competitor" className="mt-6">
+            <CompetitorIntelligenceModule />
+          </TabsContent>
+
+          <TabsContent value="opportunity" className="mt-6">
+            <OpportunityIntelligenceModule />
+          </TabsContent>
+
+          <TabsContent value="trade" className="mt-6">
+            <BuyerSellerIntelligenceModule />
           </TabsContent>
 
           <TabsContent value="signals" className="mt-6">

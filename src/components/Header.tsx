@@ -16,10 +16,10 @@ const Header = () => (
     <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-16">
         <Link to="/" className="flex items-center space-x-3">
-          <img src={amnivaLogo} alt="Amniva Logo" className="h-9 w-9 rounded-lg" />
+          <img src={amnivaLogo} alt="ABI Logo" className="h-9 w-9 rounded-lg" />
           <div className="flex flex-col leading-tight">
-            <span className="text-xl font-bold text-foreground">Amniva</span>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Intelligence OS</span>
+            <span className="text-xl font-bold text-foreground tracking-tight">ABI</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Amineva Business Intelligence</span>
           </div>
         </Link>
 
