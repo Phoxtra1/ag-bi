@@ -13,6 +13,8 @@ import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
 import TrendingNews from '@/components/dashboard/TrendingNews';
+import ExecutiveOverview from '@/components/dashboard/ExecutiveOverview';
+import BusinessIntelligenceModule from '@/components/dashboard/BusinessIntelligenceModule';
 import PredictionRequestDialog from '@/components/dashboard/PredictionRequestDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -38,25 +40,33 @@ const UserDashboard = () => {
         <WelcomeSection />
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
-          <TabsList className="grid w-full grid-cols-8">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
+            <TabsTrigger value="overview">Executive</TabsTrigger>
+            <TabsTrigger value="business">Business</TabsTrigger>
             <TabsTrigger value="predictions">Prediction</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
             <TabsTrigger value="info">Info</TabsTrigger>
-            <TabsTrigger value="community">Amniva Society</TabsTrigger>
-            <TabsTrigger value="api">API Access</TabsTrigger>
+            <TabsTrigger value="community">Society</TabsTrigger>
+            <TabsTrigger value="api">API</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="support">Support</TabsTrigger>
+            <TabsTrigger value="signals">Signals</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
+            <ExecutiveOverview />
+          </TabsContent>
+
+          <TabsContent value="business" className="mt-6">
+            <BusinessIntelligenceModule />
+          </TabsContent>
+
+          <TabsContent value="signals" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left column: Live Feed + Business Trends */}
               <div className="lg:col-span-2 space-y-6">
                 <InsightsFeed />
                 <TrendingNews />
               </div>
-              {/* Right column: Weather + Prediction Metrics */}
               <div className="space-y-6 flex flex-col">
                 <WeatherWidget />
                 <LivePredictionPanel />
