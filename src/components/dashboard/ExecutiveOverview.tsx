@@ -130,12 +130,7 @@ const ExecutiveOverview: React.FC = () => {
             {risks.length === 0 ? (
               <EmptyState title="No active risks" description="Risk alerts will appear here." />
             ) : (
-              risks.slice(0, 6).map((r) => (
-                <div key={r.id} className="flex items-center justify-between border-b last:border-0 pb-2">
-                  <div className="text-sm truncate pr-2">{r.title}</div>
-                  <RiskBadge severity={r.severity} />
-                </div>
-              ))
+              risks.slice(0, 6).map((r) => <RiskBadge key={r.id} risk={r} />)
             )}
           </CardContent>
         </Card>
