@@ -201,18 +201,16 @@ const AdminDashboard = () => {
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'audit-log', label: 'Audit Log', icon: FileText },
-    { id: 'community', label: 'Community Moderation', icon: Users },
-    { id: 'community-analytics', label: 'Community Analytics', icon: TrendingUp },
-    { id: 'insight-review', label: 'Insight Review', icon: Bot },
     { id: 'api-requests', label: 'API Requests', icon: Building },
-    { id: 'feed-sources', label: 'Data Sources', icon: Rss },
+    { id: 'feed-sources', label: 'Intelligence Sources', icon: Rss },
     { id: 'content-inbox', label: 'Submission Queue', icon: FileText, badge: notifications.contentPending },
     { id: 'contact-inbox', label: 'Contact Inbox', icon: Mail, badge: notifications.contactUnread },
     { id: 'financials', label: 'Financials', icon: DollarSign },
     { id: 'api-management', label: 'API Management', icon: Database },
     { id: 'content-oversight', label: 'Verification Oversight', icon: Eye },
+    { id: 'community', label: 'Community Moderation', icon: Users },
     { id: 'system-status', label: 'System Status', icon: Activity },
-    { id: 'ai-engines', label: 'Prediction Controls', icon: Zap },
+    { id: 'ai-engines', label: 'Intelligence Engines', icon: Zap },
     { id: 'settings', label: 'Settings', icon: Settings }
   ];
 

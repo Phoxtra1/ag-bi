@@ -1,29 +1,29 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { toast } from "@/hooks/use-toast";
 import KPIStat from "@/components/intelligence/KPIStat";
 import TrendChart from "@/components/intelligence/TrendChart";
 import EmptyState from "@/components/intelligence/EmptyState";
+import CSVUploadPreview from "@/components/intelligence/CSVUploadPreview";
+import Hint from "@/components/intelligence/Hint";
+import ChartCard from "@/components/intelligence/ChartCard";
 import {
   listBusinessEntries,
   saveBusinessEntry,
   bulkImportEntries,
   computeKPIs,
   forecastSeries,
-  parseCSVDetailed,
-  buildCSVTemplate,
   type BusinessDataEntry,
-  type CSVRowError,
 } from "@/lib/intelligence/businessIntelligence";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  Upload, Save, Download, BarChart3, Users, Package, Building2,
-  Percent, Briefcase, Info, AlertCircle, CheckCircle2,
+  Save, BarChart3, Users, Package, Building2,
+  Percent, Briefcase,
 } from "lucide-react";
 
 const eur = (n: number) =>
@@ -42,29 +42,16 @@ const FIELDS: { key: keyof Omit<BusinessDataEntry, "id" | "period" | "userId" | 
 
 const todayPeriod = () => new Date().toISOString().slice(0, 7);
 
-const Hint: React.FC<{ text: string }> = ({ text }) => (
-  <TooltipProvider>
-    <UITooltip>
-      <TooltipTrigger asChild>
-        <Info size={12} className="inline ml-1 text-muted-foreground cursor-help" />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-xs text-xs">{text}</TooltipContent>
-    </UITooltip>
-  </TooltipProvider>
-);
 
 const BusinessIntelligenceModule: React.FC = () => {
   const [entries, setEntries] = useState<BusinessDataEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | undefined>();
-  const [importErrors, setImportErrors] = useState<CSVRowError[]>([]);
-  const [importSummary, setImportSummary] = useState<string | null>(null);
   const [form, setForm] = useState({
     period: todayPeriod(),
     revenue: 0, expenses: 0, sales: 0, customers: 0,
     inventory: 0, procurement: 0, suppliers: 0, employees: 0,
   });
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const reload = async (uid?: string) => {
     setLoading(true);
@@ -121,41 +108,12 @@ const BusinessIntelligenceModule: React.FC = () => {
     setForm({ ...form, revenue: 0, expenses: 0, sales: 0, customers: 0 });
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImportErrors([]);
-    setImportSummary(null);
-    const text = await file.text();
-    const { rows, errors, detectedCurrency } = parseCSVDetailed(text);
-    setImportErrors(errors);
-    if (rows.length === 0) {
-      setImportSummary(`No valid rows. ${errors.length} error(s) detected.`);
-      toast({ title: "Import failed", description: "Fix the errors and try again.", variant: "destructive" });
-      if (fileRef.current) fileRef.current.value = "";
-      return;
-    }
+  const handleConfirmImport = async (rows: Parameters<typeof bulkImportEntries>[0]) => {
     await bulkImportEntries(rows.map((r) => ({ ...r, userId })));
-    const currencyNote = detectedCurrency && detectedCurrency !== "€" && detectedCurrency !== "EUR"
-      ? ` Detected ${detectedCurrency} — converted to EUR.` : "";
-    setImportSummary(`Imported ${rows.length} period(s). ${errors.length} row(s) skipped.${currencyNote}`);
-    toast({
-      title: "Import complete",
-      description: `${rows.length} imported · ${errors.length} skipped${currencyNote}`,
-    });
+    toast({ title: "Import complete", description: `${rows.length} period(s) saved.` });
     await reload(userId);
-    if (fileRef.current) fileRef.current.value = "";
   };
 
-  const downloadTemplate = () => {
-    const blob = new Blob([buildCSVTemplate()], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "abi-business-data-template.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="space-y-6">
@@ -226,70 +184,16 @@ const BusinessIntelligenceModule: React.FC = () => {
             <CardHeader>
               <CardTitle>Bulk import</CardTitle>
               <CardDescription>
-                Upload a CSV with monthly business data. Schema is validated, currency symbols
-                (€, $, £, EUR/USD/GBP) and unit suffixes (k, M, B) are auto-parsed.
+                Upload a CSV with monthly business data. We validate the schema, detect currency
+                (€/$/£) and unit suffixes (k, M, B), and let you review everything before saving.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-3 items-center">
-                <input ref={fileRef} type="file" accept=".csv" onChange={handleUpload} className="hidden" />
-                <Button onClick={() => fileRef.current?.click()}>
-                  <Upload className="w-4 h-4 mr-2" /> Upload CSV
-                </Button>
-                <Button variant="outline" onClick={downloadTemplate}>
-                  <Download className="w-4 h-4 mr-2" /> Download template
-                </Button>
-              </div>
-
-              <div className="rounded-md border border-border bg-muted/30 p-3 text-xs space-y-1">
-                <p className="font-semibold text-foreground">Required columns</p>
-                <p className="text-muted-foreground font-mono">
-                  period, revenue, expenses, sales, customers, inventory, procurement, suppliers, employees
-                </p>
-                <p className="text-muted-foreground">
-                  • <strong>period</strong> must be <code>YYYY-MM</code> (e.g. 2026-05)
-                  <br />• Numeric fields accept <code>"€1,200"</code>, <code>"USD 4500"</code>, <code>"1.2k"</code>, <code>"3M"</code>
-                  <br />• Negative values are rejected
-                </p>
-              </div>
-
-              {importSummary && (
-                <div className="flex items-start gap-2 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 text-sm">
-                  <CheckCircle2 size={16} className="mt-0.5" />
-                  <span>{importSummary}</span>
-                </div>
-              )}
-
-              {importErrors.length > 0 && (
-                <div className="rounded-md border border-red-200 bg-red-50">
-                  <div className="flex items-center gap-2 px-3 py-2 border-b border-red-200 text-red-800 text-sm font-semibold">
-                    <AlertCircle size={14} /> {importErrors.length} row error(s)
-                  </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    <table className="w-full text-xs">
-                      <thead className="bg-red-100/50 text-red-900">
-                        <tr>
-                          <th className="text-left px-3 py-1.5">Row</th>
-                          <th className="text-left px-3 py-1.5">Field</th>
-                          <th className="text-left px-3 py-1.5">Issue</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {importErrors.map((err, i) => (
-                          <tr key={i} className="border-t border-red-200/60">
-                            <td className="px-3 py-1.5 font-mono">{err.row}</td>
-                            <td className="px-3 py-1.5 font-mono">{err.field}</td>
-                            <td className="px-3 py-1.5 text-red-800">{err.message}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+            <CardContent>
+              <CSVUploadPreview onConfirm={handleConfirmImport} />
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="analytics" className="mt-4 space-y-6">
           {sorted.length === 0 ? (
@@ -390,15 +294,5 @@ const BusinessIntelligenceModule: React.FC = () => {
   );
 };
 
-const ChartCard: React.FC<{ title: string; hint: string; children: React.ReactNode }> = ({ title, hint, children }) => (
-  <Card>
-    <CardHeader className="pb-2">
-      <CardTitle className="text-base flex items-center">
-        {title} <Hint text={hint} />
-      </CardTitle>
-    </CardHeader>
-    <CardContent>{children}</CardContent>
-  </Card>
-);
 
 export default BusinessIntelligenceModule;

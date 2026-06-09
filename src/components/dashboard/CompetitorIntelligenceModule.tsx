@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Radar, Search, Shield, Target } from "lucide-react";
 import EmptyState from "@/components/intelligence/EmptyState";
 import KPIStat from "@/components/intelligence/KPIStat";
+import ChartCard from "@/components/intelligence/ChartCard";
+import TrendChart from "@/components/intelligence/TrendChart";
 import { listCompetitors } from "@/lib/intelligence/competitorIntelligence";
 import type { Competitor } from "@/types/intelligence";
 
@@ -39,6 +41,21 @@ const CompetitorIntelligenceModule: React.FC = () => {
   const avgThreat = filtered.length
     ? filtered.reduce((s, c) => s + (c.threatScore ?? 0), 0) / filtered.length : 0;
   const highThreat = filtered.filter((c) => (c.threatScore ?? 0) >= 75).length;
+  const medThreat = filtered.filter((c) => { const s = c.threatScore ?? 0; return s >= 50 && s < 75; }).length;
+  const lowThreat = filtered.filter((c) => (c.threatScore ?? 0) < 50).length;
+
+  const threatSeries = useMemo(() => (
+    [...filtered]
+      .sort((a, b) => (b.threatScore ?? 0) - (a.threatScore ?? 0))
+      .slice(0, 12)
+      .map((c) => ({ label: c.name.slice(0, 10), value: c.threatScore ?? 0 }))
+  ), [filtered]);
+
+  const distSeries = [
+    { label: "Low (<50)", value: lowThreat },
+    { label: "Medium", value: medThreat },
+    { label: "High (75+)", value: highThreat },
+  ];
 
   return (
     <div className="space-y-6">
@@ -52,11 +69,26 @@ const CompetitorIntelligenceModule: React.FC = () => {
       </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPIStat label="Competitors tracked" value={filtered.length} icon={<Target size={16} />} />
-        <KPIStat label="Avg threat score" value={avgThreat.toFixed(0)} />
-        <KPIStat label="High threat" value={highThreat} icon={<Shield size={16} />} />
-        <KPIStat label="Industries" value={new Set(filtered.map((c) => c.industry).filter(Boolean)).size} />
+        <KPIStat label="Competitors tracked" value={filtered.length} icon={<Target size={16} />}
+          hint="Number of competitors currently in your watchlist." />
+        <KPIStat label="Avg threat score" value={avgThreat.toFixed(0)}
+          hint="Mean threat score (0–100). Higher = more competitive pressure." />
+        <KPIStat label="High threat (≥75)" value={highThreat} icon={<Shield size={16} />}
+          hint="Competitors with a threat score of 75 or above — immediate strategic priority." />
+        <KPIStat label="Industries covered" value={new Set(filtered.map((c) => c.industry).filter(Boolean)).size}
+          hint="Distinct industries represented in your competitor set." />
       </div>
+
+      {filtered.length > 0 && (
+        <div className="grid lg:grid-cols-2 gap-6">
+          <ChartCard title="Top 12 competitors by threat" hint="Highest-scoring competitors right now.">
+            <TrendChart data={threatSeries} color="#DC2626" format="number" seriesLabel="Threat" />
+          </ChartCard>
+          <ChartCard title="Threat distribution" hint="How your tracked set splits across low/medium/high threat bands.">
+            <TrendChart data={distSeries} color="#B45309" format="number" seriesLabel="Competitors" />
+          </ChartCard>
+        </div>
+      )}
 
       <Card>
         <CardContent className="pt-6">
