@@ -4,26 +4,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { toast } from "@/hooks/use-toast";
 import KPIStat from "@/components/intelligence/KPIStat";
 import TrendChart from "@/components/intelligence/TrendChart";
 import EmptyState from "@/components/intelligence/EmptyState";
+import CSVUploadPreview from "@/components/intelligence/CSVUploadPreview";
+import Hint from "@/components/intelligence/Hint";
+import ChartCard from "@/components/intelligence/ChartCard";
 import {
   listBusinessEntries,
   saveBusinessEntry,
   bulkImportEntries,
   computeKPIs,
   forecastSeries,
-  parseCSVDetailed,
-  buildCSVTemplate,
   type BusinessDataEntry,
-  type CSVRowError,
 } from "@/lib/intelligence/businessIntelligence";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  Upload, Save, Download, BarChart3, Users, Package, Building2,
-  Percent, Briefcase, Info, AlertCircle, CheckCircle2,
+  Save, BarChart3, Users, Package, Building2,
+  Percent, Briefcase,
 } from "lucide-react";
 
 const eur = (n: number) =>
@@ -42,16 +42,6 @@ const FIELDS: { key: keyof Omit<BusinessDataEntry, "id" | "period" | "userId" | 
 
 const todayPeriod = () => new Date().toISOString().slice(0, 7);
 
-const Hint: React.FC<{ text: string }> = ({ text }) => (
-  <TooltipProvider>
-    <UITooltip>
-      <TooltipTrigger asChild>
-        <Info size={12} className="inline ml-1 text-muted-foreground cursor-help" />
-      </TooltipTrigger>
-      <TooltipContent className="max-w-xs text-xs">{text}</TooltipContent>
-    </UITooltip>
-  </TooltipProvider>
-);
 
 const BusinessIntelligenceModule: React.FC = () => {
   const [entries, setEntries] = useState<BusinessDataEntry[]>([]);
