@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import Hint from "@/components/intelligence/Hint";
 
 interface Props {
   label: string;
@@ -9,9 +10,10 @@ interface Props {
   changePct?: number;
   icon?: React.ReactNode;
   className?: string;
+  hint?: string;
 }
 
-const KPIStat: React.FC<Props> = ({ label, value, changePct, icon, className }) => {
+const KPIStat: React.FC<Props> = ({ label, value, changePct, icon, className, hint }) => {
   const positive = (changePct ?? 0) >= 0;
   return (
     <Card className={cn("border-border/60", className)}>
@@ -19,6 +21,7 @@ const KPIStat: React.FC<Props> = ({ label, value, changePct, icon, className }) 
         <div className="flex items-center justify-between">
           <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             {label}
+            {hint && <Hint text={hint} />}
           </div>
           {icon && <div className="text-muted-foreground">{icon}</div>}
         </div>
