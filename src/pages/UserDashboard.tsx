@@ -8,7 +8,7 @@ import ApiAccessSection from '@/components/dashboard/ApiAccessSection';
 import InsightsFeed from '@/components/dashboard/InsightsFeed';
 import VerifyTracking from '@/components/dashboard/VerifyTracking';
 import RequestDeepAnalysisForm from '@/components/dashboard/RequestDeepAnalysisForm';
-import UserInsightsDashboard from '@/components/UserInsightsDashboard';
+
 import WeatherWidget from '@/components/dashboard/WeatherWidget';
 import HelpSupport from '@/components/dashboard/HelpSupport';
 import CommunityFeed from '@/components/community/CommunityFeed';
@@ -53,12 +53,11 @@ const UserDashboard = () => {
             <TabsTrigger value="trade">Buyer/Seller</TabsTrigger>
             <TabsTrigger value="predictions">Prediction</TabsTrigger>
             <TabsTrigger value="verify">Verify</TabsTrigger>
-            <TabsTrigger value="info">Info</TabsTrigger>
+            <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="community">Society</TabsTrigger>
             <TabsTrigger value="api">API</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
             <TabsTrigger value="support">Support</TabsTrigger>
-            <TabsTrigger value="signals">Signals</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
@@ -160,9 +159,6 @@ const UserDashboard = () => {
             </Tabs>
           </TabsContent>
 
-          <TabsContent value="info" className="mt-6">
-            <UserInsightsDashboard />
-          </TabsContent>
 
           <TabsContent value="community" className="mt-6">
             <CommunityFeed />
