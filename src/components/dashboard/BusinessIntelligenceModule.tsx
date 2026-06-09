@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,14 +47,11 @@ const BusinessIntelligenceModule: React.FC = () => {
   const [entries, setEntries] = useState<BusinessDataEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState<string | undefined>();
-  const [importErrors, setImportErrors] = useState<CSVRowError[]>([]);
-  const [importSummary, setImportSummary] = useState<string | null>(null);
   const [form, setForm] = useState({
     period: todayPeriod(),
     revenue: 0, expenses: 0, sales: 0, customers: 0,
     inventory: 0, procurement: 0, suppliers: 0, employees: 0,
   });
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const reload = async (uid?: string) => {
     setLoading(true);
@@ -111,41 +108,12 @@ const BusinessIntelligenceModule: React.FC = () => {
     setForm({ ...form, revenue: 0, expenses: 0, sales: 0, customers: 0 });
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImportErrors([]);
-    setImportSummary(null);
-    const text = await file.text();
-    const { rows, errors, detectedCurrency } = parseCSVDetailed(text);
-    setImportErrors(errors);
-    if (rows.length === 0) {
-      setImportSummary(`No valid rows. ${errors.length} error(s) detected.`);
-      toast({ title: "Import failed", description: "Fix the errors and try again.", variant: "destructive" });
-      if (fileRef.current) fileRef.current.value = "";
-      return;
-    }
+  const handleConfirmImport = async (rows: Parameters<typeof bulkImportEntries>[0]) => {
     await bulkImportEntries(rows.map((r) => ({ ...r, userId })));
-    const currencyNote = detectedCurrency && detectedCurrency !== "€" && detectedCurrency !== "EUR"
-      ? ` Detected ${detectedCurrency} — converted to EUR.` : "";
-    setImportSummary(`Imported ${rows.length} period(s). ${errors.length} row(s) skipped.${currencyNote}`);
-    toast({
-      title: "Import complete",
-      description: `${rows.length} imported · ${errors.length} skipped${currencyNote}`,
-    });
+    toast({ title: "Import complete", description: `${rows.length} period(s) saved.` });
     await reload(userId);
-    if (fileRef.current) fileRef.current.value = "";
   };
 
-  const downloadTemplate = () => {
-    const blob = new Blob([buildCSVTemplate()], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "abi-business-data-template.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   return (
     <div className="space-y-6">
