@@ -184,70 +184,16 @@ const BusinessIntelligenceModule: React.FC = () => {
             <CardHeader>
               <CardTitle>Bulk import</CardTitle>
               <CardDescription>
-                Upload a CSV with monthly business data. Schema is validated, currency symbols
-                (€, $, £, EUR/USD/GBP) and unit suffixes (k, M, B) are auto-parsed.
+                Upload a CSV with monthly business data. We validate the schema, detect currency
+                (€/$/£) and unit suffixes (k, M, B), and let you review everything before saving.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap gap-3 items-center">
-                <input ref={fileRef} type="file" accept=".csv" onChange={handleUpload} className="hidden" />
-                <Button onClick={() => fileRef.current?.click()}>
-                  <Upload className="w-4 h-4 mr-2" /> Upload CSV
-                </Button>
-                <Button variant="outline" onClick={downloadTemplate}>
-                  <Download className="w-4 h-4 mr-2" /> Download template
-                </Button>
-              </div>
-
-              <div className="rounded-md border border-border bg-muted/30 p-3 text-xs space-y-1">
-                <p className="font-semibold text-foreground">Required columns</p>
-                <p className="text-muted-foreground font-mono">
-                  period, revenue, expenses, sales, customers, inventory, procurement, suppliers, employees
-                </p>
-                <p className="text-muted-foreground">
-                  • <strong>period</strong> must be <code>YYYY-MM</code> (e.g. 2026-05)
-                  <br />• Numeric fields accept <code>"€1,200"</code>, <code>"USD 4500"</code>, <code>"1.2k"</code>, <code>"3M"</code>
-                  <br />• Negative values are rejected
-                </p>
-              </div>
-
-              {importSummary && (
-                <div className="flex items-start gap-2 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 text-sm">
-                  <CheckCircle2 size={16} className="mt-0.5" />
-                  <span>{importSummary}</span>
-                </div>
-              )}
-
-              {importErrors.length > 0 && (
-                <div className="rounded-md border border-red-200 bg-red-50">
-                  <div className="flex items-center gap-2 px-3 py-2 border-b border-red-200 text-red-800 text-sm font-semibold">
-                    <AlertCircle size={14} /> {importErrors.length} row error(s)
-                  </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    <table className="w-full text-xs">
-                      <thead className="bg-red-100/50 text-red-900">
-                        <tr>
-                          <th className="text-left px-3 py-1.5">Row</th>
-                          <th className="text-left px-3 py-1.5">Field</th>
-                          <th className="text-left px-3 py-1.5">Issue</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {importErrors.map((err, i) => (
-                          <tr key={i} className="border-t border-red-200/60">
-                            <td className="px-3 py-1.5 font-mono">{err.row}</td>
-                            <td className="px-3 py-1.5 font-mono">{err.field}</td>
-                            <td className="px-3 py-1.5 text-red-800">{err.message}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+            <CardContent>
+              <CSVUploadPreview onConfirm={handleConfirmImport} />
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="analytics" className="mt-4 space-y-6">
           {sorted.length === 0 ? (
