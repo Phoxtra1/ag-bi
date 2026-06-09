@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Handshake, ShoppingCart, Store } from "lucide-react";
 import EmptyState from "@/components/intelligence/EmptyState";
 import KPIStat from "@/components/intelligence/KPIStat";
+import ChartCard from "@/components/intelligence/ChartCard";
+import TrendChart from "@/components/intelligence/TrendChart";
 import { listBuyerRequests, listSellerListings, type BuyerRequest, type SellerListing } from "@/lib/intelligence/buyerSellerIntelligence";
 
 const eur = (n?: number) =>
@@ -24,6 +26,29 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
   }, []);
 
   const totalBudget = buyers.reduce((s, b) => s + (b.budgetEur ?? 0), 0);
+  const avgBudget = buyers.length ? totalBudget / buyers.length : 0;
+  const avgPrice = sellers.length
+    ? sellers.reduce((s, x) => s + (x.priceEur ?? 0), 0) / sellers.length : 0;
+
+  const budgetByCountry = useMemo(() => {
+    const m = new Map<string, number>();
+    buyers.forEach((b) => {
+      const k = b.country || "Unknown";
+      m.set(k, (m.get(k) ?? 0) + (b.budgetEur ?? 0));
+    });
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8)
+      .map(([label, value]) => ({ label, value }));
+  }, [buyers]);
+
+  const listingsByCategory = useMemo(() => {
+    const m = new Map<string, number>();
+    sellers.forEach((s) => {
+      const k = s.category || "Other";
+      m.set(k, (m.get(k) ?? 0) + 1);
+    });
+    return Array.from(m.entries()).sort((a, b) => b[1] - a[1]).slice(0, 8)
+      .map(([label, value]) => ({ label, value }));
+  }, [sellers]);
 
   return (
     <div className="space-y-6">
@@ -37,10 +62,27 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
       </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPIStat label="Buyer requests" value={buyers.length} icon={<ShoppingCart size={16} />} />
-        <KPIStat label="Seller listings" value={sellers.length} icon={<Store size={16} />} />
-        <KPIStat label="Total buyer budget" value={eur(totalBudget)} />
-        <KPIStat label="Active countries" value={new Set([...buyers, ...sellers].map((x: any) => x.country).filter(Boolean)).size} />
+        <KPIStat label="Buyer requests" value={buyers.length} icon={<ShoppingCart size={16} />}
+          hint="Open buyer requests visible to you." />
+        <KPIStat label="Seller listings" value={sellers.length} icon={<Store size={16} />}
+          hint="Active seller listings available in the marketplace." />
+        <KPIStat label="Avg buyer budget" value={eur(avgBudget)}
+          hint="Mean declared budget across visible buyer requests (EUR)." />
+        <KPIStat label="Avg seller price" value={eur(avgPrice)}
+          hint="Mean asking price across visible seller listings (EUR)." />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-6">
+        <ChartCard title="Buyer budget by country" hint="Total declared buyer budget grouped by country (top 8).">
+          {budgetByCountry.length > 0
+            ? <TrendChart data={budgetByCountry} color="#1D4ED8" format="eur" seriesLabel="Budget" />
+            : <EmptyState title="No buyer data yet" description="Buyer requests with budgets will populate this chart." />}
+        </ChartCard>
+        <ChartCard title="Seller listings by category" hint="Count of listings grouped by product category (top 8).">
+          {listingsByCategory.length > 0
+            ? <TrendChart data={listingsByCategory} color="#059669" format="number" seriesLabel="Listings" />
+            : <EmptyState title="No seller data yet" description="Categorised listings will appear here." />}
+        </ChartCard>
       </div>
 
       <Tabs defaultValue="buyers">

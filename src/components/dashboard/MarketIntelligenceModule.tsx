@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Globe2, TrendingDown, TrendingUp, Search } from "lucide-react";
 import EmptyState from "@/components/intelligence/EmptyState";
 import KPIStat from "@/components/intelligence/KPIStat";
+import ChartCard from "@/components/intelligence/ChartCard";
+import TrendChart from "@/components/intelligence/TrendChart";
 import { listMarketSignals } from "@/lib/intelligence/marketIntelligence";
 import type { MarketSignal } from "@/types/intelligence";
 
@@ -34,6 +36,27 @@ const MarketIntelligenceModule: React.FC = () => {
     ? filtered.reduce((s, m) => s + (m.changePct ?? 0), 0) / filtered.length : 0;
   const bullish = filtered.filter((s) => s.sentiment === "bullish").length;
   const bearish = filtered.filter((s) => s.sentiment === "bearish").length;
+  const neutral = Math.max(0, filtered.length - bullish - bearish);
+
+  // Movement series across signals (sorted by changePct) — shows distribution shape
+  const movementSeries = useMemo(() => {
+    return [...filtered]
+      .filter((s) => typeof s.changePct === "number")
+      .sort((a, b) => (a.changePct ?? 0) - (b.changePct ?? 0))
+      .map((s, i) => ({ label: `#${i + 1}`, value: Number(s.changePct ?? 0) }));
+  }, [filtered]);
+
+  // Industry mix (top 8)
+  const industrySeries = useMemo(() => {
+    const map = new Map<string, number>();
+    filtered.forEach((s) => {
+      const k = s.industry || s.sector || "Other";
+      map.set(k, (map.get(k) ?? 0) + 1);
+    });
+    return Array.from(map.entries())
+      .sort((a, b) => b[1] - a[1]).slice(0, 8)
+      .map(([label, value]) => ({ label, value }));
+  }, [filtered]);
 
   return (
     <div className="space-y-6">
@@ -47,17 +70,35 @@ const MarketIntelligenceModule: React.FC = () => {
       </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KPIStat label="Signals tracked" value={filtered.length} icon={<Globe2 size={16} />} />
-        <KPIStat label="Avg change" value={`${avgChange.toFixed(1)}%`} changePct={avgChange} />
-        <KPIStat label="Bullish" value={bullish} icon={<TrendingUp size={16} />} />
-        <KPIStat label="Bearish" value={bearish} icon={<TrendingDown size={16} />} />
+        <KPIStat label="Signals tracked" value={filtered.length} icon={<Globe2 size={16} />}
+          hint="Active market signals matching your current filter." />
+        <KPIStat label="Avg change %" value={`${avgChange.toFixed(1)}%`} changePct={avgChange}
+          hint="Mean of recent price/value movement across all filtered signals." />
+        <KPIStat label="Bullish" value={bullish} icon={<TrendingUp size={16} />}
+          hint="Signals classified as positive/upward momentum." />
+        <KPIStat label="Bearish" value={bearish} icon={<TrendingDown size={16} />}
+          hint="Signals classified as negative/downward momentum." />
       </div>
+
+      {filtered.length > 0 && (
+        <div className="grid lg:grid-cols-2 gap-6">
+          <ChartCard title="Movement distribution" hint="Each point is one signal's change %, sorted from worst to best — shows how skewed sentiment is.">
+            <TrendChart data={movementSeries} color="#1D4ED8" format="pct" seriesLabel="Change" />
+          </ChartCard>
+          <ChartCard title="Top industries by signal volume" hint="How many tracked signals belong to each industry.">
+            <TrendChart data={industrySeries} color="#7C3AED" format="number" seriesLabel="Signals" />
+          </ChartCard>
+        </div>
+      )}
 
       <Card>
         <CardContent className="pt-6">
           <div className="relative max-w-md">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search markets, industries, countries…" className="pl-9" />
+          </div>
+          <div className="text-xs text-muted-foreground mt-2">
+            Sentiment mix — bullish {bullish} · neutral {neutral} · bearish {bearish}
           </div>
         </CardContent>
       </Card>
