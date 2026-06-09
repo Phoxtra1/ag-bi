@@ -294,15 +294,5 @@ const BusinessIntelligenceModule: React.FC = () => {
   );
 };
 
-const ChartCard: React.FC<{ title: string; hint: string; children: React.ReactNode }> = ({ title, hint, children }) => (
-  <Card>
-    <CardHeader className="pb-2">
-      <CardTitle className="text-base flex items-center">
-        {title} <Hint text={hint} />
-      </CardTitle>
-    </CardHeader>
-    <CardContent>{children}</CardContent>
-  </Card>
-);
 
 export default BusinessIntelligenceModule;
