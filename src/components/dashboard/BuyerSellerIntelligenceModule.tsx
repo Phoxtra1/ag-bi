@@ -8,6 +8,7 @@ import KPIStat from "@/components/intelligence/KPIStat";
 import ChartCard from "@/components/intelligence/ChartCard";
 import TrendChart from "@/components/intelligence/TrendChart";
 import { listBuyerRequests, listSellerListings, type BuyerRequest, type SellerListing } from "@/lib/intelligence/buyerSellerIntelligence";
+import ExportMenu from "@/components/intelligence/ExportMenu";
 
 const eur = (n?: number) =>
   n === undefined ? "—"
@@ -54,10 +55,26 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Handshake size={18} /> Buyer / Seller Intelligence</CardTitle>
-          <CardDescription>
-            Discover active buyer requests, seller listings, and match opportunities across regions and industries.
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Handshake size={18} /> Buyer / Seller Intelligence</CardTitle>
+              <CardDescription>
+                Discover active buyer requests, seller listings, and match opportunities across regions and industries.
+              </CardDescription>
+            </div>
+            <ExportMenu
+              title="Buyer / Seller Intelligence Export"
+              filenameBase="abi-buyer-seller-intelligence"
+              disabled={buyers.length + sellers.length === 0}
+              sections={[
+                { title: "KPIs", rows: [{ metric: "Buyer requests", value: buyers.length }, { metric: "Seller listings", value: sellers.length }, { metric: "Avg buyer budget (EUR)", value: Math.round(avgBudget) }, { metric: "Avg seller price (EUR)", value: Math.round(avgPrice) }] },
+                { title: "Buyer budget by country", rows: budgetByCountry.map((d) => ({ country: d.label, budget_eur: d.value })) },
+                { title: "Seller listings by category", rows: listingsByCategory.map((d) => ({ category: d.label, listings: d.value })) },
+                { title: "Buyer requests", rows: buyers.map((b) => ({ buyer: b.buyerName, product: b.product, country: b.country ?? "", quantity: b.quantity ?? "", unit: b.unit ?? "", budget_eur: b.budgetEur ?? "", status: b.status ?? "" })) },
+                { title: "Seller listings", rows: sellers.map((s) => ({ seller: s.sellerName, product: s.product, country: s.country ?? "", min_order: s.minOrder ?? "", unit: s.unit ?? "", price_eur: s.priceEur ?? "", category: s.category ?? "", status: s.status ?? "" })) },
+              ]}
+            />
+          </div>
         </CardHeader>
       </Card>
 

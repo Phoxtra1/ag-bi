@@ -8,6 +8,7 @@ import ChartCard from "@/components/intelligence/ChartCard";
 import TrendChart from "@/components/intelligence/TrendChart";
 import { listMarketSignals } from "@/lib/intelligence/marketIntelligence";
 import type { MarketSignal } from "@/types/intelligence";
+import ExportMenu from "@/components/intelligence/ExportMenu";
 
 const MarketIntelligenceModule: React.FC = () => {
   const [signals, setSignals] = useState<MarketSignal[]>([]);
@@ -62,10 +63,25 @@ const MarketIntelligenceModule: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Globe2 size={18} /> Market Intelligence</CardTitle>
-          <CardDescription>
-            Real-time signals across industries, countries and sectors. Filter to your watchlist and track sentiment.
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Globe2 size={18} /> Market Intelligence</CardTitle>
+              <CardDescription>
+                Real-time signals across industries, countries and sectors. Filter to your watchlist and track sentiment.
+              </CardDescription>
+            </div>
+            <ExportMenu
+              title="Market Intelligence Export"
+              filenameBase="abi-market-intelligence"
+              disabled={filtered.length === 0}
+              sections={[
+                { title: "KPIs", rows: [{ metric: "Signals tracked", value: filtered.length }, { metric: "Avg change %", value: avgChange.toFixed(2) }, { metric: "Bullish", value: bullish }, { metric: "Bearish", value: bearish }, { metric: "Neutral", value: neutral }] },
+                { title: "Movement distribution", rows: movementSeries.map((d) => ({ rank: d.label, change_pct: d.value })) },
+                { title: "Top industries by signal volume", rows: industrySeries.map((d) => ({ industry: d.label, signals: d.value })) },
+                { title: "Signals", rows: filtered.map((m) => ({ title: m.title, region: m.region ?? "", industry: m.industry ?? "", country: m.country ?? "", change_pct: m.changePct ?? "", sentiment: m.sentiment ?? "" })) },
+              ]}
+            />
+          </div>
         </CardHeader>
       </Card>
 

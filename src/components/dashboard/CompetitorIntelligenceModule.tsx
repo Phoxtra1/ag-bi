@@ -9,6 +9,7 @@ import ChartCard from "@/components/intelligence/ChartCard";
 import TrendChart from "@/components/intelligence/TrendChart";
 import { listCompetitors } from "@/lib/intelligence/competitorIntelligence";
 import type { Competitor } from "@/types/intelligence";
+import ExportMenu from "@/components/intelligence/ExportMenu";
 
 const threatTone = (s?: number) =>
   s === undefined ? "bg-muted text-foreground" :
@@ -61,10 +62,25 @@ const CompetitorIntelligenceModule: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Radar size={18} /> Competitor Intelligence</CardTitle>
-          <CardDescription>
-            Monitor competitor positioning, threat levels and movements across your industry.
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Radar size={18} /> Competitor Intelligence</CardTitle>
+              <CardDescription>
+                Monitor competitor positioning, threat levels and movements across your industry.
+              </CardDescription>
+            </div>
+            <ExportMenu
+              title="Competitor Intelligence Export"
+              filenameBase="abi-competitor-intelligence"
+              disabled={filtered.length === 0}
+              sections={[
+                { title: "KPIs", rows: [{ metric: "Competitors tracked", value: filtered.length }, { metric: "Avg threat score", value: avgThreat.toFixed(1) }, { metric: "High threat (>=75)", value: highThreat }, { metric: "Medium threat", value: medThreat }, { metric: "Low threat", value: lowThreat }] },
+                { title: "Top 12 by threat", rows: threatSeries.map((d) => ({ competitor: d.label, threat: d.value })) },
+                { title: "Threat distribution", rows: distSeries.map((d) => ({ band: d.label, count: d.value })) },
+                { title: "Competitors", rows: filtered.map((c) => ({ name: c.name, industry: c.industry ?? "", country: c.country ?? "", threat_score: c.threatScore ?? "", positioning: c.positioning ?? "" })) },
+              ]}
+            />
+          </div>
         </CardHeader>
       </Card>
 
