@@ -9,6 +9,7 @@ import TrendChart from "@/components/intelligence/TrendChart";
 import OpportunityCard from "@/components/intelligence/OpportunityCard";
 import { listOpportunities } from "@/lib/intelligence/opportunityIntelligence";
 import type { Opportunity } from "@/types/intelligence";
+import ExportMenu from "@/components/intelligence/ExportMenu";
 
 const OpportunityIntelligenceModule: React.FC = () => {
   const [items, setItems] = useState<Opportunity[]>([]);
@@ -59,10 +60,25 @@ const OpportunityIntelligenceModule: React.FC = () => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Target size={18} /> Opportunity Intelligence</CardTitle>
-          <CardDescription>
-            Vetted opportunities scored across readiness, demand and revenue potential.
-          </CardDescription>
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div>
+              <CardTitle className="flex items-center gap-2"><Target size={18} /> Opportunity Intelligence</CardTitle>
+              <CardDescription>
+                Vetted opportunities scored across readiness, demand and revenue potential.
+              </CardDescription>
+            </div>
+            <ExportMenu
+              title="Opportunity Intelligence Export"
+              filenameBase="abi-opportunity-intelligence"
+              disabled={filtered.length === 0}
+              sections={[
+                { title: "KPIs", rows: [{ metric: "Opportunities", value: filtered.length }, { metric: "Avg opportunity score", value: avgScore.toFixed(1) }, { metric: "Market-ready (>=70)", value: highReady }, { metric: "Total projected revenue (EUR)", value: totalRevenue }] },
+                { title: "Top 12 by score", rows: scoreSeries.map((d) => ({ opportunity: d.label, score: d.value })) },
+                { title: "Revenue potential by sector", rows: revBySector.map((d) => ({ sector: d.label, revenue_eur: d.value })) },
+                { title: "Opportunities", rows: filtered.map((o) => ({ title: o.title, industry: o.industry ?? "", region: o.region ?? "", score: o.opportunityScore ?? "", readiness: o.marketReadinessScore ?? "", revenue_eur: o.revenueProjection ?? "" })) },
+              ]}
+            />
+          </div>
         </CardHeader>
       </Card>
 

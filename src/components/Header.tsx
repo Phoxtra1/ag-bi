@@ -17,10 +17,7 @@ const Header = () => (
       <div className="flex justify-between items-center h-16">
         <Link to="/" className="flex items-center space-x-3">
           <img src={amnivaLogo} alt="ABI Logo" className="h-9 w-9 rounded-lg" />
-          <div className="flex flex-col leading-tight">
-            <span className="text-xl font-bold text-foreground tracking-tight">ABI</span>
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Amineva Business Intelligence</span>
-          </div>
+          <span className="text-xl font-bold text-foreground tracking-tight">ABI</span>
         </Link>
 
         <div className="hidden md:flex items-center space-x-7">
