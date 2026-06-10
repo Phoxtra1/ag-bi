@@ -109,7 +109,11 @@ const ExecutiveOverview: React.FC = () => {
             {opps.length === 0 ? (
               <EmptyState
                 title="No opportunities yet"
-                description="Submit opportunities in the Opportunity Intelligence tab to start scoring."
+                description="Opportunities are ingested by the admin team. Submit one for review or start building your private intelligence with your own Business data."
+                actions={[
+                  { label: "Submit for review", to: "/dashboard?tab=verify" },
+                  { label: "Enter Business data", to: "/dashboard?tab=business", variant: "outline" },
+                ]}
               />
             ) : (
               <div className="grid sm:grid-cols-2 gap-3">
@@ -128,7 +132,10 @@ const ExecutiveOverview: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             {risks.length === 0 ? (
-              <EmptyState title="No active risks" description="Risk alerts will appear here." />
+              <EmptyState
+                title="No active risks"
+                description="No risk alerts are open for your scope right now. Alerts will appear here as the team publishes them."
+              />
             ) : (
               risks.slice(0, 6).map((r) => <RiskBadge key={r.id} risk={r} />)
             )}
@@ -145,7 +152,11 @@ const ExecutiveOverview: React.FC = () => {
         </CardHeader>
         <CardContent>
           {signals.length === 0 ? (
-            <EmptyState title="No market signals yet" description="Signals will populate as markets are tracked." />
+            <EmptyState
+              title="No market signals yet"
+              description="Market signals populate as feeds are activated by the admin team."
+              actions={[{ label: "Open Market tab", to: "/dashboard?tab=market" }]}
+            />
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {signals.slice(0, 8).map((s) => (

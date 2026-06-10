@@ -116,7 +116,16 @@ const CompetitorIntelligenceModule: React.FC = () => {
       </Card>
 
       {loading ? null : filtered.length === 0 ? (
-        <EmptyState title="No competitors tracked yet" description="Competitor records will appear here as soon as your watchlist is populated." icon={<Radar size={20} />} />
+        <EmptyState
+          title="No competitors tracked yet"
+          description="Competitor records and threat scores are published from the admin Intelligence Sources. Nothing has been ingested for your scope yet."
+          icon={<Radar size={20} />}
+          tip="In the meantime, populate Business data to start your own benchmark."
+          actions={[
+            { label: "Go to Business data", to: "/dashboard?tab=business" },
+            { label: "Request analysis", to: "/dashboard?tab=verify", variant: "outline" },
+          ]}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((c) => (

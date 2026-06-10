@@ -73,8 +73,23 @@ const Reports: React.FC = () => {
 
         {filtered.length === 0 ? (
           <EmptyState
-            title="No reports match"
-            description="Try a different filter or come back after the next publishing cycle."
+            title={reports.length === 0 ? "No reports published yet" : "No reports match your filter"}
+            description={
+              reports.length === 0
+                ? "Intelligence reports are released by the admin team after each publishing cycle. Once any report goes live, it will appear here."
+                : "Try clearing the search or switching to a different report category."
+            }
+            tip="While you wait, enter your Business data so your private Executive Overview and forecasts work immediately."
+            actions={
+              reports.length === 0
+                ? [
+                    { label: "Go to Business data", to: "/dashboard?tab=business" },
+                    { label: "Open dashboard", to: "/dashboard", variant: "outline" },
+                  ]
+                : [
+                    { label: "Clear filter", onClick: () => { setQ(""); setKind("all"); } },
+                  ]
+            }
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/Header';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
@@ -20,30 +20,58 @@ import CompetitorIntelligenceModule from '@/components/dashboard/CompetitorIntel
 import OpportunityIntelligenceModule from '@/components/dashboard/OpportunityIntelligenceModule';
 import BuyerSellerIntelligenceModule from '@/components/dashboard/BuyerSellerIntelligenceModule';
 import PredictionRequestDialog from '@/components/dashboard/PredictionRequestDialog';
+import WalkthroughDialog, { hasSeenWalkthrough, resetWalkthrough } from '@/components/intelligence/WalkthroughDialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { logoutUser } from '@/lib/auth';
-import { useNavigate } from 'react-router-dom';
-import { LogOut, TrendingUp } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { LogOut, TrendingUp, HelpCircle } from 'lucide-react';
+
+const VALID_TABS = ['overview','business','market','competitor','opportunity','trade','predictions','verify','signals','community','api','account','support'];
 
 const UserDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(VALID_TABS.includes(initialTab ?? '') ? (initialTab as string) : 'overview');
   const [predictionDialogOpen, setPredictionDialogOpen] = useState(false);
+  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
+
+  useEffect(() => {
+    if (!hasSeenWalkthrough()) {
+      const t = setTimeout(() => setWalkthroughOpen(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  useEffect(() => {
+    const t = searchParams.get('tab');
+    if (t && VALID_TABS.includes(t) && t !== activeTab) setActiveTab(t);
+  }, [searchParams]);
+
+  const handleTabChange = (v: string) => {
+    setActiveTab(v);
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', v);
+    setSearchParams(next, { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          <Button variant="outline" size="sm" onClick={() => { resetWalkthrough(); setWalkthroughOpen(true); }}>
+            <HelpCircle className="w-4 h-4 mr-2" /> Walkthrough
+          </Button>
           <Button variant="outline" size="sm" onClick={async () => { await logoutUser(); navigate('/'); }}>
             <LogOut className="w-4 h-4 mr-2" /> Logout
           </Button>
         </div>
         <WelcomeSection />
-        
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-8">
+
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
           <TabsList className="flex w-full flex-wrap h-auto">
             <TabsTrigger value="overview">Executive</TabsTrigger>
             <TabsTrigger value="business">Business</TabsTrigger>
@@ -177,6 +205,12 @@ const UserDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <WalkthroughDialog
+        open={walkthroughOpen}
+        onOpenChange={setWalkthroughOpen}
+        onJumpToBusiness={() => handleTabChange('business')}
+      />
     </div>
   );
 };
