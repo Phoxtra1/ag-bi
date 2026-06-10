@@ -110,7 +110,16 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
 
         <TabsContent value="buyers" className="mt-4">
           {buyers.length === 0 ? (
-            <EmptyState title="No buyer requests yet" description="Verified buyer requests will appear here." icon={<ShoppingCart size={20} />} />
+            <EmptyState
+              title="No buyer requests yet"
+              description="Verified buyer requests are published from the admin Submission Queue. None match your scope right now."
+              icon={<ShoppingCart size={20} />}
+              tip="Sellers: post a listing so buyers can find you the moment requests open."
+              actions={[
+                { label: "Post a seller listing", to: "/dashboard?tab=verify" },
+                { label: "View Reports", to: "/reports", variant: "outline" },
+              ]}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {buyers.map((b) => (
@@ -138,7 +147,16 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
 
         <TabsContent value="sellers" className="mt-4">
           {sellers.length === 0 ? (
-            <EmptyState title="No seller listings yet" description="Verified seller listings will appear here." icon={<Store size={20} />} />
+            <EmptyState
+              title="No seller listings yet"
+              description="Seller listings appear once verified by the admin team. None are live for your scope yet."
+              icon={<Store size={20} />}
+              tip="Buyers: submit a request so suppliers can be matched to your needs."
+              actions={[
+                { label: "Submit a buyer request", to: "/dashboard?tab=verify" },
+                { label: "Go to Business data", to: "/dashboard?tab=business", variant: "outline" },
+              ]}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {sellers.map((s) => (

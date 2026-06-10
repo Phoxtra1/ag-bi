@@ -117,7 +117,16 @@ const OpportunityIntelligenceModule: React.FC = () => {
       </Card>
 
       {loading ? null : filtered.length === 0 ? (
-        <EmptyState title="No opportunities yet" description="Submitted products, projects and trade requests will appear here once scored." icon={<Target size={20} />} />
+        <EmptyState
+          title="No opportunities yet"
+          description="Opportunities appear once products, projects or trade requests are submitted and scored by the admin team."
+          icon={<Target size={20} />}
+          tip="You can submit something to be considered, or get a head start by recording your Business data."
+          actions={[
+            { label: "Submit for verification", to: "/dashboard?tab=verify" },
+            { label: "Go to Business data", to: "/dashboard?tab=business", variant: "outline" },
+          ]}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((o) => <OpportunityCard key={o.id} opportunity={o} />)}

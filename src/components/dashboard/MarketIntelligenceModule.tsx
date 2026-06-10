@@ -120,7 +120,16 @@ const MarketIntelligenceModule: React.FC = () => {
       </Card>
 
       {loading ? null : filtered.length === 0 ? (
-        <EmptyState title="No market signals" description="Signals will appear here as feeds activate." icon={<Globe2 size={20} />} />
+        <EmptyState
+          title="No market signals yet"
+          description="Market signals are ingested centrally. As soon as the admin team activates a feed for your industry or region, signals will appear here automatically."
+          icon={<Globe2 size={20} />}
+          tip="While you wait: enter your Business data so your Executive Overview and forecasts start working today."
+          actions={[
+            { label: "Go to Business data", to: "/dashboard?tab=business" },
+            { label: "Browse Reports", to: "/reports", variant: "outline" },
+          ]}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((m) => (
