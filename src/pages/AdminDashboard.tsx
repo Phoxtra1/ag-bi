@@ -52,6 +52,7 @@ import InsightReviewPanel from '@/components/admin/InsightReviewPanel';
 import CommunityModeration from '@/components/admin/CommunityModeration';
 import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
 import AuditLogPanel from '@/components/admin/AuditLogPanel';
+import IntelligenceOverview from '@/components/admin/IntelligenceOverview';
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
 import { logoutUser } from '@/lib/auth';
@@ -198,6 +199,7 @@ const AdminDashboard = () => {
 
   const navigationItems = [
     { id: 'overview', label: 'Overview', icon: BarChart3 },
+    { id: 'intelligence', label: 'Intelligence Health', icon: Zap },
     { id: 'users', label: 'User Management', icon: Users },
     { id: 'admins', label: 'Admin Management', icon: Shield },
     { id: 'audit-log', label: 'Audit Log', icon: FileText },
@@ -314,6 +316,7 @@ const AdminDashboard = () => {
           {/* Main Content Area */}
           <div className="flex-1">
             {activeTab === 'overview' && <DashboardOverview stats={realTimeStats} />}
+            {activeTab === 'intelligence' && <IntelligenceOverview onNavigate={setActiveTab} />}
             {activeTab === 'users' && <UserManagement />}
             {activeTab === 'admins' && <AdminInvitation />}
             {activeTab === 'audit-log' && <AuditLogPanel />}
