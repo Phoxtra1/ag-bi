@@ -17,11 +17,11 @@ interface Slot {
 
 const SLOTS: Slot[] = [
   { key: "markets", label: "Market signals", collection: "markets-ava", icon: <Globe2 size={16} />, hint: "Drives the Market Intelligence tab and Executive Overview signals strip.", ingestTab: "feed-sources" },
-  { key: "competitors", label: "Competitors", collection: "competitors", icon: <Radar size={16} />, hint: "Powers Competitor Intelligence and threat scoring.", ingestTab: "feed-sources" },
-  { key: "opportunities", label: "Opportunities", collection: "opportunities", icon: <Target size={16} />, hint: "Vetted opportunities surfaced to users (scored on readiness, demand, revenue).", ingestTab: "content-inbox" },
-  { key: "buyers", label: "Buyer requests", collection: "buyer_requests", icon: <Handshake size={16} />, hint: "Marketplace demand-side records.", ingestTab: "content-inbox" },
-  { key: "sellers", label: "Seller listings", collection: "seller_listings", icon: <Handshake size={16} />, hint: "Marketplace supply-side records.", ingestTab: "content-inbox" },
-  { key: "risks", label: "Risk alerts", collection: "risk_alerts", icon: <ShieldAlert size={16} />, hint: "Active risk alerts shown on the Executive Overview.", ingestTab: "feed-sources" },
+  { key: "competitors", label: "Competitors", collection: "competitors-ava", icon: <Radar size={16} />, hint: "Powers Competitor Intelligence and threat scoring.", ingestTab: "feed-sources" },
+  { key: "opportunities", label: "Opportunities", collection: "opportunities-ava", icon: <Target size={16} />, hint: "Vetted opportunities surfaced to users (scored on readiness, demand, revenue).", ingestTab: "content-inbox" },
+  { key: "buyers", label: "Buyer requests", collection: "buyer_requests-ava", icon: <Handshake size={16} />, hint: "Marketplace demand-side records.", ingestTab: "content-inbox" },
+  { key: "sellers", label: "Seller listings", collection: "seller_listings-ava", icon: <Handshake size={16} />, hint: "Marketplace supply-side records.", ingestTab: "content-inbox" },
+  { key: "risks", label: "Risk alerts", collection: "risk-alerts-ava", icon: <ShieldAlert size={16} />, hint: "Active risk alerts shown on the Executive Overview.", ingestTab: "feed-sources" },
   { key: "reports", label: "Intelligence reports", collection: "reports-ava", icon: <FileText size={16} />, hint: "Published reports listed on /reports.", ingestTab: "content-inbox" },
 ];
 
