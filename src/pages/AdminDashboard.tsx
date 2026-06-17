@@ -58,9 +58,14 @@ import AdminWalkthroughDialog, { hasSeenAdminWalkthrough, resetAdminWalkthrough 
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
 import { logoutUser } from '@/lib/auth';
+import { useSearchParams } from 'react-router-dom';
+
+const VALID_ADMIN_TABS = ['overview','intelligence','users','admins','audit-log','api-requests','feed-sources','content-inbox','contact-inbox','financials','api-management','content-oversight','community','community-analytics','insight-review','system-status','ai-engines','settings'];
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab');
+  const [activeTab, setActiveTabState] = useState(VALID_ADMIN_TABS.includes(initialTab ?? '') ? (initialTab as string) : 'overview');
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);
   const [notifications, setNotifications] = useState({
     contactUnread: 0,
@@ -68,6 +73,18 @@ const AdminDashboard = () => {
     apiRequests: 0,
     systemAlerts: 0
   });
+
+  const setActiveTab = (v: string) => {
+    setActiveTabState(v);
+    const next = new URLSearchParams(searchParams);
+    next.set('tab', v);
+    setSearchParams(next, { replace: true });
+  };
+
+  useEffect(() => {
+    const t = searchParams.get('tab');
+    if (t && VALID_ADMIN_TABS.includes(t) && t !== activeTab) setActiveTabState(t);
+  }, [searchParams]);
 
   useEffect(() => {
     if (!hasSeenAdminWalkthrough()) {
