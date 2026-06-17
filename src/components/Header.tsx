@@ -33,9 +33,6 @@ const Header = () => (
         </div>
 
         <div className="flex items-center gap-2">
-          <Link to="/login" className="hidden sm:inline">
-            <Button variant="ghost" size="sm">Sign in</Button>
-          </Link>
           <Link to="/signup">
             <Button className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
               Launch workspace

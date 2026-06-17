@@ -31,7 +31,8 @@ import {
   Building,
   Rss,
   Bot,
-  LogOut
+  LogOut,
+  HelpCircle
 } from 'lucide-react';
 import DashboardOverview from '@/components/admin/DashboardOverview';
 import UserManagement from '@/components/admin/UserManagement';
@@ -53,18 +54,27 @@ import CommunityModeration from '@/components/admin/CommunityModeration';
 import CommunityAnalytics from '@/components/admin/CommunityAnalytics';
 import AuditLogPanel from '@/components/admin/AuditLogPanel';
 import IntelligenceOverview from '@/components/admin/IntelligenceOverview';
+import AdminWalkthroughDialog, { hasSeenAdminWalkthrough, resetAdminWalkthrough } from '@/components/admin/AdminWalkthroughDialog';
 import { databases, account, DATABASE_ID } from '@/lib/database';
 import { Query } from 'appwrite';
 import { logoutUser } from '@/lib/auth';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [walkthroughOpen, setWalkthroughOpen] = useState(false);
   const [notifications, setNotifications] = useState({
     contactUnread: 0,
     contentPending: 0,
     apiRequests: 0,
     systemAlerts: 0
   });
+
+  useEffect(() => {
+    if (!hasSeenAdminWalkthrough()) {
+      const t = setTimeout(() => setWalkthroughOpen(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, []);
 
   // Real-time stats for dashboard - REAL DATA (not dummy)
   const [realTimeStats, setRealTimeStats] = useState({
@@ -245,6 +255,14 @@ const AdminDashboard = () => {
                 <span>•</span>
                 <span>{realTimeStats.newSignupsToday} new signups today</span>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => { resetAdminWalkthrough(); setWalkthroughOpen(true); }}
+              >
+                <HelpCircle className="h-4 w-4 mr-2" />
+                Walkthrough
+              </Button>
               <Button variant="outline" size="sm">
                 <Bell className="h-4 w-4 mr-2" />
                 Notifications
@@ -341,6 +359,12 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      <AdminWalkthroughDialog
+        open={walkthroughOpen}
+        onOpenChange={setWalkthroughOpen}
+        onNavigate={setActiveTab}
+      />
     </div>
   );
 };
