@@ -57,15 +57,6 @@ const LoadingAnimation = () => {
           />
         </div>
 
-        {/* Loading text */}
-        <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <h2 className="text-3xl font-bold text-white tracking-tight">
-            Amniva
-          </h2>
-          <p className="text-amber-200/80 text-sm font-medium">
-            Business Intelligence Platform
-          </p>
-        </div>
 
         {/* Progress bar */}
         <div className="mt-8 w-64 mx-auto">
