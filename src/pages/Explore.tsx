@@ -112,7 +112,14 @@ const Explore: React.FC = () => {
 
           <TabsContent value="markets">
             {filteredMarkets.length === 0 ? (
-              <EmptyState title="No market signals match" description="Try a different search or wait for the next sync." />
+              <EmptyState
+                title="No market signals match"
+                description="Try a different search, or wait for the admin team to ingest more feeds."
+                actions={[
+                  { label: "Go to Business data", to: "/dashboard?tab=business" },
+                  { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
+                ]}
+              />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {filteredMarkets.map((m) => (
@@ -136,7 +143,14 @@ const Explore: React.FC = () => {
 
           <TabsContent value="opportunities">
             {filteredOpps.length === 0 ? (
-              <EmptyState title="No opportunities match" />
+              <EmptyState
+                title="No opportunities match"
+                description="Submit one for verification, or wait for new opportunities to be approved."
+                actions={[
+                  { label: "Submit for verification", to: "/dashboard?tab=verify" },
+                  { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
+                ]}
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredOpps.map((o) => <OpportunityCard key={o.id} opportunity={o} />)}
@@ -146,7 +160,14 @@ const Explore: React.FC = () => {
 
           <TabsContent value="competitors">
             {filteredComps.length === 0 ? (
-              <EmptyState title="No competitors tracked yet" description="Add competitors from your workspace to begin monitoring." />
+              <EmptyState
+                title="No competitors tracked yet"
+                description="Competitor records are published from the admin Intelligence Sources."
+                actions={[
+                  { label: "Request analysis", to: "/dashboard?tab=verify" },
+                  { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
+                ]}
+              />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredComps.map((c) => (
@@ -167,7 +188,13 @@ const Explore: React.FC = () => {
 
           <TabsContent value="risks">
             {filteredRisks.length === 0 ? (
-              <EmptyState title="No risks match" />
+              <EmptyState
+                title="No risks match"
+                description="Risk alerts appear once published by the admin team."
+                actions={[
+                  { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
+                ]}
+              />
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredRisks.map((r) => <RiskBadge key={r.id} risk={r} />)}

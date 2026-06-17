@@ -125,6 +125,7 @@ const OpportunityIntelligenceModule: React.FC = () => {
           actions={[
             { label: "Submit for verification", to: "/dashboard?tab=verify" },
             { label: "Go to Business data", to: "/dashboard?tab=business", variant: "outline" },
+            { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
           ]}
         />
       ) : (
