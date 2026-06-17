@@ -143,7 +143,15 @@ const Index: React.FC = () => {
         action={<Link to="/explore" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">Explore <ArrowRight size={14} /></Link>}
       >
         {markets.length === 0 ? (
-          <EmptyState title="Market signals will appear here" description="Connect a feed or wait for the next intelligence sync." icon={<TrendingUp size={20} />} />
+          <EmptyState
+            title="Market signals will appear here"
+            description="Connect a feed or wait for the next intelligence sync."
+            icon={<TrendingUp size={20} />}
+            actions={[
+              { label: "Launch workspace", to: "/signup" },
+              { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
+            ]}
+          />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {markets.map((m) => (
@@ -177,7 +185,15 @@ const Index: React.FC = () => {
         action={<Link to="/dashboard" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">Submit yours <ArrowRight size={14} /></Link>}
       >
         {opportunities.length === 0 ? (
-          <EmptyState title="No opportunities published yet" description="Submitted products, projects and trade requests will surface here once scored." icon={<Target size={20} />} />
+          <EmptyState
+            title="No opportunities published yet"
+            description="Submitted products, projects and trade requests will surface here once scored."
+            icon={<Target size={20} />}
+            actions={[
+              { label: "Launch workspace", to: "/signup" },
+              { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
+            ]}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {opportunities.map((o) => <OpportunityCard key={o.id} opportunity={o} />)}
@@ -191,7 +207,12 @@ const Index: React.FC = () => {
         subtitle="Live signals across market, financial, supply chain, regulatory and operational risks."
       >
         {risks.length === 0 ? (
-          <EmptyState title="All clear" description="No active risk alerts at the moment." icon={<ShieldAlert size={20} />} />
+          <EmptyState
+            title="All clear"
+            description="No active risk alerts at the moment."
+            icon={<ShieldAlert size={20} />}
+            actions={[{ label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" }]}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {risks.map((r) => <RiskBadge key={r.id} risk={r} />)}
@@ -206,7 +227,15 @@ const Index: React.FC = () => {
         action={<Link to="/reports" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">All reports <ArrowRight size={14} /></Link>}
       >
         {reports.length === 0 ? (
-          <EmptyState title="Reports will surface here" description="Published intelligence reports appear in this feed." icon={<Building2 size={20} />} />
+          <EmptyState
+            title="Reports will surface here"
+            description="Published intelligence reports appear in this feed."
+            icon={<Building2 size={20} />}
+            actions={[
+              { label: "Browse Reports", to: "/reports" },
+              { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
+            ]}
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {reports.map((r) => <IntelligenceReportCard key={r.id} report={r} />)}
