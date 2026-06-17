@@ -128,6 +128,7 @@ const MarketIntelligenceModule: React.FC = () => {
           actions={[
             { label: "Go to Business data", to: "/dashboard?tab=business" },
             { label: "Browse Reports", to: "/reports", variant: "outline" },
+            { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
           ]}
         />
       ) : (

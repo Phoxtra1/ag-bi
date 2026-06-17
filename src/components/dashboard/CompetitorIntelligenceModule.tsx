@@ -124,6 +124,7 @@ const CompetitorIntelligenceModule: React.FC = () => {
           actions={[
             { label: "Go to Business data", to: "/dashboard?tab=business" },
             { label: "Request analysis", to: "/dashboard?tab=verify", variant: "outline" },
+            { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
           ]}
         />
       ) : (

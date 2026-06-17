@@ -113,6 +113,7 @@ const ExecutiveOverview: React.FC = () => {
                 actions={[
                   { label: "Submit for review", to: "/dashboard?tab=verify" },
                   { label: "Enter Business data", to: "/dashboard?tab=business", variant: "outline" },
+                  { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
                 ]}
               />
             ) : (
@@ -135,6 +136,7 @@ const ExecutiveOverview: React.FC = () => {
               <EmptyState
                 title="No active risks"
                 description="No risk alerts are open for your scope right now. Alerts will appear here as the team publishes them."
+                actions={[{ label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" }]}
               />
             ) : (
               risks.slice(0, 6).map((r) => <RiskBadge key={r.id} risk={r} />)
@@ -155,7 +157,10 @@ const ExecutiveOverview: React.FC = () => {
             <EmptyState
               title="No market signals yet"
               description="Market signals populate as feeds are activated by the admin team."
-              actions={[{ label: "Open Market tab", to: "/dashboard?tab=market" }]}
+              actions={[
+                { label: "Open Market tab", to: "/dashboard?tab=market" },
+                { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
+              ]}
             />
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">

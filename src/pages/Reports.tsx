@@ -85,6 +85,7 @@ const Reports: React.FC = () => {
                 ? [
                     { label: "Go to Business data", to: "/dashboard?tab=business" },
                     { label: "Open dashboard", to: "/dashboard", variant: "outline" },
+                    { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
                   ]
                 : [
                     { label: "Clear filter", onClick: () => { setQ(""); setKind("all"); } },

@@ -118,6 +118,7 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
               actions={[
                 { label: "Post a seller listing", to: "/dashboard?tab=verify" },
                 { label: "View Reports", to: "/reports", variant: "outline" },
+                { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
               ]}
             />
           ) : (
@@ -155,6 +156,7 @@ const BuyerSellerIntelligenceModule: React.FC = () => {
               actions={[
                 { label: "Submit a buyer request", to: "/dashboard?tab=verify" },
                 { label: "Go to Business data", to: "/dashboard?tab=business", variant: "outline" },
+                { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
               ]}
             />
           ) : (
