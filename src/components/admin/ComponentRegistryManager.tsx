@@ -91,12 +91,12 @@ const ComponentRegistryManager: React.FC = () => {
 
   const getDefaultModules = (): ComponentModule[] => [
     {
-      name: 'odeneho_chatbot',
-      display_name: 'Odeneho AI',
+      name: 'dipa_chatbot',
+      display_name: 'Dipa',
       description: 'Intelligent AI assistant for media insights',
       category: 'ai',
       icon: 'Bot',
-      endpoint: 'amniva-odeneho-engine',
+      endpoint: 'amniva-dipa-engine',
       api_type: 'internal',
       enabled: true,
       permissions: [],

@@ -8,14 +8,14 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Bot, Save, TestTube, Mic, Volume2 } from 'lucide-react';
 import { getChatbaseConfig, setChatbaseConfig, sendMessageToChatbase } from '@/lib/chatbaseApi';
-import { getOdenehoSettings, setOdenehoSettings } from '@/lib/odenehoSettings';
-import { getOdenehoVoiceConfig, setOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
+import { getDipaSettings, setDipaSettings } from '@/lib/dipaSettings';
+import { getDipaVoiceConfig, setDipaVoiceConfig } from '@/lib/dipaVoiceConfig';
 import { toast } from 'sonner';
 
-const ConfigureOdenehoAI = () => {
+const ConfigureDipaAI = () => {
   const [chatbaseConfig, setChatbaseConfigState] = useState(getChatbaseConfig());
-  const [odenehoSettings, setOdenehoSettingsState] = useState(getOdenehoSettings());
-  const [voiceConfig, setVoiceConfigState] = useState(getOdenehoVoiceConfig());
+  const [dipaSettings, setDipaSettingsState] = useState(getDipaSettings());
+  const [voiceConfig, setVoiceConfigState] = useState(getDipaVoiceConfig());
   const [testMessage, setTestMessage] = useState('Hello, how are you?');
   const [testing, setTesting] = useState(false);
 
@@ -24,13 +24,13 @@ const ConfigureOdenehoAI = () => {
     toast.success('Chatbase configuration saved successfully!');
   };
 
-  const handleOdenehoSave = () => {
-    setOdenehoSettings(odenehoSettings);
-    toast.success('Odeneho AI settings saved successfully!');
+  const handleDipaSave = () => {
+    setDipaSettings(dipaSettings);
+    toast.success('Dipa settings saved successfully!');
   };
 
   const handleVoiceSave = () => {
-    setOdenehoVoiceConfig(voiceConfig);
+    setDipaVoiceConfig(voiceConfig);
     toast.success('Voice configuration saved successfully!');
   };
 
@@ -61,7 +61,7 @@ const ConfigureOdenehoAI = () => {
             External API Configuration
           </CardTitle>
           <CardDescription>
-            Configure external Chatbase API and custom endpoints for Odeneho AI
+            Configure external Chatbase API and custom endpoints for Dipa
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -101,7 +101,7 @@ const ConfigureOdenehoAI = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="externalApiUrl">External API URL (Odeneho)</Label>
+            <Label htmlFor="externalApiUrl">External API URL (Dipa)</Label>
             <Input
               id="externalApiUrl"
               type="url"
@@ -109,7 +109,7 @@ const ConfigureOdenehoAI = () => {
               onChange={(e) => 
                 setChatbaseConfigState(prev => ({ ...prev, externalApiUrl: e.target.value }))
               }
-              placeholder="https://api.your-odeneho-bot.com/v1/chat"
+              placeholder="https://api.your-dipa-bot.com/v1/chat"
             />
           </div>
 
@@ -211,15 +211,15 @@ const ConfigureOdenehoAI = () => {
         <CardHeader>
           <CardTitle>Internal AI Configuration</CardTitle>
           <CardDescription>
-            Configure general behavior and appearance of Odeneho AI
+            Configure general behavior and appearance of Dipa
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center space-x-2">
             <Switch
-              checked={odenehoSettings.primary ?? true}
+              checked={dipaSettings.primary ?? true}
               onCheckedChange={(primary) => 
-                setOdenehoSettingsState(prev => ({ ...prev, primary }))
+                setDipaSettingsState(prev => ({ ...prev, primary }))
               }
             />
             <Label>Set as Primary AI Engine</Label>
@@ -227,9 +227,9 @@ const ConfigureOdenehoAI = () => {
 
           <div className="flex items-center space-x-2">
             <Switch
-              checked={odenehoSettings.autoOpen ?? false}
+              checked={dipaSettings.autoOpen ?? false}
               onCheckedChange={(autoOpen) => 
-                setOdenehoSettingsState(prev => ({ ...prev, autoOpen }))
+                setDipaSettingsState(prev => ({ ...prev, autoOpen }))
               }
             />
             <Label>Auto-open chat widget</Label>
@@ -237,9 +237,9 @@ const ConfigureOdenehoAI = () => {
 
           <div className="flex items-center space-x-2">
             <Switch
-              checked={odenehoSettings.typingAnimation ?? true}
+              checked={dipaSettings.typingAnimation ?? true}
               onCheckedChange={(typingAnimation) => 
-                setOdenehoSettingsState(prev => ({ ...prev, typingAnimation }))
+                setDipaSettingsState(prev => ({ ...prev, typingAnimation }))
               }
             />
             <Label>Enable typing animation</Label>
@@ -249,16 +249,16 @@ const ConfigureOdenehoAI = () => {
             <Label htmlFor="greeting">Custom Greeting Message</Label>
             <Textarea
               id="greeting"
-              value={odenehoSettings.greeting || ''}
+              value={dipaSettings.greeting || ''}
               onChange={(e) => 
-                setOdenehoSettingsState(prev => ({ ...prev, greeting: e.target.value }))
+                setDipaSettingsState(prev => ({ ...prev, greeting: e.target.value }))
               }
               placeholder="Enter custom greeting message"
               rows={3}
             />
           </div>
 
-          <Button onClick={handleOdenehoSave} className="flex items-center gap-2">
+          <Button onClick={handleDipaSave} className="flex items-center gap-2">
             <Save className="w-4 h-4" />
             Save Settings
           </Button>
@@ -268,4 +268,4 @@ const ConfigureOdenehoAI = () => {
   );
 };
 
-export default ConfigureOdenehoAI;
+export default ConfigureDipaAI;

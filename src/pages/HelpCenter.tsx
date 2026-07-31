@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import HelpSupport from '@/components/dashboard/HelpSupport';
-import OdenehoComponent from '@/components/OdenehoComponent';
+import DipaComponent from '@/components/DipaComponent';
 
 const HelpCenter = () => {
   return (
@@ -20,7 +20,7 @@ const HelpCenter = () => {
         <HelpSupport />
       </div>
       
-      <OdenehoComponent />
+      <DipaComponent />
     </div>
   );
 };

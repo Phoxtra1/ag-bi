@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Send, X, Mic, MicOff } from 'lucide-react';
-import { getResolvedOdenehoSettings } from '@/lib/odenehoSettings';
+import { getResolvedDipaSettings } from '@/lib/dipaSettings';
 import { useConversation } from '@11labs/react';
-import { getOdenehoVoiceConfig } from '@/lib/odenehoVoiceConfig';
+import { getDipaVoiceConfig } from '@/lib/dipaVoiceConfig';
 import { toast } from 'sonner';
 
 // Types
@@ -78,9 +78,9 @@ const staticAnswers: Record<string, string> = {
   'support email': 'Email us at support@amniva.io for any assistance. We respond within 5 business days.',
   'community': 'Join Amniva Society from the Community tab to connect with other users, share insights, and participate in discussions.',
   
-  // Odeneho
-  'odeneho': 'I\'m Odeneho, your AI assistant for Amniva. I can explain features, guide you through processes, and answer questions about the platform. How can I help you today?',
-  'who are you': 'I\'m Odeneho, Amniva\'s AI assistant. I\'m here to help you navigate the platform, explain features, and answer any questions about our business intelligence services.',
+  // Dipa
+  'dipa': 'I\'m Dipa, your AI assistant for Amniva. I can explain features, guide you through processes, and answer questions about the platform. How can I help you today?',
+  'who are you': 'I\'m Dipa, Amniva\'s AI assistant. I\'m here to help you navigate the platform, explain features, and answer any questions about our business intelligence services.',
 };
 
 // find best static answer by searching normalized keys
@@ -91,12 +91,12 @@ const findStaticAnswer = (input: string) => {
   return key ? staticAnswers[key] : null;
 };
 
-const OdenehoComponent = () => {
-  const initialSettings = getResolvedOdenehoSettings();
+const DipaComponent = () => {
+  const initialSettings = getResolvedDipaSettings();
 
   const defaultGreeting =
     initialSettings?.greeting ||
-    "Hello! I'm Odeneho, your AI assistant at Amniva. Ask me about Verify, Info, Prediction, Business Trends, pricing, API access, or how to get started!";
+    "Hello! I'm Dipa, your AI assistant at Amniva. Ask me about Verify, Info, Prediction, Business Trends, pricing, API access, or how to get started!";
 
   const [isOpen, setIsOpen] = useState<boolean>(initialSettings.autoOpen || false);
   const [messages, setMessages] = useState<Message[]>([
@@ -114,22 +114,22 @@ const OdenehoComponent = () => {
   ];
 
   // Voice state
-  const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
+  const [voiceConfig, setVoiceConfig] = useState(getDipaVoiceConfig());
   const [isRecording, setIsRecording] = useState(false);
   const conversation = useConversation({
-    onConnect: () => console.log('Odeneho Voice: connected'),
+    onConnect: () => console.log('Dipa Voice: connected'),
     onDisconnect: () => setIsRecording(false),
     onError: (err: any) => {
-      console.error('Odeneho Voice error:', err);
+      console.error('Dipa Voice error:', err);
       toast.error('Voice error', { description: err?.message || String(err) });
     },
   });
 
   // stable handler for voice config updates so cleanup works
   useEffect(() => {
-    const onVoiceConfigUpdated = () => setVoiceConfig(getOdenehoVoiceConfig());
-    window.addEventListener('odenehoVoiceConfigUpdated', onVoiceConfigUpdated);
-    return () => window.removeEventListener('odenehoVoiceConfigUpdated', onVoiceConfigUpdated);
+    const onVoiceConfigUpdated = () => setVoiceConfig(getDipaVoiceConfig());
+    window.addEventListener('dipaVoiceConfigUpdated', onVoiceConfigUpdated);
+    return () => window.removeEventListener('dipaVoiceConfigUpdated', onVoiceConfigUpdated);
   }, []);
 
   // Listen for openChatbot event
@@ -228,7 +228,7 @@ const OdenehoComponent = () => {
         >
           <img
             src="/lovable-uploads/09200a87-69a1-40bc-ba24-967d1f42f0e7.png"
-            alt="Odeneho AI"
+            alt="Dipa"
             className="w-8 h-8 rounded-full object-cover"
           />
         </Button>
@@ -240,7 +240,7 @@ const OdenehoComponent = () => {
           <div className="flex items-center justify-between p-3 border-b">
             <div className="flex items-center space-x-2">
               <MessageCircle className="w-5 h-5 text-primary" />
-              <h2 className="font-semibold text-foreground">Odeneho AI</h2>
+              <h2 className="font-semibold text-foreground">Dipa</h2>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -268,7 +268,7 @@ const OdenehoComponent = () => {
                 </div>
               </div>
             ))}
-            {isTyping && <div className="text-muted-foreground text-xs">Odeneho is typing...</div>}
+            {isTyping && <div className="text-muted-foreground text-xs">Dipa is typing...</div>}
           </div>
 
           {/* Input */}
@@ -311,4 +311,4 @@ const OdenehoComponent = () => {
   );
 };
 
-export default OdenehoComponent;
+export default DipaComponent;

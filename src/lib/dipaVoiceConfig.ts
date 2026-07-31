@@ -1,5 +1,5 @@
 
-export type OdenehoVoiceConfig = {
+export type DipaVoiceConfig = {
   enabled: boolean;
   streaming: boolean; // enable streaming mode
   sttProvider: 'elevenlabs';
@@ -8,13 +8,13 @@ export type OdenehoVoiceConfig = {
   agentId?: string; // ElevenLabs Conversational AI agent id (public agent supported)
 };
 
-const KEY = 'odenehoVoiceConfig';
+const KEY = 'dipaVoiceConfig';
 
-export const getOdenehoVoiceConfig = (): OdenehoVoiceConfig => {
+export const getDipaVoiceConfig = (): DipaVoiceConfig => {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { enabled: false, streaming: false, sttProvider: 'elevenlabs', ttsProvider: 'elevenlabs' };
-    const cfg = JSON.parse(raw) as OdenehoVoiceConfig;
+    const cfg = JSON.parse(raw) as DipaVoiceConfig;
     return {
       enabled: cfg.enabled ?? false,
       streaming: cfg.streaming ?? false,
@@ -28,10 +28,10 @@ export const getOdenehoVoiceConfig = (): OdenehoVoiceConfig => {
   }
 };
 
-export const setOdenehoVoiceConfig = (config: Partial<OdenehoVoiceConfig>) => {
-  const current = getOdenehoVoiceConfig();
-  const next = { ...current, ...config } as OdenehoVoiceConfig;
+export const setDipaVoiceConfig = (config: Partial<DipaVoiceConfig>) => {
+  const current = getDipaVoiceConfig();
+  const next = { ...current, ...config } as DipaVoiceConfig;
   localStorage.setItem(KEY, JSON.stringify(next));
-  window.dispatchEvent(new CustomEvent('odenehoVoiceConfigUpdated', { detail: next }));
+  window.dispatchEvent(new CustomEvent('dipaVoiceConfigUpdated', { detail: next }));
   return next;
 };

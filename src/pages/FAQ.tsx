@@ -44,7 +44,7 @@ const FAQ = () => {
     },
     {
       question: "How can I get support?",
-      answer: "Access the Support tab in your dashboard for FAQs, documentation, and contact options. Use our Odeneho AI assistant for instant guidance, or email support@amniva.io. Pro and Elite members receive priority response."
+      answer: "Access the Support tab in your dashboard for FAQs, documentation, and contact options. Use our Dipa assistant for instant guidance, or email support@amniva.io. Pro and Elite members receive priority response."
     }
   ];
 
@@ -100,7 +100,7 @@ const FAQ = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-primary hover:bg-primary/90">
               <MessageCircle className="mr-2 h-5 w-5" />
-              Chat with Odeneho AI
+              Chat with Dipa
             </Button>
             <Link to="/contact">
               <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/10">

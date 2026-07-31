@@ -1,7 +1,7 @@
 # Amniva Unified Module System
 
 ## Overview
-The Amniva platform is now powered by a unified architecture that dynamically connects the Admin Dashboard, User Dashboard, and Frontend using Appwrite as the backend. This system enables seamless management and execution of AI engines (Odeneho AI, Prediction, Verify, Report, Trending) with real-time synchronization, health monitoring, and extensibility.
+The Amniva platform is now powered by a unified architecture that dynamically connects the Admin Dashboard, User Dashboard, and Frontend using Appwrite as the backend. This system enables seamless management and execution of AI engines (Dipa, Prediction, Verify, Report, Trending) with real-time synchronization, health monitoring, and extensibility.
 
 ## Architecture
 
@@ -98,7 +98,7 @@ fetchUserModules(): Promise<ModuleInfo[]>
 executeModule(moduleName, input): Promise<ModuleResponse>
 
 // Convenience wrappers
-executeOdeneho(message)
+executeDipa(message)
 executePrediction(data)
 executeVerify(content)
 executeReport(data)
@@ -118,12 +118,12 @@ await execute('prediction', { context: '...' });
 
 ## User Flow Examples
 
-### Example 1: User Chats with Odeneho
+### Example 1: User Chats with Dipa
 ```typescript
 // Frontend
-import { executeOdeneho } from '@/lib/moduleRegistry';
+import { executeDipa } from '@/lib/moduleRegistry';
 
-const response = await executeOdeneho("What is Amniva Verify?");
+const response = await executeDipa("What is Amniva Verify?");
 // Backend routes to amniva-verify function
 // Returns: { success: true, data: { responseText: "..." }, processing_time_ms: 234 }
 ```

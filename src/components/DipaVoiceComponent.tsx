@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, VolumeX } from "lucide-react";
-import { getOdenehoVoiceConfig } from "@/lib/odenehoVoiceConfig";
+import { getDipaVoiceConfig } from "@/lib/dipaVoiceConfig";
 import { toast } from "sonner";
 import { useConversation } from "@11labs/react";
 
-const OdenehoVoiceComponent = () => {
-  const [voiceConfig, setVoiceConfig] = useState(getOdenehoVoiceConfig());
+const DipaVoiceComponent = () => {
+  const [voiceConfig, setVoiceConfig] = useState(getDipaVoiceConfig());
   const [isListening, setIsListening] = useState(false);
 
   const conversation = useConversation({
     onConnect: () => {
-      console.log("✅ Odeneho Voice connected to ElevenLabs");
+      console.log("✅ Dipa Voice connected to ElevenLabs");
       toast.success("Voice chat connected");
     },
     onDisconnect: () => {
-      console.log("❌ Odeneho Voice disconnected");
+      console.log("❌ Dipa Voice disconnected");
       setIsListening(false);
       toast("Voice chat ended");
     },
     onMessage: (payload: any) => {
-      console.log("📩 Odeneho Voice message:", payload);
+      console.log("📩 Dipa Voice message:", payload);
     },
     onError: (error) => {
-      console.error("⚠️ Odeneho Voice error:", error);
+      console.error("⚠️ Dipa Voice error:", error);
       toast.error("Voice error", { description: String(error) });
     },
   });
@@ -31,11 +31,11 @@ const OdenehoVoiceComponent = () => {
   // Refresh config when updated in admin
   useEffect(() => {
     const handleVoiceConfigUpdate = () => {
-      setVoiceConfig(getOdenehoVoiceConfig());
+      setVoiceConfig(getDipaVoiceConfig());
     };
-    window.addEventListener("odenehoVoiceConfigUpdated", handleVoiceConfigUpdate);
+    window.addEventListener("dipaVoiceConfigUpdated", handleVoiceConfigUpdate);
     return () => {
-      window.removeEventListener("odenehoVoiceConfigUpdated", handleVoiceConfigUpdate);
+      window.removeEventListener("dipaVoiceConfigUpdated", handleVoiceConfigUpdate);
     };
   }, []);
 
@@ -112,4 +112,4 @@ const OdenehoVoiceComponent = () => {
   );
 };
 
-export default OdenehoVoiceComponent;
+export default DipaVoiceComponent;

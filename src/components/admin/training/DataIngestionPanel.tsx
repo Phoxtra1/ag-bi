@@ -228,7 +228,7 @@ export const DataIngestionPanel: React.FC<DataIngestionPanelProps> = ({
                   <SelectItem value="report">Report Engine</SelectItem>
                   <SelectItem value="prediction">Prediction Engine</SelectItem>
                   <SelectItem value="trending">Trending Engine</SelectItem>
-                  <SelectItem value="odeneho-ai">Odeneho AI</SelectItem>
+                  <SelectItem value="dipa-ai">Dipa</SelectItem>
                   <SelectItem value="api-engine">API Engine</SelectItem>
                 </SelectContent>
               </Select>

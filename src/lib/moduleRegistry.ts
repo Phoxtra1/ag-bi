@@ -30,14 +30,14 @@ const COMPONENT_REGISTRY_ID = 'component_registry';
 // Default modules for when database is not available
 const DEFAULT_MODULES: ModuleInfo[] = [
   {
-    id: 'odeneho_chatbot',
-    name: 'odeneho_chatbot',
-    displayName: 'Odeneho AI',
+    id: 'dipa_chatbot',
+    name: 'dipa_chatbot',
+    displayName: 'Dipa',
     description: 'Intelligent AI assistant for business intelligence guidance',
     category: 'ai',
     icon: 'message-square',
-    endpoint: 'amniva-odeneho-engine',
-    inputFormat: { message: { type: 'text', label: 'Message', multiline: true, placeholder: 'Ask Odeneho anything...' } },
+    endpoint: 'amniva-dipa-engine',
+    inputFormat: { message: { type: 'text', label: 'Message', multiline: true, placeholder: 'Ask Dipa anything...' } },
     outputFormat: { responseText: 'string', metadata: 'object' },
     apiType: 'internal',
     enabled: true
@@ -231,10 +231,10 @@ export async function getModuleConfig(moduleName: string): Promise<ModuleInfo | 
 }
 
 /**
- * Execute Odeneho AI chatbot
+ * Execute Dipa chatbot
  */
-export async function executeOdeneho(message: string): Promise<ModuleResponse> {
-  return executeModule('odeneho_chatbot', { message });
+export async function executeDipa(message: string): Promise<ModuleResponse> {
+  return executeModule('dipa_chatbot', { message });
 }
 
 /**
