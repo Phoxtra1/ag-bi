@@ -45,7 +45,7 @@ const IntegrationsPanel = () => {
   // Stable bot metrics (avoid disco-style randomness)
   const [botMetrics, setBotMetrics] = useState<{ activeChats: number; dailyQueries: number }>(() => {
     try {
-      const saved = localStorage.getItem('odenehoBotMetrics');
+      const saved = localStorage.getItem('dipaBotMetrics');
       return saved ? JSON.parse(saved) : { activeChats: 18, dailyQueries: 320 };
     } catch {
       return { activeChats: 18, dailyQueries: 320 };
@@ -60,7 +60,7 @@ const IntegrationsPanel = () => {
           activeChats: Math.max(0, prev.activeChats + (Math.random() < 0.6 ? 1 : -1)),
           dailyQueries: Math.max(0, prev.dailyQueries + Math.floor(Math.random() * 6) - 3),
         };
-        localStorage.setItem('odenehoBotMetrics', JSON.stringify(next));
+        localStorage.setItem('dipaBotMetrics', JSON.stringify(next));
         return next;
       });
     }, 30000); // update every 30s for realism
@@ -139,7 +139,7 @@ const IntegrationsPanel = () => {
     updateSetting('chatBotEnabled', enabled);
     toast({
       title: enabled ? "Chat Bot Enabled" : "Chat Bot Disabled",
-      description: `Odeneho chat bot has been ${enabled ? 'activated' : 'deactivated'}.`,
+      description: `Dipa chat bot has been ${enabled ? 'activated' : 'deactivated'}.`,
     });
   };
 
@@ -152,7 +152,7 @@ const IntegrationsPanel = () => {
         updateSetting('chatBotTraining', false);
         toast({
           title: "Training Complete",
-          description: "Odeneho has been successfully retrained with new data.",
+          description: "Dipa has been successfully retrained with new data.",
         });
       }, 3000);
     }

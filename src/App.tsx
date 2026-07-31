@@ -33,8 +33,8 @@ import WatchDemo from "./pages/WatchDemo";
 
 import NotFound from "./pages/NotFound";
 
-// ✅ Import centralized Odeneho AI assistant
-import OdenehoComponent from "@/components/OdenehoComponent";
+// ✅ Import centralized Dipa assistant
+import DipaComponent from "@/components/DipaComponent";
 import RequireAuth from "@/components/auth/RequireAuth";
 import RequireAdmin from "@/components/auth/RequireAdmin";
 import PageLoader from "@/components/PageLoader";
@@ -85,8 +85,8 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        {/* ✅ Persistent centralized Odeneho chatbot */}
-        <OdenehoComponent />
+        {/* ✅ Persistent centralized Dipa chatbot */}
+        <DipaComponent />
       </BrowserRouter>
       </PageLoader>
     </TooltipProvider>

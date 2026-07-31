@@ -34,7 +34,7 @@ import { MonitoringPanel } from './training/MonitoringPanel';
 
 export interface TrainingJob {
   id: string;
-  engine: 'verify' | 'report' | 'prediction' | 'trending' | 'odeneho-ai' | 'api-engine';
+  engine: 'verify' | 'report' | 'prediction' | 'trending' | 'dipa-ai' | 'api-engine';
   status: 'pending' | 'running' | 'completed' | 'failed' | 'stopped';
   progress: number;
   datasetId: string;

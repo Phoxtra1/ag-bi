@@ -138,7 +138,7 @@ CREATE POLICY "System can insert logs"
 
 -- Insert default components
 INSERT INTO component_registry (name, display_name, description, category, icon, endpoint, api_type, display_order, permissions) VALUES
-  ('odeneho_chatbot', 'Odeneho AI', 'AI-powered chatbot assistant', 'AI', 'message-square', 'amniva-verify', 'internal', 1, '{}'),
+  ('dipa_chatbot', 'Dipa', 'AI-powered chatbot assistant', 'AI', 'message-square', 'amniva-verify', 'internal', 1, '{}'),
   ('prediction', 'Prediction Engine', 'AI predictions for trends and forecasts', 'Analytics', 'brain', 'amniva-prediction-engine', 'internal', 2, '{}'),
   ('verify', 'Verify Engine', 'Content authenticity verification', 'Security', 'shield', 'amniva-verify-engine', 'internal', 3, '{}'),
   ('report', 'Report Engine', 'Attribution and analytics reports', 'Analytics', 'file-text', 'amniva-report-engine', 'internal', 4, '{}'),

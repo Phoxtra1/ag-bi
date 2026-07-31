@@ -46,7 +46,7 @@ import ContentSubmissions from '@/components/admin/ContentSubmissions';
 import ContactInbox from '@/components/admin/ContactInbox';
 import ApiAccessRequests from '@/components/admin/ApiAccessRequests';
 import CustomFeedManager from '@/components/dashboard/CustomFeedManager';
-import ConfigureOdenehoAI from '@/components/admin/ConfigureOdenehoAI';
+import ConfigureDipaAI from '@/components/admin/ConfigureDipaAI';
 import AIEnginePanel from '@/components/admin/AIEnginePanel';
 import TrainingSystem from '@/components/admin/TrainingSystem';
 import InsightReviewPanel from '@/components/admin/InsightReviewPanel';

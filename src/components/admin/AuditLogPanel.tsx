@@ -167,9 +167,9 @@ const AuditLogPanel: React.FC = () => {
       action_category: 'config',
       user_id: 'admin-001',
       user_email: 'admin@amniva.com',
-      target_id: 'odeneho_chatbot',
+      target_id: 'dipa_chatbot',
       target_type: 'engine',
-      details: 'Updated Odeneho AI temperature setting to 0.7',
+      details: 'Updated Dipa temperature setting to 0.7',
       status: 'success'
     },
     {

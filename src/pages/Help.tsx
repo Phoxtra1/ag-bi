@@ -140,7 +140,7 @@ const Help = () => {
               <MessageCircle className="h-12 w-12 mx-auto mb-4" />
               <CardTitle className="text-2xl">Live Chat Support</CardTitle>
               <CardDescription className="text-blue-100">
-                Chat with Odeneho, our AI support assistant, or connect with our live agents
+                Chat with Dipa, our AI support assistant, or connect with our live agents
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
@@ -311,7 +311,7 @@ const Help = () => {
             24/7 AI Support Available
           </h2>
           <p className="text-lg text-gray-700 mb-6">
-            Speak directly to Odeneho for instant answers to common questions, 
+            Speak directly to Dipa for instant answers to common questions,
             or escalate to live agents when you need human assistance.
           </p>
           <Button size="lg" variant="outline">

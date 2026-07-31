@@ -9,11 +9,11 @@ const HelpSupport = () => {
   const { toast } = useToast();
 
   const handleStartLiveChat = () => {
-    // Dispatch custom event to open the Odeneho chatbot
+    // Dispatch custom event to open the Dipa chatbot
     window.dispatchEvent(new CustomEvent('openChatbot'));
     
     toast({
-      title: "Odeneho AI Assistant",
+      title: "Dipa",
       description: "Chat with our AI assistant for instant help and support.",
     });
   };
@@ -49,7 +49,7 @@ Best regards,
 
   const supportOptions = [
     {
-      title: "Live Chat with Odeneho",
+      title: "Live Chat with Dipa",
       description: "Get instant help from our AI assistant - available 24/7",
       icon: MessageCircle,
       action: handleStartLiveChat,
@@ -144,7 +144,7 @@ Best regards,
                   className="w-full"
                   variant="default"
                 >
-                  {option.title === "Live Chat with Odeneho" ? "Start Live Chat" : 
+                  {option.title === "Live Chat with Dipa" ? "Start Live Chat" :
                    option.title === "Phone Support" ? "Call Now" : "Send Email"}
                 </Button>
               </CardContent>
@@ -228,7 +228,7 @@ Best regards,
                 Currently Online
               </Badge>
               <p className="text-xs text-muted-foreground mt-1">
-                Odeneho AI is available 24/7
+                Dipa is available 24/7
               </p>
             </div>
           </div>

@@ -240,7 +240,7 @@ export const MonitoringPanel: React.FC = () => {
                   <SelectItem value="report">Report</SelectItem>
                   <SelectItem value="prediction">Prediction</SelectItem>
                   <SelectItem value="trending">Trending</SelectItem>
-                  <SelectItem value="odeneho-ai">Odeneho AI</SelectItem>
+                  <SelectItem value="dipa-ai">Dipa</SelectItem>
                   <SelectItem value="api-engine">API Engine</SelectItem>
                 </SelectContent>
               </Select>

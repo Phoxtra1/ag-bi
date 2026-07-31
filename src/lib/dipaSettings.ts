@@ -1,6 +1,6 @@
 
-export type OdenehoSettings = {
-  // When true, Odeneho should be considered the primary engine and can auto-open
+export type DipaSettings = {
+  // When true, Dipa should be considered the primary engine and can auto-open
   primary?: boolean;
   // Optional custom greeting for first message
   greeting?: string;
@@ -13,36 +13,36 @@ export type OdenehoSettings = {
 };
 
 // Storage key used across the app
-const SETTINGS_KEY = 'odenehoSettings';
+const SETTINGS_KEY = 'dipaSettings';
 
 // Dispatch a custom event so any mounted components can react instantly
-export const dispatchOdenehoSettingsUpdated = (settings: OdenehoSettings) => {
-  window.dispatchEvent(new CustomEvent('odenehoSettingsUpdated', { detail: settings }));
+export const dispatchDipaSettingsUpdated = (settings: DipaSettings) => {
+  window.dispatchEvent(new CustomEvent('dipaSettingsUpdated', { detail: settings }));
 };
 
-export const getOdenehoSettings = (): OdenehoSettings => {
+export const getDipaSettings = (): DipaSettings => {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return {};
-    return JSON.parse(raw) as OdenehoSettings;
+    return JSON.parse(raw) as DipaSettings;
   } catch {
     return {};
   }
 };
 
-export const setOdenehoSettings = (settings: OdenehoSettings) => {
-  const current = getOdenehoSettings();
+export const setDipaSettings = (settings: DipaSettings) => {
+  const current = getDipaSettings();
   const next = { ...current, ...settings };
   localStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
-  dispatchOdenehoSettingsUpdated(next);
+  dispatchDipaSettingsUpdated(next);
 };
 
 // Merge with defaults
-export const getResolvedOdenehoSettings = (): Required<OdenehoSettings> => {
-  const s = getOdenehoSettings();
+export const getResolvedDipaSettings = (): Required<DipaSettings> => {
+  const s = getDipaSettings();
   return {
     primary: s.primary ?? true,
-    greeting: s.greeting ?? "Hello there! I'm Odeneho, your AI assistant at Amniva. How can I help you today?",
+    greeting: s.greeting ?? "Hello there! I'm Dipa, your AI assistant at Amniva. How can I help you today?",
     autoOpen: s.autoOpen ?? false,
     typingAnimation: s.typingAnimation ?? true,
     quickActions: s.quickActions ?? [

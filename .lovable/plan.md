@@ -40,7 +40,7 @@ Scope is large (15+ modules, public pages, workspace, AI assistant, API platform
   7. Verification
   8. Predictive
   9. Reports
-  10. Odeneho AI
+  10. Dipa
   11. Account / API / Support
 - **Business Intelligence module**: manual data entry forms (Revenue, Expenses, Sales, Customers, Inventory, Procurement, Suppliers, Employees) + CSV/Excel upload + API/ERP/CRM connector stubs. Generates Revenue analytics, Profitability, Customer intelligence, Growth/Demand/Cash-flow forecasting via `predictiveIntelligence` + recharts.
 - KPI dashboards, trend, comparative, benchmarking views all share `ScoreCard`/`TrendChart`.
@@ -62,11 +62,11 @@ Scope is large (15+ modules, public pages, workspace, AI assistant, API platform
 - **Investment Intelligence**: evaluator for startups, expansions, acquisitions, real estate, agri, manufacturing, infrastructure → feasibility, viability, projections, risk, attractiveness score, strategic recs.
 - **Reporting System**: Daily/Weekly/Monthly/Quarterly/Annual + Opportunity/Risk/Competitor/Market reports, exportable to PDF (jsPDF), Excel/CSV (sheetjs), PowerPoint (pptxgenjs).
 
-## Phase 5 — Odeneho AI as Decision Intelligence Assistant
+## Phase 5 — Dipa as Decision Intelligence Assistant
 
-- Convert `OdenehoComponent` into a chat-based **conversational intelligence assistant** powered by Lovable AI Gateway (default `google/gemini-3-flash-preview`) through an Appwrite Function that has read access to the user's intelligence context (scores, opportunities, competitors, risks). System prompt frames answers as Insights / Explanations / Recommendations / Forecasts / Strategic guidance.
+- Convert `DipaComponent` into a chat-based **conversational intelligence assistant** powered by Lovable AI Gateway (default `google/gemini-3-flash-preview`) through an Appwrite Function that has read access to the user's intelligence context (scores, opportunities, competitors, risks). System prompt frames answers as Insights / Explanations / Recommendations / Forecasts / Strategic guidance.
 - Suggested prompt chips for the seven spec questions ("Which market should I enter?" etc.).
-- Keep existing 400×500 dialog constraints per `mem://design/odeneho-ui-constraints`.
+- Keep existing 400×500 dialog constraints per `mem://design/dipa-ui-constraints`.
 
 ## Phase 6 — API Platform & Admin
 
@@ -82,7 +82,7 @@ Scope is large (15+ modules, public pages, workspace, AI assistant, API platform
 - **Service shape**: every module exports `list*`, `get*`, `submit*`, `score*` async functions returning typed results. Each catches Appwrite errors and returns `{ data: [], error }` so UIs always render.
 - **Scoring**: `scoringEngine.computeScores(context)` returns `{ intelligence, growth, opportunity, risk, marketConfidence }` 0–100, used by Executive Overview and module headers.
 - **Collections (created when first phase needs them)**: `markets`, `industries`, `competitors`, `opportunities`, `buyer_requests`, `seller_listings`, `risk_alerts`, `intelligence_reports`, `business_data_entries`, `investment_evaluations`, `api_keys`, `api_usage`. Each with RLS-equivalent Appwrite permissions and `executeModule` routes.
-- **AI**: Odeneho assistant uses an Appwrite Function calling Lovable AI Gateway. `LOVABLE_API_KEY` stored as Appwrite Function env var (server-only). Function receives the user's intelligence context summary built by `scoringEngine` + recent opportunities/risks.
+- **AI**: Dipa assistant uses an Appwrite Function calling Lovable AI Gateway. `LOVABLE_API_KEY` stored as Appwrite Function env var (server-only). Function receives the user's intelligence context summary built by `scoringEngine` + recent opportunities/risks.
 - **Reports export**: install `jspdf`, `jspdf-autotable`, `xlsx`, `pptxgenjs` in Phase 4.
 - **Charts**: reuse `recharts` (already in stack).
 - **No Supabase**. Auth bypass on Lovable preview retained per memory.

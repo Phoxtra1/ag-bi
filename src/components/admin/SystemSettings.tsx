@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import IntegrationsEngines from './IntegrationsEngines';
 import IntegrationsPanel from './IntegrationsPanel';
-import ConfigureOdenehoAI from './ConfigureOdenehoAI';
+import ConfigureDipaAI from './ConfigureDipaAI';
 import EngineExternalAPIs from './engines/EngineExternalAPIs';
 import SystemHealthPanel from './SystemHealthPanel';
 import ComponentRegistryManager from './ComponentRegistryManager';
@@ -44,7 +44,7 @@ const SystemSettings = () => {
   const getDefaultTab = () => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace('#','');
-      const allowed = new Set(['integrations','engines','odeneho-ai','general','security','database']);
+      const allowed = new Set(['integrations','engines','dipa-ai','general','security','database']);
       if (allowed.has(hash)) return hash as string;
     }
     return 'integrations';
@@ -135,9 +135,9 @@ const SystemSettings = () => {
             <Activity className="w-4 h-4" />
             System Health
           </TabsTrigger>
-          <TabsTrigger value="odeneho-ai" className="flex items-center gap-2">
+          <TabsTrigger value="dipa-ai" className="flex items-center gap-2">
             <Bot className="w-4 h-4" />
-            Odeneho AI
+            Dipa
           </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Settings className="w-4 h-4" />
@@ -173,8 +173,8 @@ const SystemSettings = () => {
            <IntegrationsEngines />
          </TabsContent>
 
-        <TabsContent value="odeneho-ai">
-          <ConfigureOdenehoAI />
+        <TabsContent value="dipa-ai">
+          <ConfigureDipaAI />
         </TabsContent>
 
         <TabsContent value="general" className="space-y-6">
