@@ -2,7 +2,7 @@
 
 A focused information services platform with two service areas:
 
-- **Info Discovery** — request-based information discovery, assessment, verification and report delivery.
+- **Info Discovery** — a self-service research workspace. Customers enter a question, receive an initial review, then pay as they go to unlock the complete report.
 - **InfoService** — individually scoped professional information services across Career and Education, Business Information, Contracts and Commitments, Travel and Relocation, and Info and Report Verification.
 
 ## Product architecture
@@ -11,7 +11,7 @@ A focused information services platform with two service areas:
 - Supabase Auth for customer accounts.
 - Supabase Postgres with Row Level Security for requests, assessments, invoices, payments and reports.
 - Private Supabase Storage bucket for report files.
-- Staff workflow for request assessment, quotations, invoice issue, manual payment confirmation, report preparation and release.
+- Separate staff workflow for InfoService engagements, including assessment, appointments/discussion, quotations, invoicing and delivery.
 - No monthly subscription requirement.
 
 The current build is intentionally independent of the previous ABI/Business Intelligence application. Legacy source modules are not imported by the new application entry point.
@@ -19,7 +19,7 @@ The current build is intentionally independent of the previous ABI/Business Inte
 ## Supabase setup
 
 1. Create or select the dedicated Supabase project.
-2. Run `supabase/migrations/202611180001_information_solutions.sql` in the Supabase SQL editor.
+2. Run the migrations in order: `202611180001_information_solutions.sql`, `202611180002_self_service_discovery.sql`, and `202611180003_protect_paid_discovery_reports.sql`.
 3. Configure Authentication > URL Configuration with the deployed platform URL and the local development URL if needed.
 4. Enable email confirmation if required by your account policy.
 5. Copy `.env.example` to `.env` and set:
@@ -47,25 +47,23 @@ npm run dev
 ## Operational workflow
 
 ### Info Discovery
-Customer submits a request → staff reviews scope and evidence needs → staff records assessment and quotation → invoice is issued → payment is confirmed → staff prepares report → report is released to the customer's workspace.
+Customer enters a question → the server-side research engine discovers, verifies, analyzes and connects information → a structured review is shown → customer chooses whether to pay to unlock the complete report. Product recommendations are surfaced when the topic matches an Amineva product.
 
 ### InfoService
 Customer submits a professional service request → staff assesses and discusses scope → quotation and invoice are issued → payment is confirmed → work is delivered and report/record is released as appropriate.
 
-The staff console currently supports manual payment confirmation for operational testing. This is not a payment gateway. Stripe checkout and signed webhook confirmation are a later integration; do not mark a payment paid based solely on a browser redirect.
+The staff console handles InfoService only. Info Discovery uses a server-side Edge Function and a pay-as-you-go unlock contract. Connect the payment provider and require signed webhook confirmation; never mark a payment paid based solely on a browser redirect.
 
-## AI / research integration boundary
+## Info Discovery engine configuration
 
-The request and report workflow is prepared for a later server-side research and assessment integration. No model provider or assistant identity is exposed in the customer-facing interface. Until that integration is connected, staff can assess requests and prepare reports through the staff console.
+Deploy `supabase/functions/info-discovery/index.ts` as the `info-discovery` Supabase Edge Function. Configure the server-side secrets:
 
-When adding automated assessment:
-- Run model calls only in server-side functions.
-- Validate and rate-limit requests before invoking a model.
-- Use lightweight classification for initial triage and reserve deeper research for scoped/approved work.
-- Cache reusable research outputs and avoid repeated calls on unchanged inputs.
-- Keep secrets server-side; never expose model API keys in frontend environment variables.
-- Treat model output as draft research that requires source checks and human review before release.
+- `INFO_DISCOVERY_ENGINE_URL` — HTTPS endpoint for the research engine.
+- `INFO_DISCOVERY_ENGINE_KEY` — private key used by the Edge Function to authenticate to that engine.
 
+The engine receives `action: discover` with the customer's question, optional context and the five-stage pipeline: discover, verify, analyze, connect and outcomes. It must return a customer-safe preview, recommendations, report price and currency. The `action: unlock` call must create a payment checkout or return the full report only after payment has been verified server-side. Keep complete report content out of customer-readable preview rows.
+
+Optional frontend destination variables can be set for product recommendations: `VITE_AGROCLIMATE_URL`, `VITE_ADESUA_URL`, `VITE_INVENTRA_URL`, `VITE_SIKASEM_URL`, `VITE_DATALENS_URL` and `VITE_AMINEVA_SUITE_URL`. Recommendations still appear without these URLs; setting them enables direct navigation.
 ## Security and data handling
 
 - Row Level Security is enabled on all customer data tables.
