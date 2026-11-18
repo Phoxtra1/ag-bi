@@ -104,7 +104,9 @@ Deno.serve(async (req) => {
         .filter((p: any) => Object.prototype.hasOwnProperty.call(productUrls, p?.name))
         .map((p: any) => ({ name: p.name, reason: String(p.reason || ""), url: productUrls[p.name] }));
 
-      const pricingTier = discoveryMode === "sensitive" ? "Sensitive Info" : (["Quick Discovery","Insight Report","Deep Research"].includes(generated.pricing_tier) ? generated.pricing_tier : "Insight Report");\n      const tierPrices: Record<string, number> = { "Quick Discovery": 4.99, "Insight Report": 12.99, "Deep Research": 24.99, "Sensitive Info": 34.99 };\n      const record = {
+      const pricingTier = discoveryMode === "sensitive" ? "Sensitive Info" : (["Quick Discovery","Insight Report","Deep Research"].includes(generated.pricing_tier) ? generated.pricing_tier : "Insight Report");
+      const tierPrices: Record<string, number> = { "Quick Discovery": 4.99, "Insight Report": 12.99, "Deep Research": 24.99, "Sensitive Info": 34.99 };
+      const record = {
         user_id: user.id,
         question,
         context: null,
@@ -112,8 +114,9 @@ Deno.serve(async (req) => {
         title: String(generated.title || "Information discovery"),
         preview: { summary: String(generated.summary || ""), overview: String(generated.overview || "") },
         recommendations,
-        price: Number.isFinite(Number(generated.price)) ? Number(generated.price) : null,
-        currency: String(generated.currency || "USD"),
+        pricing_tier: pricingTier,
+        price: tierPrices[pricingTier],
+        currency: "USD",
         payment_status: "preview",
       };
       const { data: saved, error: saveError } = await supabase.from("discovery_runs").insert(record).select("id").single();
