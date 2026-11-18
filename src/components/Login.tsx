@@ -136,7 +136,7 @@ export default function Login() {
           toast({
             title: "Sign-in incomplete",
             description:
-              "We couldn't confirm your session after sign-in. If you're in a strict browser or embedded preview, allow third‑party cookies for Appwrite or use a custom domain.",
+              "We couldn't confirm your session after sign-in. Please check your connection and try signing in again.",
             variant: "destructive",
           });
           return;
