@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +41,7 @@ export default function Login() {
   const [phoxtraId, setPhoxtraId] = useState('');
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { toast } = useToast();
 
   const loginForm = useForm<LoginFormData>();
@@ -68,7 +69,9 @@ export default function Login() {
       const result = await checkOAuthSession();
       if (result.success && result.user) {
         const { isAdmin } = await checkAdminRedirect();
-        navigate(isAdmin ? "/admin" : "/dashboard");
+        const requestedPath = (location.state as any)?.from || searchParams.get("next");
+        const safePath = typeof requestedPath === "string" && requestedPath.startsWith("/") ? requestedPath : "/dashboard";
+        navigate(isAdmin ? "/admin" : safePath);
       }
     };
 
@@ -162,7 +165,9 @@ export default function Login() {
           return;
         }
 
-        navigate(isAdmin ? "/admin" : "/dashboard");
+        const requestedPath = (location.state as any)?.from || searchParams.get("next");
+        const safePath = typeof requestedPath === "string" && requestedPath.startsWith("/") ? requestedPath : "/dashboard";
+        navigate(isAdmin ? "/admin" : safePath);
       } else {
         toast({
           title: "Login Failed",
