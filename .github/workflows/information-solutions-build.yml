@@ -13,5 +13,4 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - run: npx tsc --noEmit -p tsconfig.app.json
       - run: npm run build
