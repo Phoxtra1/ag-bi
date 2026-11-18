@@ -143,6 +143,18 @@ const from = (table: string) => {
       filters.push(`${encodeURIComponent(column)}=eq.${encodeURIComponent(value)}`);
       return this;
     },
+    async insert(values: Record<string, unknown>) {
+      try {
+        const token = await accessToken();
+        if (!token) throw new Error("Please sign in to submit an information request.");
+        const data = await rawRequest(`/rest/v1/${encodeURIComponent(table)}`, {
+          method: "POST",
+          headers: { Prefer: "return=minimal" },
+          body: JSON.stringify(values),
+        }, token);
+        return { data, error: null };
+      } catch (error: any) { return { data: null, error }; }
+    },
     async maybeSingle() {
       try {
         const token = await accessToken();
