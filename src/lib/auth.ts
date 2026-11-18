@@ -4,8 +4,7 @@ export interface LoginCredentials { email: string; password: string; }
 export interface RegisterCredentials { email: string; password: string; name: string; }
 export type UserRole = "admin" | "user";
 
-// Preserve the legacy $id field for older dashboard components while the
-// remaining data modules are migrated from Appwrite.
+// Preserve a legacy $id alias for dashboard components during the data migration.
 const withLegacyId = (user: any) => user ? { ...user, $id: user.id } : null;
 
 export const loginUser = async ({ email, password }: LoginCredentials) => {
