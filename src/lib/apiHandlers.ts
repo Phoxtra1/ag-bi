@@ -45,44 +45,20 @@ export const handleContactSubmission = async (data: {
   category: string;
   message: string;
 }) => {
-  const create = async () =>
-    await databases.createDocument(
-      DATABASE_ID,
-      CONTACTS_COLLECTION_ID,
-      ID.unique(),
-      {
-        fullName: data.fullName,
-        email: data.email,
-        subject: data.subject,
-        category: data.category,
-        message: data.message,
-        status: 'new',
-        timestamp: new Date().toISOString(),
-      }
-    );
-
-  try {
-    const response = await create();
-    return { success: true, document: response };
-  } catch (error: any) {
-    // If not authorized, try creating an anonymous session and retry once
-    const msg = error?.message || '';
-    const code = error?.code;
-    if (code === 401 || code === 403 || /permission|unauthorized|scope/i.test(msg)) {
-      try {
-        // @ts-ignore - method exists in Appwrite JS SDK
-        await account.createAnonymousSession();
-        const response = await create();
-        return { success: true, document: response };
-      } catch (e2: any) {
-        console.error('Contact submission retry failed:', e2);
-        const hint = 'Ask admin to enable Create permission for guests on contacts-ava or set up a server function proxy.';
-        return { success: false, error: `${e2?.message || 'Unauthorized'}. ${hint}` };
-      }
-    }
-    console.error('Contact submission error:', error);
-    return { success: false, error: msg || 'Submission failed' };
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData.user) {
+    return { success: false, error: "Please sign in before submitting an InfoService request." };
   }
+  const { error } = await supabase.from("infoservice_requests").insert({
+    user_id: authData.user.id,
+    full_name: data.fullName,
+    email: data.email,
+    category: data.category,
+    request_details: data.subject + "\n\n" + data.message,
+  });
+  return error
+    ? { success: false, error: error.message }
+    : { success: true, document: { status: "received" } };
 };
 
 // Prediction form handler with improved error handling
