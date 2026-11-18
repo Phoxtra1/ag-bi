@@ -234,3 +234,58 @@ with check (bucket_id = 'information-reports' and public.has_staff_role());
 -- Bootstrap the first administrator manually after the first account is registered:
 -- insert into public.user_roles (user_id, role) values ('AUTH_USER_UUID', 'admin');
 -- Never expose the Supabase service-role key in browser code.
+
+-- Atomic manual payment confirmation. Safe to retry with the same invoice.
+create or replace function public.confirm_manual_invoice_payment(
+  p_invoice_id uuid,
+  p_provider_reference text default null
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  inv public.invoices%rowtype;
+  payment_ref text;
+begin
+  if not public.has_staff_role() then
+    raise exception 'Staff access required';
+  end if;
+  select * into inv from public.invoices where id = p_invoice_id for update;
+  if not found then raise exception 'Invoice not found'; end if;
+  if inv.status = 'void' then raise exception 'A void invoice cannot be paid'; end if;
+  if inv.status = 'paid' then return; end if;
+  payment_ref := coalesce(nullif(p_provider_reference,''), 'MANUAL-' || inv.id::text);
+  insert into public.payment_records(invoice_id,user_id,provider,provider_reference,amount,currency,status,confirmed_at)
+  values(inv.id,inv.user_id,'manual',payment_ref,inv.amount,inv.currency,'succeeded',now())
+  on conflict (provider_reference) do nothing;
+  update public.invoices set status='paid',updated_at=now() where id=inv.id;
+  if inv.discovery_request_id is not null then
+    update public.info_discovery_requests set status='paid',updated_at=now() where id=inv.discovery_request_id;
+  elsif inv.infoservice_request_id is not null then
+    update public.infoservice_requests set status='paid',updated_at=now() where id=inv.infoservice_request_id;
+  end if;
+end;
+$$;
+
+-- Prevent staff or client code from releasing a paid report against an unpaid invoice.
+create or replace function public.enforce_report_release_payment()
+returns trigger language plpgsql security definer
+set search_path = public
+as $$
+declare invoice_status text;
+begin
+  if new.status = 'released' and new.invoice_id is not null then
+    select status into invoice_status from public.invoices where id = new.invoice_id and user_id = new.user_id;
+    if invoice_status is distinct from 'paid' then
+      raise exception 'The linked invoice must be paid before this report can be released';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists reports_require_paid_invoice on public.reports;
+create trigger reports_require_paid_invoice
+before insert or update of status, invoice_id on public.reports
+for each row execute procedure public.enforce_report_release_payment();
