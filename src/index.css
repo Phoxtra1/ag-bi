@@ -27,8 +27,8 @@
     --muted: 220 15% 95%;
     --muted-foreground: 220 10% 45%;
 
-    /* Gold accent */
-    --accent:  sobrem 70% 40%;
+    /* Teal accent */
+    --accent: 173 80% 40%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -90,12 +90,12 @@
 
     --sidebar-background: 220 60% 5%;
     --sidebar-foreground: 220 10% 90%;
-    --sidebar-primary: 45 100% 50%;
-    --sidebar-primary-foreground: 220 60% 5%;
+    --sidebar-primary: 173 80% 40%;
+    --sidebar-primary-foreground: 202 64% 10%;
     --sidebar-accent: 220 40% 12%;
     --sidebar-accent-foreground: 220 10% 90%;
     --sidebar-border: 220 40% 15%;
-    --sidebar-ring: 45 100% 50%;
+    --sidebar-ring: 173 80% 40%;
   }
 }
 
