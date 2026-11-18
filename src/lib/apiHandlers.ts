@@ -1,64 +1,40 @@
 
-import { account, databases } from './appwrite';
+import { supabase } from "@/lib/supabase";
+import { databases, account } from './appwrite';
 import { DATABASE_ID, CONTACTS_COLLECTION_ID, PREDICTIONS_COLLECTION_ID, NEWSLETTERS_COLLECTION_ID, API_REQUESTS_COLLECTION_ID } from './database';
 import { ID } from 'appwrite';
 
-// Authentication handlers
+// Authentication is handled by Supabase. Legacy content collections remain on
+// Appwrite during the staged data migration.
 export const handleSignup = async (name: string, email: string, password: string) => {
   try {
-    const user = await account.create(ID.unique(), email, password, name);
-    // Ensure we don't conflict with any existing session
-    try { await account.deleteSession('current'); } catch {}
-    const session = await account.createEmailPasswordSession(email, password);
-    return { success: true, user, session };
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } },
+    });
+    if (error) throw error;
+    return { success: true, user: data.user, session: data.session };
   } catch (error: any) {
     console.error('Signup error:', error);
-    const message: string = error?.message || '';
-    const code: number | undefined = error?.code;
-
-    // If the user already exists, attempt to log them in instead
-    if (code === 409 || /already exists/i.test(message)) {
-      try {
-        try { await account.deleteSession('current'); } catch {}
-        const session = await account.createEmailPasswordSession(email, password);
-        return { success: true, session };
-      } catch (loginError: any) {
-        return { success: false, error: 'Email already registered. Please log in with your password.' };
-      }
-    }
-
-    return { success: false, error: message || 'Registration failed' };
+    return { success: false, error: error?.message || 'Registration failed' };
   }
 };
 
 export const handleLogin = async (email: string, password: string) => {
   try {
-    // If a session is already active, clear it first to avoid 409 conflicts
-    try { await account.deleteSession('current'); } catch {}
-    const session = await account.createEmailPasswordSession(email, password);
-    return { success: true, session };
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return { success: true, session: data.session, user: data.user };
   } catch (error: any) {
     console.error('Login error:', error);
-    const message: string = error?.message || '';
-    const code: number | undefined = error?.code;
-
-    // If a session is already active, treat as a successful login
-    if (code === 409 || /session is active/i.test(message)) {
-      return { success: true, session: { current: true } };
-    }
-
-    return { success: false, error: message || 'Login failed' };
+    return { success: false, error: error?.message || 'Login failed' };
   }
 };
 
 export const handleLogout = async () => {
-  try {
-    await account.deleteSession('current');
-    return { success: true };
-  } catch (error: any) {
-    console.error('Logout error:', error);
-    return { success: false, error: error.message };
-  }
+  const { error } = await supabase.auth.signOut();
+  return error ? { success: false, error: error.message } : { success: true };
 };
 
 // Contact form handler
