@@ -44,7 +44,13 @@ export default function Signup() {
     try {
       const result = await handleSignup(formData.fullName, formData.email, formData.password);
       
-      if (result.success) {
+      if (result.success && !result.session) {
+        toast({
+          title: "Confirm your email",
+          description: "We sent you a confirmation link. Verify your email, then sign in to continue.",
+        });
+        navigate("/login");
+      } else if (result.success) {
         toast({
           title: "Account Created Successfully!",
           description: "Welcome to Amniva. You have been automatically logged in.",
