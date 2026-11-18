@@ -65,7 +65,7 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
    }
   }).catch((e:any)=>setNotice({kind:"error",text:e.message||"Could not load this discovery."}));
  },[user?.id,loc.search]);
- const recommendations=(result?.recommendations||[]).filter((p:any)=>["Amineva Suite","AgroClimate"].includes(p.name));
+ const recommendations=(result?.recommendations||[]).filter((p:any)=>["AgroClimate","Adesua","Inventra","SikaSem","DataLens"].includes(p.name));
  return <div className="page-wrap"><div className="container">
   <PageIntro eyebrow="INFO DISCOVERY" title="A world of information. One search." desc="Discover what matters. See the connections. Get to the answer."/>
   <div className="discovery-mode-grid" role="group" aria-label="Discovery mode">
