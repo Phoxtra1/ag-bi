@@ -1,74 +1,51 @@
+import React from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ContactForm from "@/components/ContactForm";
+import { BriefcaseBusiness, GraduationCap, FileCheck2, Plane, FileText } from "lucide-react";
 
-import React from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import ContactForm from '@/components/ContactForm';
-import { Mail } from 'lucide-react';
+const serviceAreas = [
+  { icon: GraduationCap, title: "Career and Education", text: "Career reports, educational pathways, career change, opportunities and one-on-one sessions." },
+  { icon: BriefcaseBusiness, title: "Business Information", text: "Business research, market context, organizational information and opportunity assessment." },
+  { icon: FileText, title: "Contracts and Commitments", text: "Information and assessment relating to agreements, obligations and commitments." },
+  { icon: Plane, title: "Travel and Relocation", text: "Information to support travel, relocation and related planning decisions." },
+  { icon: FileCheck2, title: "Info and Report Verification", text: "Review information, documents, claims and reports for accuracy and supporting evidence." },
+];
 
-const Contact = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-12">
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <Mail className="h-16 w-16 mx-auto mb-6 text-blue-600" />
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Contact Us
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Have questions about Amniva or Amnewsworld? We'd love to hear from you. 
-            Send us a message and our team will respond within 48 hours.
-          </p>
-        </div>
-
-        {/* Contact Form */}
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
-            <ContactForm />
+const Contact: React.FC = () => (
+  <div className="min-h-screen bg-background">
+    <Header />
+    <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-3xl text-center">
+        <p className="text-sm font-semibold uppercase tracking-[.16em] text-teal-700">Professional information services</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">InfoService</h1>
+        <p className="mt-5 text-lg leading-8 text-muted-foreground">For requests that need professional research, consultation or a tailored engagement, tell us what you need. We assess the request, discuss the scope, and provide a quotation before work begins.</p>
+      </div>
+      <div className="mt-12 grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
+        <div>
+          <h2 className="text-xl font-semibold">Service areas</h2>
+          <div className="mt-5 space-y-4">
+            {serviceAreas.map((item) => {
+              const Icon = item.icon;
+              return <div key={item.title} className="flex gap-4 rounded-xl border border-border bg-card p-4">
+                <div className="h-fit rounded-lg bg-teal-500/10 p-2.5 text-teal-700"><Icon size={20} /></div>
+                <div><h3 className="font-semibold">{item.title}</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">{item.text}</p></div>
+              </div>;
+            })}
+          </div>
+          <div className="mt-6 rounded-xl bg-slate-50 p-5 text-sm leading-6 text-muted-foreground dark:bg-slate-900/40">
+            <strong className="text-foreground">How engagements proceed:</strong> Request → Assessment → Discussion → Quotation → Invoice → Payment → Service delivery. Fees depend on the agreed scope.
           </div>
         </div>
-
-        {/* Additional Info */}
-        <div className="max-w-2xl mx-auto mt-12 text-center">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
-              Why Contact Amniva?
-            </h3>
-            <div className="grid md:grid-cols-2 gap-6 text-left">
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Media Intelligence</h4>
-                <p className="text-gray-700 text-sm">
-                  Questions about our AI-powered analytics and media intelligence tools.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Partnerships</h4>
-                <p className="text-gray-700 text-sm">
-                  Interested in collaborating with Amnewsworld or integrating our services.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Support</h4>
-                <p className="text-gray-700 text-sm">
-                  Need help with your account, billing, or technical issues.
-                </p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-2">Feedback</h4>
-                <p className="text-gray-700 text-sm">
-                  Share your thoughts on how we can improve our platform and services.
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-lg shadow-slate-900/5 sm:p-8">
+          <h2 className="text-xl font-semibold">Tell us about your request</h2>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in to submit and track your service request.</p>
+          <div className="mt-6"><ContactForm /></div>
         </div>
-      </main>
-
-      <Footer />
-    </div>
-  );
-};
+      </div>
+    </main>
+    <Footer />
+  </div>
+);
 
 export default Contact;
