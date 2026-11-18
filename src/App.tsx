@@ -33,7 +33,6 @@ import WatchDemo from "./pages/WatchDemo";
 
 import NotFound from "./pages/NotFound";
 
-// ✅ Import centralized Dipa assistant
 import RequireAuth from "@/components/auth/RequireAuth";
 import RequireAdmin from "@/components/auth/RequireAdmin";
 import PageLoader from "@/components/PageLoader";
