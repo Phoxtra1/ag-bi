@@ -193,6 +193,14 @@ export default function Login() {
       const result = await handleSignup(data.name, data.email, data.password);
       
       if (result.success) {
+        if (!result.session) {
+          toast({
+            title: "Confirm your email",
+            description: "We sent you a confirmation link. Verify your email, then sign in to continue.",
+          });
+          setActiveTab("login");
+          return;
+        }
         // Store user type and organization info (would typically go to database)
         console.log('User registration data:', {
           name: data.name,
