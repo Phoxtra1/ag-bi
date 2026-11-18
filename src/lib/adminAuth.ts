@@ -57,9 +57,13 @@ export const generateSecureToken = (): string => {
 /**
  * Create an admin invitation (only callable by existing admins)
  */
-export const createAdminInvitation = async (): Promise<AdminInvitation | null> => null;
+export const createAdminInvitation = async (_email: string, _permissions: string[], _role: "admin" | "supportive" = "supportive"): Promise<AdminInvitation | null> => null;
 export const validateInvitationToken = async (_token: string): Promise<AdminInvitation | null> => null;
 export const completeAdminSetup = async (_token: string, _password: string, _name: string) => ({
   success: false, error: "Admin invitations will be enabled after the Supabase admin workflow is configured.",
 });
 export const revokeAdminInvitation = async (_invitationId: string): Promise<boolean> => false;
+
+export const getPendingInvitations = async (): Promise<AdminInvitation[]> => [];
+export const getAdminSetupUrl = (token: string): string =>
+  `${window.location.origin}/admin-setup?token=${encodeURIComponent(token)}`;
