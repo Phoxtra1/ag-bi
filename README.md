@@ -59,9 +59,9 @@ The staff console handles InfoService only. Info Discovery uses a server-side Ed
 Deploy `supabase/functions/info-discovery/index.ts` as the `info-discovery` Supabase Edge Function. Configure the server-side secrets:
 
 - `INFO_DISCOVERY_ENGINE_URL` — HTTPS endpoint for the research engine.
-- `INFO_DISCOVERY_ENGINE_KEY` — private key used by the Edge Function to authenticate to that engine.
+- `INFO_DISCOVERY_ENGINE_KEY` — private key used by the Edge Function to authenticate to that engine.\n- `SUPABASE_SERVICE_ROLE_KEY` — server-side key used only by the Edge Function to record verified payment state; never expose it to the browser.
 
-The engine receives `action: discover` with the customer's question, optional context and the five-stage pipeline: discover, verify, analyze, connect and outcomes. It must return a customer-safe preview, recommendations, report price and currency. The `action: unlock` call must create a payment checkout or return the full report only after payment has been verified server-side. Keep complete report content out of customer-readable preview rows.
+The engine receives `action: discover` with the customer's question, optional context and the five-stage pipeline: discover, analyze and assess, verify, organize and connect, and outcome. It must return a customer-safe preview, recommendations, report price and currency. The `action: unlock` call must create a payment checkout or return the full report only after payment has been verified server-side. Keep complete report content out of customer-readable preview rows.
 
 Optional frontend destination variables can be set for product recommendations: `VITE_AGROCLIMATE_URL`, `VITE_ADESUA_URL`, `VITE_INVENTRA_URL`, `VITE_SIKASEM_URL`, `VITE_DATALENS_URL` and `VITE_AMINEVA_SUITE_URL`. Recommendations still appear without these URLs; setting them enables direct navigation.
 ## Security and data handling
