@@ -1,285 +1,166 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import {
-  ArrowRight,
-  Brain,
-  Building2,
-  Globe2,
-  LineChart,
-  Radar,
-  ShieldAlert,
-  Sparkles,
-  Target,
-  TrendingUp,
+  ArrowRight, Search, FileCheck2, BriefcaseBusiness, ShieldCheck,
+  Compass, ClipboardList, CreditCard, FileText, Globe2,
 } from "lucide-react";
 
-import { listMarketSignals, listFeaturedReports } from "@/lib/intelligence/marketIntelligence";
-import { listOpportunities } from "@/lib/intelligence/opportunityIntelligence";
-import { listRiskAlerts } from "@/lib/intelligence/riskIntelligence";
-
-import OpportunityCard from "@/components/intelligence/OpportunityCard";
-import RiskBadge from "@/components/intelligence/RiskBadge";
-import IntelligenceReportCard from "@/components/intelligence/IntelligenceReportCard";
-import EmptyState from "@/components/intelligence/EmptyState";
-
-import type {
-  IntelligenceReport,
-  MarketSignal,
-  Opportunity,
-  RiskAlert,
-} from "@/types/intelligence";
-
-const PILLARS = [
-  { icon: Brain, label: "Business Intelligence" },
-  { icon: Globe2, label: "Market Intelligence" },
-  { icon: Radar, label: "Competitor Intelligence" },
-  { icon: ShieldAlert, label: "Verification Intelligence" },
-  { icon: Target, label: "Opportunity Intelligence" },
-  { icon: LineChart, label: "Predictive Intelligence" },
-  { icon: Sparkles, label: "Decision Intelligence" },
+const services = [
+  {
+    icon: Compass,
+    title: "Info Discovery",
+    description: "Explore a question, topic, opportunity or claim. Receive a structured assessment, a clear preview and a defined report scope before deciding whether to purchase the full deliverable.",
+    points: ["Research and information discovery", "Analysis and contextual assessment", "Verification where evidence permits", "Pay per requested deliverable"],
+    action: "Start Info Discovery",
+    href: "/explore",
+    featured: true,
+  },
+  {
+    icon: BriefcaseBusiness,
+    title: "InfoService",
+    description: "Request a professional information service when your needs require deeper research, specialist input, consultation or direct engagement.",
+    points: ["Career and Education", "Business Information", "Contracts and Commitments", "Travel and Relocation", "Info and Report Verification"],
+    action: "Request a Service",
+    href: "/contact",
+    featured: false,
+  },
 ];
 
-const Index: React.FC = () => {
-  const [markets, setMarkets] = useState<MarketSignal[]>([]);
-  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
-  const [risks, setRisks] = useState<RiskAlert[]>([]);
-  const [reports, setReports] = useState<IntelligenceReport[]>([]);
+const steps = [
+  { icon: Search, title: "Submit a request", text: "Tell us what information you need and what you want to achieve." },
+  { icon: ShieldCheck, title: "Assess the evidence", text: "Relevant information is researched, organized and assessed against the request." },
+  { icon: CreditCard, title: "Review the scope", text: "For paid deliverables, review the preview, scope and price before proceeding." },
+  { icon: FileText, title: "Receive your result", text: "Access the completed report or the agreed professional service." },
+];
 
-  useEffect(() => {
-    (async () => {
-      const [m, o, r, rep] = await Promise.all([
-        listMarketSignals(8),
-        listOpportunities(6),
-        listRiskAlerts(6),
-        listFeaturedReports(6),
-      ]);
-      setMarkets(m.data);
-      setOpportunities(o.data);
-      setRisks(r.data);
-      setReports(rep.data);
-    })();
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[hsl(220_60%_10%)] text-primary-foreground">
-        <div className="absolute inset-0 opacity-10 pointer-events-none"
-          style={{ backgroundImage: "radial-gradient(circle at 20% 20%, hsl(45 100% 50%) 0, transparent 40%), radial-gradient(circle at 80% 60%, hsl(220 60% 30%) 0, transparent 40%)" }} />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-semibold uppercase tracking-wider">
-              <Sparkles size={14} /> ABI · Amineva Business Intelligence
-            </span>
-            <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-              Transform information into <span className="text-accent">actionable intelligence</span>.
+const Index: React.FC = () => (
+  <div className="min-h-screen bg-background">
+    <Header />
+    <main>
+      <section className="relative isolate overflow-hidden bg-[#0b1b2b] text-white">
+        <div className="absolute inset-0 -z-10 opacity-70" style={{
+          backgroundImage: "radial-gradient(circle at 78% 20%, rgba(20,184,166,.22), transparent 32%), radial-gradient(circle at 12% 90%, rgba(245,158,11,.12), transparent 30%)"
+        }} />
+        <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.15fr_.85fr] lg:items-center lg:px-8 lg:py-28">
+          <div>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-[.18em] text-teal-200">
+              <Globe2 size={14} /> Amineva Global
+            </div>
+            <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              Information that helps you <span className="text-teal-300">understand, verify and move forward.</span>
             </h1>
-            <p className="mt-5 text-lg text-primary-foreground/80 leading-relaxed">
-              ABI powers businesses, investors, governments, and entrepreneurs with AI-driven
-              Business, Market, Competitor, Verification, Opportunity, Predictive and Decision Intelligence —
-              globally accessible, with deep coverage across Africa and emerging markets.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
+              Information Solutions brings research, discovery, analysis and professional information services together—helping individuals and organizations make better-informed decisions.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/signup">
-                <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
-                  Launch your workspace <ArrowRight className="ml-2" size={16} />
-                </Button>
-              </Link>
+            <div className="mt-9 flex flex-wrap gap-3">
               <Link to="/explore">
-                <Button size="lg" variant="outline" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10">
-                  Explore intelligence
+                <Button size="lg" className="bg-teal-500 font-semibold text-slate-950 hover:bg-teal-400">
+                  Explore information <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button size="lg" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+                  Speak to our team
                 </Button>
               </Link>
             </div>
+            <p className="mt-7 text-sm text-slate-400">A service platform by Amineva Global · An Information Solutions Provider</p>
           </div>
 
-          {/* Pillars strip */}
-          <div className="mt-14 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {PILLARS.map(({ icon: Icon, label }) => (
-              <div
-                key={label}
-                className="flex flex-col items-center justify-center gap-2 rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 px-3 py-4 text-center"
-              >
-                <Icon size={18} className="text-accent" />
-                <span className="text-[11px] font-medium text-primary-foreground/90 leading-tight">{label}</span>
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="absolute -inset-5 rounded-[2rem] bg-teal-400/10 blur-2xl" />
+            <div className="relative rounded-[1.75rem] border border-white/10 bg-white/[.06] p-6 shadow-2xl backdrop-blur">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-300">Information workflow</p>
+                  <p className="mt-1 text-xl font-semibold">From question to clarity</p>
+                </div>
+                <div className="rounded-xl bg-teal-400/15 p-3 text-teal-200"><FileCheck2 size={24} /></div>
               </div>
-            ))}
+              {[
+                ["01", "Discover", "Find relevant information"],
+                ["02", "Assess", "Check context and evidence"],
+                ["03", "Understand", "Organize findings and implications"],
+                ["04", "Act", "Receive a report or expert service"],
+              ].map(([n, title, body], i) => (
+                <div key={n} className="flex gap-4 border-t border-white/10 py-4">
+                  <span className="pt-0.5 text-xs font-bold tracking-widest text-teal-300">{n}</span>
+                  <div><p className="font-semibold">{title}</p><p className="mt-1 text-sm text-slate-400">{body}</p></div>
+                  {i === 3 && <ArrowRight className="ml-auto mt-1 h-4 w-4 text-teal-300" />}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Core questions */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Answer the questions that drive decisions.</h2>
-        <p className="text-muted-foreground mt-2 max-w-2xl">
-          Amniva turns scattered data into clear answers to the six questions every operator, investor and policymaker must ask.
-        </p>
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            "What is happening?",
-            "Why is it happening?",
-            "What is likely to happen next?",
-            "What opportunities exist?",
-            "What risks should be considered?",
-            "What actions should be taken?",
-          ].map((q) => (
-            <div key={q} className="rounded-lg border border-border bg-card p-4 text-sm font-medium text-foreground">
-              {q}
-            </div>
-          ))}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div className="mb-9 max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-[.16em] text-teal-700">Our services</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Two ways to get the information you need.</h2>
+          <p className="mt-4 leading-7 text-muted-foreground">Choose self-service discovery for a defined information request, or engage our team for work that needs a more tailored approach.</p>
         </div>
-      </section>
-
-      {/* Trending markets */}
-      <Section
-        title="Trending Markets"
-        subtitle="Real-time signal from industries, countries and sectors we monitor."
-        action={<Link to="/explore" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">Explore <ArrowRight size={14} /></Link>}
-      >
-        {markets.length === 0 ? (
-          <EmptyState
-            title="Market signals will appear here"
-            description="Connect a feed or wait for the next intelligence sync."
-            icon={<TrendingUp size={20} />}
-            actions={[
-              { label: "Launch workspace", to: "/signup" },
-              { label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" },
-            ]}
-          />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {markets.map((m) => (
-              <Card key={m.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base">{m.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  <div className="text-xs text-muted-foreground">
-                    {[m.region, m.industry, m.country].filter(Boolean).join(" · ")}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {services.map((service) => {
+            const Icon = service.icon;
+            return (
+              <Card key={service.title} className={service.featured ? "border-teal-500/40 shadow-lg shadow-teal-900/5" : "border-border"}>
+                <CardContent className="p-7 sm:p-8">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="rounded-2xl bg-teal-500/10 p-3 text-teal-700"><Icon size={26} /></div>
+                    {service.featured && <span className="rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">Self-service</span>}
                   </div>
-                  {m.changePct !== undefined && (
-                    <div className={`text-lg font-bold ${m.changePct >= 0 ? "text-emerald-600" : "text-red-600"}`}>
-                      {m.changePct >= 0 ? "+" : ""}{m.changePct}%
-                    </div>
-                  )}
-                  <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {m.sentiment ?? "neutral"}
-                  </div>
+                  <h3 className="mt-6 text-2xl font-semibold">{service.title}</h3>
+                  <p className="mt-3 min-h-[76px] leading-7 text-muted-foreground">{service.description}</p>
+                  <ul className="mt-6 space-y-3">
+                    {service.points.map((point) => <li key={point} className="flex items-start gap-3 text-sm text-foreground/80"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-500" />{point}</li>)}
+                  </ul>
+                  <Link to={service.href} className="mt-8 inline-flex items-center gap-2 font-semibold text-teal-700 hover:text-teal-800">
+                    {service.action}<ArrowRight size={16} />
+                  </Link>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
-      </Section>
+            );
+          })}
+        </div>
+      </section>
 
-      {/* Opportunities */}
-      <Section
-        title="Investment & Business Opportunities"
-        subtitle="Vetted opportunities scored across readiness, demand and revenue potential."
-        action={<Link to="/dashboard" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">Submit yours <ArrowRight size={14} /></Link>}
-      >
-        {opportunities.length === 0 ? (
-          <EmptyState
-            title="No opportunities published yet"
-            description="Submitted products, projects and trade requests will surface here once scored."
-            icon={<Target size={20} />}
-            actions={[
-              { label: "Launch workspace", to: "/signup" },
-              { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
-            ]}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {opportunities.map((o) => <OpportunityCard key={o.id} opportunity={o} />)}
+      <section className="bg-slate-50 py-16 dark:bg-slate-900/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <p className="text-sm font-semibold uppercase tracking-[.16em] text-teal-700">How it works</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight">A clear process. No unnecessary complexity.</h2>
           </div>
-        )}
-      </Section>
-
-      {/* Risk alerts */}
-      <Section
-        title="Business Risk Alerts"
-        subtitle="Live signals across market, financial, supply chain, regulatory and operational risks."
-      >
-        {risks.length === 0 ? (
-          <EmptyState
-            title="All clear"
-            description="No active risk alerts at the moment."
-            icon={<ShieldAlert size={20} />}
-            actions={[{ label: "Admin: Intelligence Sources", to: "/admin?tab=feed-sources", variant: "outline" }]}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {risks.map((r) => <RiskBadge key={r.id} risk={r} />)}
-          </div>
-        )}
-      </Section>
-
-      {/* Featured reports */}
-      <Section
-        title="Featured Intelligence Reports"
-        subtitle="Industry, market, country, investment, trade, risk and opportunity intelligence."
-        action={<Link to="/reports" className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1">All reports <ArrowRight size={14} /></Link>}
-      >
-        {reports.length === 0 ? (
-          <EmptyState
-            title="Reports will surface here"
-            description="Published intelligence reports appear in this feed."
-            icon={<Building2 size={20} />}
-            actions={[
-              { label: "Browse Reports", to: "/reports" },
-              { label: "Admin: Submission Queue", to: "/admin?tab=content-inbox", variant: "outline" },
-            ]}
-          />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {reports.map((r) => <IntelligenceReportCard key={r.id} report={r} />)}
-          </div>
-        )}
-      </Section>
-
-      {/* CTA */}
-      <section className="bg-gradient-to-r from-primary to-[hsl(220_60%_12%)] text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-2xl sm:text-3xl font-bold">Know better. Act smarter.</h3>
-            <p className="text-primary-foreground/80 mt-2 max-w-xl">
-              Activate your Executive Dashboard, monitor competitors, evaluate opportunities and forecast outcomes — all from one intelligence workspace.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/pricing"><Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">See plans</Button></Link>
-            <Link to="/signup"><Button size="lg" variant="outline" className="border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10">Get started</Button></Link>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step, i) => {
+              const Icon = step.icon;
+              return <div key={step.title} className="rounded-2xl border border-border/70 bg-card p-6">
+                <div className="flex items-center justify-between"><Icon className="h-6 w-6 text-teal-700" /><span className="text-sm font-semibold text-amber-600">0{i + 1}</span></div>
+                <h3 className="mt-5 font-semibold">{step.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{step.text}</p>
+              </div>;
+            })}
           </div>
         </div>
       </section>
 
-      <Footer />
-    </div>
-  );
-};
-
-const Section: React.FC<{
-  title: string;
-  subtitle?: string;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}> = ({ title, subtitle, action, children }) => (
-  <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div className="flex items-end justify-between gap-4 mb-6">
-      <div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h2>
-        {subtitle && <p className="text-muted-foreground mt-1">{subtitle}</p>}
-      </div>
-      {action}
-    </div>
-    {children}
-  </section>
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 rounded-3xl bg-[#0b1b2b] p-8 text-white sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-2 text-sm font-semibold text-teal-300"><ClipboardList size={16} /> Start with your question</div>
+            <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">What information do you need to move forward?</h2>
+            <p className="mt-3 leading-7 text-slate-300">Tell us what you are trying to understand. We will direct you to the right service pathway.</p>
+          </div>
+          <Link to="/explore"><Button size="lg" className="shrink-0 bg-teal-500 font-semibold text-slate-950 hover:bg-teal-400">Get started <ArrowRight className="ml-2 h-4 w-4" /></Button></Link>
+        </div>
+      </section>
+    </main>
+    <Footer />
+  </div>
 );
 
 export default Index;
