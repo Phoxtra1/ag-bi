@@ -26,13 +26,12 @@ Return valid JSON only with this shape:
  "overview":"A concise overview of what the full document will contain and the main direction of the findings.",
  "full_report":{"content":"Complete document with clearly labeled sections for the five pillars, detailed findings, source references/URLs where available, limitations and conclusion."},
  "recommendations":[
-   {"name":"Amineva Suite","reason":"...","url":""},
-   {"name":"AgroClimate","reason":"...","url":""}
+   {"name":"AgroClimate | Adesua | Inventra | SikaSem | DataLens","reason":"...","url":""}
  ],
  "price":number,
  "currency":"GHS"
 }
-Only recommend Amineva Suite when the question indicates a need that its business workspace/apps can address. Recommend AgroClimate ONLY when the actual subject materially concerns agriculture, farming, crops, livestock, farm operations, agricultural weather, climate impacts on agriculture, or agricultural risk. Do not recommend any other Amineva product. Do not recommend AgroClimate merely because the question mentions weather or climate in an unrelated context. If no product is genuinely relevant, return an empty recommendations array.
+Do NOT recommend Amineva Suite. It is the company's productivity workspace and is accessed separately from the Amineva Global homepage; it is not a recommendation within Info Discovery. You may recommend the following existing Amineva products only when the user's actual information need is materially related to what that product does: AgroClimate for agriculture, farming, crops, livestock, farm operations and agricultural climate/risk; Adesua for education, learning and career development/exploration; Inventra for inventory, stock and sales operations; SikaSem for mobile money, microfinance, savings, loans and financial operations; DataLens for IT support and web application maintenance. The AI must decide relevance from the complete meaning of the user's search, not from hardcoded keyword rules. Do not recommend a product just because a related word appears in an unrelated question. If none of these products genuinely addresses the need, return an empty recommendations array and simply complete the information report.
 Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Set a modest pay-as-you-go price appropriate to the scope and length; never require a subscription.
 `;
 
@@ -84,10 +83,16 @@ Deno.serve(async (req) => {
       catch { return json({ error: "The AI returned an unreadable report. Please try again." }, 502); }
       if (!generated || !generated.full_report) return json({ error: "The AI did not return a complete document. Please try again." }, 502);
 
-      const allowedNames = new Set(["Amineva Suite", "AgroClimate"]);
+      const productUrls: Record<string, string> = {
+        AgroClimate: Deno.env.get("AGROCLIMATE_URL") || "",
+        Adesua: Deno.env.get("ADESUA_URL") || "",
+        Inventra: Deno.env.get("INVENTRA_URL") || "",
+        SikaSem: Deno.env.get("SIKASEM_URL") || "",
+        DataLens: Deno.env.get("DATALENS_URL") || "",
+      };
       const recommendations = (Array.isArray(generated.recommendations) ? generated.recommendations : [])
-        .filter((p: any) => allowedNames.has(p?.name))
-        .map((p: any) => ({ name: p.name, reason: String(p.reason || ""), url: p.name === "Amineva Suite" ? (Deno.env.get("AMINEVA_SUITE_URL") || "") : (Deno.env.get("AGROCLIMATE_URL") || "") }));
+        .filter((p: any) => Object.prototype.hasOwnProperty.call(productUrls, p?.name))
+        .map((p: any) => ({ name: p.name, reason: String(p.reason || ""), url: productUrls[p.name] }));
 
       const record = {
         user_id: user.id,
