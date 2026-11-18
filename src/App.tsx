@@ -29,6 +29,7 @@ function Field({label,children,required=false,hint}:{label:string;children:React
 function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  const loc=useLocation();
  const [question,setQuestion]=useState("");
+ const [discoveryMode,setDiscoveryMode]=useState<"general"|"sensitive">("general");
  const [busy,setBusy]=useState(false);
  const [result,setResult]=useState<any>(null);
  const [showFull,setShowFull]=useState(false);
@@ -37,7 +38,7 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
   if(question.trim().length<2){setNotice({kind:"error",text:"Enter what you want to find out."});return;}
   if(!user){setNotice({kind:"info",text:"Sign in or create an account to start and save your discovery."});return;}
   setBusy(true);setResult(null);setShowFull(false);
-  try{const data=await backend.discover({question:question.trim()});setResult(data);setNotice({kind:"success",text:"Your information overview is ready."});}
+  try{const data=await backend.discover({question:question.trim(),mode:discoveryMode});setResult({...data,discovery_mode:discoveryMode});setNotice({kind:"success",text:"Your information overview is ready."});}
   catch(err:any){setNotice({kind:"error",text:err.message||"The discovery could not be completed. Please try again."});}
   finally{setBusy(false);}
  }
@@ -54,7 +55,8 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
   backend.table("discovery_runs",`select=*&id=eq.${runId}&user_id=eq.${user.id}&limit=1`).then(async(rows:any[])=>{
    const row=rows[0];if(!row)return;
    setQuestion(row.question||"");
-   setResult({run_id:row.id,title:row.title,preview:row.preview,recommendations:row.recommendations||[],price:row.price,currency:row.currency,payment_status:row.payment_status});
+   setDiscoveryMode(row.discovery_mode==="sensitive"?"sensitive":"general");
+   setResult({run_id:row.id,title:row.title,preview:row.preview,recommendations:row.recommendations||[],price:row.price,currency:row.currency,payment_status:row.payment_status,discovery_mode:row.discovery_mode||"general"});
    if(row.payment_status==="paid"||new URLSearchParams(loc.search).get("payment")==="success"){
     const unlocked=await backend.unlockDiscovery(row.id);
     if(unlocked?.report)setResult((old:any)=>({...old,...unlocked}));
@@ -63,16 +65,21 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  },[user?.id,loc.search]);
  const recommendations=(result?.recommendations||[]).filter((p:any)=>["Amineva Suite","AgroClimate"].includes(p.name));
  return <div className="page-wrap"><div className="container">
-  <PageIntro eyebrow="INFO DISCOVERY" title="What information are you looking for?" desc="Search any topic, question or information need. The research and analysis happen behind the scenes. You will first see a brief summary and overview."/>
+  <PageIntro eyebrow="INFO DISCOVERY" title="What information are you looking for?" desc="Search any topic, question or information need. Choose Sensitive Info when you need deeper discovery of difficult-to-find public-interest information."/>
+  <div className="discovery-mode-grid" role="group" aria-label="Discovery type">
+   <button type="button" className={discoveryMode==="general"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("general")}><span className="discovery-mode-icon"><Search size={19}/></span><span><b>Info Discovery</b><small>Explore questions, topics, knowledge and information across industries.</small></span></button>
+   <button type="button" className={discoveryMode==="sensitive"?"discovery-mode-card sensitive active":"discovery-mode-card sensitive"} onClick={()=>setDiscoveryMode("sensitive")}><span className="discovery-mode-icon"><ShieldCheck size={19}/></span><span><b>Sensitive Info</b><small>Investigate difficult-to-find public records, corporate links, regulatory actions, procurement and documented risks.</small></span></button>
+  </div>
+  {discoveryMode==="sensitive"&&<div className="sensitive-info-note"><ShieldCheck size={16}/><p><b>Public-interest intelligence.</b> Sensitive Info focuses on lawful, publicly accessible or otherwise authorized information. It does not uncover private personal data, confidential records or protected information.</p></div>}
   <div className="discovery-search-hero">
    <form className="panel discovery-search" onSubmit={run}>
-    <label className="discovery-query-label" htmlFor="discovery-question">Enter your search</label>
-    <textarea id="discovery-question" value={question} onChange={e=>setQuestion(e.target.value)} rows={3} maxLength={10000} placeholder="Type what you want to know or understand…" autoFocus/>
+    <label className="discovery-query-label" htmlFor="discovery-question">{discoveryMode==="sensitive"?"What would you like to investigate?":"Enter your search"}</label>
+    <textarea id="discovery-question" value={question} onChange={e=>setQuestion(e.target.value)} rows={3} maxLength={10000} placeholder={discoveryMode==="sensitive"?"Example: Investigate the public ownership history, regulatory actions, major public contracts and documented controversies involving an organisation.":"Type what you want to know or understand…"} autoFocus/>
     <div className="form-foot"><span><ShieldCheck size={15}/> Your full report is prepared privately.</span><Button type="submit" disabled={busy}>{busy?<><LoaderCircle className="spin"/> Searching</>:<>Search information <ArrowRight size={16}/></>}</Button></div>
    </form>
   </div>
   {result&&<section className="discovery-results">
-   <div className="results-heading"><div><div className="eyebrow">SEARCH OVERVIEW</div><h2>{result.title||"Information overview"}</h2><p>{result.preview?.summary||result.summary||""}</p></div><span className="review-badge"><FileCheck2 size={15}/> Overview ready</span></div>
+   <div className="results-heading"><div><div className="eyebrow">{result.discovery_mode==="sensitive"?"SENSITIVE INFO · INVESTIGATION OVERVIEW":"SEARCH OVERVIEW"}</div><h2>{result.title||"Information overview"}</h2><p>{result.preview?.summary||result.summary||""}</p></div><span className="review-badge"><FileCheck2 size={15}/> Overview ready</span></div>
    <div className="review-panel">
     <div className="review-label">OVERVIEW</div>
     <div className="finding-section"><p>{result.preview?.overview||result.preview?.content||result.preview?.sections?.map((s:any)=>s.content||s.text||"").filter(Boolean).join("\n\n")||"Your overview is ready. Unlock the full document to access the complete organized information."}</p></div>
