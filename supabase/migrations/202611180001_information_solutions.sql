@@ -102,6 +102,10 @@ drop policy if exists "Users read own discovery requests" on public.info_discove
 create policy "Users read own discovery requests" on public.info_discovery_requests
   for select to authenticated using (auth.uid() = user_id);
 
+drop policy if exists "Users create own infoservice requests" on public.infoservice_requests;
+create policy "Users create own infoservice requests" on public.infoservice_requests
+  for insert to authenticated with check (auth.uid() = user_id);
+
 drop policy if exists "Users read own infoservice requests" on public.infoservice_requests;
 create policy "Users read own infoservice requests" on public.infoservice_requests
   for select to authenticated using (auth.uid() = user_id);
