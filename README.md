@@ -17,11 +17,11 @@ Sensitive Info is a dedicated investigation mode inside Info Discovery for diffi
 
 ## Pricing
 
-The interface currently presents provisional one-time global USD tiers: Quick Discovery $4.99, Insight Report $12.99, Deep Research $24.99 and Sensitive Info $34.99. InfoService remains individually scoped and quoted in USD. These are launch-planning prices to validate before payments are enabled.
+Pricing is not presented as a standalone page or navigation tab. After the report is prepared, the research engine classifies the completed work into Quick Discovery ($4.99), Insight Report ($12.99), Deep Research ($24.99), or Sensitive Info ($34.99). The server maps that classification to a fixed one-time USD amount; the model does not set arbitrary prices. Sensitive Info mode always maps to $34.99. InfoService remains individually scoped and quoted in USD.
 
 ## Preview and authentication staging
 
-`AUTH_ENABLED` in `src/App.tsx` is currently `false` so the interface can be previewed without sign-in. When backend authentication is ready, set it to `true`; Info Discovery and InfoService will then redirect visitors to sign-in before rendering the feature. In preview mode, InfoService form submission is local-only and is not sent or stored. Info Discovery does not fabricate results while AI execution is paused.
+Info Discovery and InfoService display a sign-in/create-account dialog before the service interface is rendered. The dialog supports email/password and Google/Facebook OAuth buttons; enable the Google and Facebook providers and configure their redirect URLs in Supabase Auth before using social sign-in. The service pages remain protected and require an authenticated session.
 
 ## InfoService
 
