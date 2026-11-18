@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Building, User, Loader2 } from "lucide-react";
 import { handleLogin, handleSignup } from "@/lib/apiHandlers";
+import { getCurrentUser } from "@/lib/auth";
 import { sendPasswordRecovery } from "@/lib/auth";
 import { checkAdminRedirect } from "@/lib/adminAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -124,8 +125,7 @@ export default function Login() {
         for (let i = 0; i < 6; i++) {
           try {
             // Importing account here keeps the auth source consistent with the rest of the app.
-            const { account } = await import("@/lib/appwrite");
-            currentUser = await account.get();
+            currentUser = await getCurrentUser();
             break;
           } catch {
             await new Promise((r) => setTimeout(r, 200));
@@ -155,7 +155,7 @@ export default function Login() {
           toast({
             title: "Admin role record not linked",
             description:
-              `You're signed in as the designated admin email, but no 'admin' role is linked to this account. In Appwrite, create a document in user_roles with user_id = ${currentUser.$id} and role = admin (and ensure users can read their own role).`,
+              `You're signed in, but no admin role is assigned in the platform database.`,
             variant: "destructive",
           });
           navigate("/dashboard");
