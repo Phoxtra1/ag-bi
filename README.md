@@ -1,73 +1,76 @@
-# Welcome to your Lovable project
+# Information Solutions by Amineva Global
 
-## Project info
+A focused information services platform with two service areas:
 
-**URL**: https://lovable.dev/projects/106f3a40-dd0c-4531-a0aa-61e79b146e79
+- **Info Discovery** — request-based information discovery, assessment, verification and report delivery.
+- **InfoService** — individually scoped professional information services across Career and Education, Business Information, Contracts and Commitments, Travel and Relocation, and Info and Report Verification.
 
-## How can I edit this code?
+## Product architecture
 
-There are several ways of editing your application.
+- React + TypeScript + Vite frontend.
+- Supabase Auth for customer accounts.
+- Supabase Postgres with Row Level Security for requests, assessments, invoices, payments and reports.
+- Private Supabase Storage bucket for report files.
+- Staff workflow for request assessment, quotations, invoice issue, manual payment confirmation, report preparation and release.
+- No monthly subscription requirement.
 
-**Use Lovable**
+The current build is intentionally independent of the previous ABI/Business Intelligence application. Legacy source modules are not imported by the new application entry point.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/106f3a40-dd0c-4531-a0aa-61e79b146e79) and start prompting.
+## Supabase setup
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Create or select the dedicated Supabase project.
+2. Run `supabase/migrations/202611180001_information_solutions.sql` in the Supabase SQL editor.
+3. Configure Authentication > URL Configuration with the deployed platform URL and the local development URL if needed.
+4. Enable email confirmation if required by your account policy.
+5. Copy `.env.example` to `.env` and set:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+6. Set the same public environment values in Lovable Cloud / deployment environment.
+7. Register the first staff account, then grant the administrator role in the Supabase SQL editor:
 
-**Use your preferred IDE**
+```sql
+insert into public.user_roles (user_id, role)
+select id, 'admin' from auth.users where email = 'YOUR_ADMIN_EMAIL'
+on conflict (user_id, role) do nothing;
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Do not put the Supabase service-role key in a `VITE_*` variable or browser code.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Local development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
+cp .env.example .env
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Operational workflow
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Info Discovery
+Customer submits a request → staff reviews scope and evidence needs → staff records assessment and quotation → invoice is issued → payment is confirmed → staff prepares report → report is released to the customer's workspace.
 
-**Use GitHub Codespaces**
+### InfoService
+Customer submits a professional service request → staff assesses and discusses scope → quotation and invoice are issued → payment is confirmed → work is delivered and report/record is released as appropriate.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The staff console currently supports manual payment confirmation for operational testing. This is not a payment gateway. Stripe checkout and signed webhook confirmation are a later integration; do not mark a payment paid based solely on a browser redirect.
 
-## What technologies are used for this project?
+## AI / research integration boundary
 
-This project is built with:
+The request and report workflow is prepared for a later server-side research and assessment integration. No model provider or assistant identity is exposed in the customer-facing interface. Until that integration is connected, staff can assess requests and prepare reports through the staff console.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+When adding automated assessment:
+- Run model calls only in server-side functions.
+- Validate and rate-limit requests before invoking a model.
+- Use lightweight classification for initial triage and reserve deeper research for scoped/approved work.
+- Cache reusable research outputs and avoid repeated calls on unchanged inputs.
+- Keep secrets server-side; never expose model API keys in frontend environment variables.
+- Treat model output as draft research that requires source checks and human review before release.
 
-## How can I deploy this project?
+## Security and data handling
 
-Simply open [Lovable](https://lovable.dev/projects/106f3a40-dd0c-4531-a0aa-61e79b146e79) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Row Level Security is enabled on all customer data tables.
+- Customers can create and read only their own requests.
+- Customers can read only their own released reports and invoices.
+- Staff permissions are controlled through `user_roles`.
+- Report storage is private.
+- Never store card details or secret credentials in the application database.
