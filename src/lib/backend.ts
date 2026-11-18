@@ -61,12 +61,19 @@ export const backend = {
     const data=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})},false);
     saveSession({...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)}); return data;
   },
+  async resetPassword(email:string) {
+    return request("/auth/v1/recover",{method:"POST",body:JSON.stringify({email}),headers:{"redirect_to":location.origin+"/reset-password"}},false);
+  },
+  async updatePassword(password:string) {
+    const result=await request("/auth/v1/user",{method:"PUT",body:JSON.stringify({password})});
+    return result;
+  },
   async signOut() { const s=getSession(); if(s) await request("/auth/v1/logout",{method:"POST"}); saveSession(null); },
   async user():Promise<AppUser|null> {
     const params=new URLSearchParams(location.search);
     const tokenHash=params.get("token_hash"), verificationType=params.get("type");
     if(tokenHash && verificationType) {
-      const verified=await request(`/auth/v1/verify?token=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(verificationType)}`,{method:"POST"},false);
+      const verified=await request("/auth/v1/verify",{method:"POST",body:JSON.stringify({token_hash:tokenHash,type:verificationType})},false);
       if(verified?.access_token) saveSession({...verified,expires_at:Math.floor(Date.now()/1000)+(verified.expires_in||3600)});
       history.replaceState({},document.title,location.pathname);
     }
