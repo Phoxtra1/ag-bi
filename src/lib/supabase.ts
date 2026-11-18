@@ -13,8 +13,31 @@ const SESSION_KEY = "amineva-information-solutions-session";
 
 const readSession = (): AuthSession | null => {
   if (typeof window === "undefined") return null;
-  try { return JSON.parse(window.localStorage.getItem(SESSION_KEY) || "null"); }
-  catch { return null; }
+  try {
+    const stored = window.localStorage.getItem(SESSION_KEY);
+    if (stored) return JSON.parse(stored);
+    // Supabase OAuth returns tokens in the URL fragment. Capture them once,
+    // then remove the fragment so credentials are not left in browser history.
+    if (window.location.hash) {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const access_token = params.get("access_token");
+      const refresh_token = params.get("refresh_token");
+      if (access_token && refresh_token) {
+        const expires_in = Number(params.get("expires_in") || 3600);
+        const session: AuthSession = {
+          access_token,
+          refresh_token,
+          expires_in,
+          expires_at: Math.floor(Date.now() / 1000) + expires_in,
+          token_type: params.get("token_type") || "bearer",
+        };
+        window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+        return session;
+      }
+    }
+    return null;
+  } catch { return null; }
 };
 
 const saveSession = (session: AuthSession | null) => {
