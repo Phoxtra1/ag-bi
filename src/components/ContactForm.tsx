@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { Send, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { handleContactSubmission } from '@/lib/apiHandlers';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 interface ContactFormData {
   fullName: string;
@@ -22,60 +21,24 @@ interface ContactFormProps {
   className?: string;
 }
 
-const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
 const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const form = useForm<ContactFormData>();
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-
     try {
-      // ✅ Execute invisible reCAPTCHA
-      const token = await recaptchaRef.current?.executeAsync();
-      recaptchaRef.current?.reset();
-
-      if (!token) {
-        toast({ title: "CAPTCHA Failed", description: "Please verify you're human.", variant: "destructive" });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // ✅ Verify token through your Appwrite Function
-      const verifyResponse = await fetch("https://cloud.appwrite.io/v1/functions/verifyCaptcha/executions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Appwrite-Project": import.meta.env.VITE_APPWRITE_PROJECT_ID,
-        },
-        body: JSON.stringify({ token }),
-      });
-
-      const verifyResult = await verifyResponse.json();
-      const verification = verifyResult?.response ? JSON.parse(verifyResult.response) : {};
-
-      if (!verification.success) {
-        toast({ title: "Verification Failed", description: "CAPTCHA verification unsuccessful.", variant: "destructive" });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // ✅ Submit contact data after CAPTCHA passes
       const result = await handleContactSubmission(data);
-      if (!result.success) throw new Error(result.error || 'Submission failed');
-
+      if (!result.success) throw new Error(result.error || "Request submission failed");
       setIsSubmitted(true);
       form.reset();
-      toast({ title: 'Message Sent Successfully!', description: "We'll get back to you within 48 hours." });
+      toast({ title: "Request received", description: "Your InfoService request has been saved for assessment." });
       onSuccess && setTimeout(onSuccess, 1200);
-
     } catch (error: any) {
-      console.error('Contact form submission error:', error);
-      toast({ title: 'Submission Failed', description: error?.message || 'Please try again later.', variant: 'destructive' });
+      toast({ title: "Submission failed", description: error?.message || "Please sign in and try again.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -85,8 +48,8 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
     return (
       <div className={`text-center p-8 ${className}`}>
         <CheckCircle className="h-16 w-16 mx-auto mb-4 text-green-600" />
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Message Sent!</h3>
-        <p className="text-gray-600">Thank you for contacting us. We'll respond within 48 hours.</p>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">Request Received!</h3>
+        <p className="text-gray-600">Thank you. Your InfoService request has been saved for assessment.</p>
       </div>
     );
   }
@@ -161,12 +124,11 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
                     className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">Select a category</option>
-                    <option value="amniva">Amniva</option>
-                    <option value="amniva-society">Amniva Society</option>
-                    <option value="billing-plans">Billing Plans</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="support">Support</option>
-                    <option value="partnership">Partnership</option>
+                    <option value="career_education">Career and Education</option>
+                    <option value="business_information">Business Information</option>
+                    <option value="contracts_commitments">Contracts and Commitments</option>
+                    <option value="travel_relocation">Travel and Relocation</option>
+                    <option value="info_report_verification">Info and Report Verification</option>
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -194,13 +156,6 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
             )}
           />
 
-          {/* ✅ Invisible reCAPTCHA widget */}
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={SITE_KEY}
-            size="invisible"
-          />
-
           <Button
             type="submit"
             size="lg"
@@ -210,12 +165,12 @@ const ContactForm = ({ onSuccess, className = "" }: ContactFormProps) => {
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Sending...
+                Submitting...
               </>
             ) : (
               <>
                 <Send className="mr-2 h-5 w-5" />
-                Send Message
+                Submit Service Request
               </>
             )}
           </Button>
