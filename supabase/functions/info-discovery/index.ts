@@ -24,7 +24,9 @@ Deno.serve(async (req) => {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) return json({ error: "Your session is invalid. Please sign in again." }, 401);
 
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");\n  const admin = serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } }) : null;\n  const engineUrl = Deno.env.get("INFO_DISCOVERY_ENGINE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const admin = serviceRoleKey ? createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
+  const engineUrl = Deno.env.get("INFO_DISCOVERY_ENGINE_URL");
   const engineKey = Deno.env.get("INFO_DISCOVERY_ENGINE_KEY");
   if (!engineUrl || !engineKey) {
     return json({ error: "The information research engine has not been configured yet." }, 503);
@@ -42,7 +44,8 @@ Deno.serve(async (req) => {
           action: "discover",
           question,
           context: input.context || null,
-          pipeline: ["discover", "analyze_and_assess", "verify", "organize_and_connect", "outcome"],\n          capabilities: ["discover", "analyze", "verify", "assess", "organize", "connect", "produce_outcome"],
+          pipeline: ["discover", "analyze_and_assess", "verify", "organize_and_connect", "outcome"],
+          capabilities: ["discover", "analyze", "verify", "assess", "organize", "connect", "produce_outcome"],
           response_format: "review_and_full_report",
         }),
       });
@@ -90,7 +93,8 @@ Deno.serve(async (req) => {
       if (!engineResponse.ok) return json({ error: engineData.error || "Could not start report checkout." }, 502);
       if (engineData.checkout_url) return json({ checkout_url: engineData.checkout_url, run_id: run.id });
       if (engineData.payment_status === "paid" && engineData.report) {
-        if (!admin) return json({ error: "Server payment confirmation is not configured." }, 503);\n        const { error: updateError } = await admin.from("discovery_runs").update({ payment_status: "paid", payment_reference: engineData.payment_reference || null, updated_at: new Date().toISOString() }).eq("id", run.id).eq("user_id", user.id);
+        if (!admin) return json({ error: "Server payment confirmation is not configured." }, 503);
+        const { error: updateError } = await admin.from("discovery_runs").update({ payment_status: "paid", payment_reference: engineData.payment_reference || null, updated_at: new Date().toISOString() }).eq("id", run.id).eq("user_id", user.id);
         if (updateError) return json({ error: "Payment was confirmed but report access could not be updated. Contact support." }, 500);
         return json({ run_id: run.id, full_access: true, report: engineData.report });
       }
