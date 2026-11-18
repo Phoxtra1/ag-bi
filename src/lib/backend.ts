@@ -83,6 +83,9 @@ export const backend = {
   async update<T=any>(table:string,filters:string,values:Record<string,unknown>):Promise<T[]> {
     return request(`/rest/v1/${table}?${filters}`,{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify(values)});
   },
+  async rpc<T=any>(fn:string,args:Record<string,unknown>):Promise<T> {
+    return request(`/rest/v1/rpc/${fn}`,{method:"POST",body:JSON.stringify(args)});
+  },
   async role(userId:string):Promise<string|null> {
     const rows=await request(`/rest/v1/user_roles?select=role&user_id=eq.${encodeURIComponent(userId)}&limit=1`);
     return rows?.[0]?.role || null;
