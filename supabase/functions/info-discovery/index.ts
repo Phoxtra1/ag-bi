@@ -32,7 +32,7 @@ Return valid JSON only with this shape:
  "currency":"USD"
 }
 Do NOT recommend Amineva Suite. It is the company's productivity workspace and is accessed separately from the Amineva Global homepage; it is not a recommendation within Info Discovery. You may recommend the following existing Amineva products only when the user's actual information need is materially related to what that product does: AgroClimate for agriculture, farming, crops, livestock, farm operations and agricultural climate/risk; Adesua for education, learning and career development/exploration; Inventra for inventory, stock and sales operations; SikaSem for mobile money, microfinance, savings, loans and financial operations; DataLens for IT support and web application maintenance. The AI must decide relevance from the complete meaning of the user's search, not from hardcoded keyword rules. Do not recommend a product just because a related word appears in an unrelated question. If none of these products genuinely addresses the need, return an empty recommendations array and simply complete the information report.
-Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Set a modest pay-as-you-go price appropriate to the scope and length; never require a subscription.
+Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Classify the completed document into exactly one pricing_tier based on the actual research scope and depth: Quick Discovery for a straightforward, concise answer; Insight Report for structured multi-part analysis and verification; Deep Research for broad, multi-source, complex investigations. Sensitive Info mode must always use Sensitive Info. Never choose a tier based only on the question wording; assess the completed findings and work actually performed. Do not return a price. The server assigns the fixed one-time USD price: Quick Discovery 4.99, Insight Report 12.99, Deep Research 24.99, Sensitive Info 34.99. Never require a subscription.
 `;
 
 
@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
         .filter((p: any) => Object.prototype.hasOwnProperty.call(productUrls, p?.name))
         .map((p: any) => ({ name: p.name, reason: String(p.reason || ""), url: productUrls[p.name] }));
 
-      const record = {
+      const pricingTier = discoveryMode === "sensitive" ? "Sensitive Info" : (["Quick Discovery","Insight Report","Deep Research"].includes(generated.pricing_tier) ? generated.pricing_tier : "Insight Report");\n      const tierPrices: Record<string, number> = { "Quick Discovery": 4.99, "Insight Report": 12.99, "Deep Research": 24.99, "Sensitive Info": 34.99 };\n      const record = {
         user_id: user.id,
         question,
         context: null,
@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
         await supabase.from("discovery_runs").delete().eq("id", saved.id).eq("user_id", user.id);
         return json({ error: "The full document could not be stored securely: " + privateSaveError.message }, 500);
       }
-      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, price: record.price, currency: record.currency, discovery_mode: discoveryMode });
+      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, pricing_tier: record.pricing_tier, price: record.price, currency: record.currency, discovery_mode: discoveryMode });
     }
 
     if (input.action === "unlock") {
