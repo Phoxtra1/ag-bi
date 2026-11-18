@@ -31,7 +31,7 @@ function recommendAminevaProducts(text:string){
  const add=(match:boolean,name:string,reason:string,envKey:string)=>{if(match){const url=(import.meta.env as any)[envKey]||"";found.push({name,reason,url});}};
  add(/avocado|farm|farmer|agricultur|crop|harvest|soil|weather|plant|livestock|pest/.test(q),"AgroClimate","Agricultural information, climate intelligence, farm risks and related farm operations.","VITE_AGROCLIMATE_URL");
  add(/education|school|student|learner|career|course|university|scholarship|learning|training/.test(q),"Adesua","Learning and education support, with career development and exploration resources.","VITE_ADESUA_URL");
- add(/inventory|stock|warehouse|retail|wholesale|sales management|point of sale|shop/.test(q),"Inventra","Inventory and sales management for retailers and wholesalers.","VITE_INVENTRA_URL");
+ add(/inventory|stock|warehouse|retail|wholesale|sales|sales management|point of sale|shop/.test(q),"Inventra","Inventory and sales management for retailers and wholesalers.","VITE_INVENTRA_URL");
  add(/mobile money|microfinance|microcredit|savings|loan|rural bank|financial operations|vendor/.test(q),"SikaSem","Financial operations for mobile money, savings, loans and microfinance providers.","VITE_SIKASEM_URL");
  add(/website|web app|it support|software maintenance|technical support|hosting|system maintenance/.test(q),"DataLens","IT support, web application maintenance and technical service requests.","VITE_DATALENS_URL");
  add(/crm|human resources|hr system|team workspace|business workspace|office suite/.test(q),"Amineva Suite","A shared workspace for business applications and team operations.","VITE_AMINEVA_SUITE_URL");
