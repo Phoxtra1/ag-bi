@@ -8,13 +8,6 @@ const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthed, setIsAuthed] = useState(false);
 
   useEffect(() => {
-    // Allow all protected routes in preview mode without authentication
-    if (window.location.hostname.includes('lovable')) {
-      setIsAuthed(true);
-      setLoading(false);
-      return;
-    }
-
     let mounted = true;
     (async () => {
       try {
