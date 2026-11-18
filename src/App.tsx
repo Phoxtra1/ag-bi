@@ -37,7 +37,7 @@ function recommendAminevaProducts(text:string){
  add(/crm|human resources|hr system|team workspace|business workspace|office suite/.test(q),"Amineva Suite","A shared workspace for business applications and team operations.","VITE_AMINEVA_SUITE_URL");
  return found;
 }
-function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
+function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {\n const loc=useLocation();
  const [question,setQuestion]=useState("");
  const [context,setContext]=useState("");
  const [busy,setBusy]=useState(false);
