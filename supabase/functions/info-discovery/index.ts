@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
       if (!engineResponse.ok) return json({ error: engineData.error || "Could not start report checkout." }, 502);
       if (engineData.checkout_url) return json({ checkout_url: engineData.checkout_url, run_id: run.id });
       if (engineData.payment_status === "paid" && engineData.report) {
-        const { error: updateError } = await supabase.from("discovery_runs").update({ full_report: engineData.report, payment_status: "paid", payment_reference: engineData.payment_reference || null, updated_at: new Date().toISOString() }).eq("id", run.id).eq("user_id", user.id);
+        const { error: updateError } = await supabase.from("discovery_runs").update({ payment_status: "paid", payment_reference: engineData.payment_reference || null, updated_at: new Date().toISOString() }).eq("id", run.id).eq("user_id", user.id);
         if (updateError) return json({ error: "Payment was confirmed but report access could not be updated. Contact support." }, 500);
         return json({ run_id: run.id, full_access: true, report: engineData.report });
       }
