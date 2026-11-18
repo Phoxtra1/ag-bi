@@ -93,7 +93,7 @@ export const backend = {
   async rpc<T=any>(fn:string,args:Record<string,unknown>):Promise<T> {
     return request(`/rest/v1/rpc/${fn}`,{method:"POST",body:JSON.stringify(args)});
   },
-  async discover(input:{question:string;context:string|null}) {
+  async discover(input:{question:string;context?:string|null;mode?:"general"|"sensitive"}) {
     const session=getSession();
     if(!session) throw new Error("Sign in to run and save an information discovery.");
     return request("/functions/v1/info-discovery",{method:"POST",body:JSON.stringify({action:"discover",...input})});
