@@ -52,7 +52,8 @@ async function request(path:string,init:RequestInit={},useSession=true) {
 export const backend = {
   configured: () => Boolean(BASE && KEY),
   async signUp(email:string,password:string,fullName:string) {
-    const data=await request("/auth/v1/signup",{method:"POST",body:JSON.stringify({email,password,data:{full_name:fullName}})},false);
+    const redirect = encodeURIComponent(location.origin + "/login");
+    const data=await request(`/auth/v1/signup?redirect_to=${redirect}`,{method:"POST",body:JSON.stringify({email,password,data:{full_name:fullName}})},false);
     if(data?.access_token) saveSession({...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)});
     return data;
   },
@@ -62,6 +63,13 @@ export const backend = {
   },
   async signOut() { const s=getSession(); if(s) await request("/auth/v1/logout",{method:"POST"}); saveSession(null); },
   async user():Promise<AppUser|null> {
+    const params=new URLSearchParams(location.search);
+    const tokenHash=params.get("token_hash"), verificationType=params.get("type");
+    if(tokenHash && verificationType) {
+      const verified=await request(`/auth/v1/verify?token=${encodeURIComponent(tokenHash)}&type=${encodeURIComponent(verificationType)}`,{method:"POST"},false);
+      if(verified?.access_token) saveSession({...verified,expires_at:Math.floor(Date.now()/1000)+(verified.expires_in||3600)});
+      history.replaceState({},document.title,location.pathname);
+    }
     const s=getSession(); if(!s) return null;
     if(!s.user?.id) { const user=await request("/auth/v1/user"); const next={...s,user}; saveSession(next); return user; }
     return s.user;
