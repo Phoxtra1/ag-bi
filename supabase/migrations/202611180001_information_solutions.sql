@@ -94,6 +94,10 @@ drop policy if exists "Users read own roles" on public.user_roles;
 create policy "Users read own roles" on public.user_roles
   for select to authenticated using (auth.uid() = user_id);
 
+drop policy if exists "Users create own discovery requests" on public.info_discovery_requests;
+create policy "Users create own discovery requests" on public.info_discovery_requests
+  for insert to authenticated with check (auth.uid() = user_id);
+
 drop policy if exists "Users read own discovery requests" on public.info_discovery_requests;
 create policy "Users read own discovery requests" on public.info_discovery_requests
   for select to authenticated using (auth.uid() = user_id);
