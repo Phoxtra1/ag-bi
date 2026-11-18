@@ -1,4 +1,4 @@
-# Information Solutions by Amineva Global
+# Info Solutions by Amineva Global
 
 A focused information services platform with two service areas:
 
