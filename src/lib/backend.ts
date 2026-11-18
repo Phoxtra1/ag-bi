@@ -93,6 +93,16 @@ export const backend = {
   async rpc<T=any>(fn:string,args:Record<string,unknown>):Promise<T> {
     return request(`/rest/v1/rpc/${fn}`,{method:"POST",body:JSON.stringify(args)});
   },
+  async discover(input:{question:string;context:string|null}) {
+    const session=getSession();
+    if(!session) throw new Error("Sign in to run and save an information discovery.");
+    return request("/functions/v1/info-discovery",{method:"POST",body:JSON.stringify({action:"discover",...input})});
+  },
+  async unlockDiscovery(runId:string) {
+    const session=getSession();
+    if(!session) throw new Error("Sign in to unlock your report.");
+    return request("/functions/v1/info-discovery",{method:"POST",body:JSON.stringify({action:"unlock",run_id:runId})});
+  },
   async role(userId:string):Promise<string|null> {
     const rows=await request(`/rest/v1/user_roles?select=role&user_id=eq.${encodeURIComponent(userId)}&limit=1`);
     return rows?.[0]?.role || null;
