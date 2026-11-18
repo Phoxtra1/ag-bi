@@ -35,6 +35,15 @@ Do NOT recommend Amineva Suite. It is the company's productivity workspace and i
 Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Set a modest pay-as-you-go price appropriate to the scope and length; never require a subscription.
 `;
 
+
+const SENSITIVE_INFO_PROMPT = `
+SPECIAL MODE: SENSITIVE INFO.
+Act as a careful public-interest and organizational intelligence researcher. Investigate difficult-to-find information that is lawful to access and appropriate to disclose. Prioritize publicly disclosed corporate and institutional ownership, leadership and affiliations; procurement, tenders, contract awards and public expenditure; regulatory notices, sanctions, court judgments, litigation and official investigations; documented governance, compliance and conflict-of-interest concerns; underreported public reports and historical records; and evidence-supported connections among organizations, official acts, contracts and events.
+Prefer official registries, courts, regulators, procurement portals, audited filings, parliamentary records and reputable journalism. Cite source titles, publishers, dates and URLs only when genuinely available. Never invent sources, links, quotes, allegations, ownership links or findings. If live records cannot be accessed or a claim cannot be verified, say so clearly and specify which records would be needed. Separate confirmed facts, credible reporting, allegations, inference and unknowns. Include dates and jurisdiction.
+Do not expose, infer or facilitate access to private home addresses, personal contact details, credentials, private financial or medical records, personal identifiers, confidential documents, non-public personal data or protected information. Do not profile private individuals. Discuss public officials only in relation to documented official conduct and public duties. Do not present unproven allegations as facts or generate defamatory conclusions.
+Structure the report using Discover; Analyze and assess; Verify; Organize and connect; Present the outcome. Include scope, findings and evidence, supported entity relationships, risk indicators, confidence and verification status, gaps requiring further investigation, sources, limitations and balanced conclusions. Explain what is not known as carefully as what is known.
+`;
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -61,6 +70,7 @@ Deno.serve(async (req) => {
     const input = await req.json();
     if (input.action === "discover") {
       const question = String(input.question || "").trim();
+      const discoveryMode = input.mode === "sensitive" ? "sensitive" : "general";
       if (question.length < 2) return json({ error: "Enter what you want to discover." }, 400);
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -70,7 +80,7 @@ Deno.serve(async (req) => {
           temperature: 0.2,
           response_format: { type: "json_object" },
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: discoveryMode === "sensitive" ? SYSTEM_PROMPT + "\n\n" + SENSITIVE_INFO_PROMPT : SYSTEM_PROMPT },
             { role: "user", content: question }
           ]
         }),
@@ -98,6 +108,7 @@ Deno.serve(async (req) => {
         user_id: user.id,
         question,
         context: null,
+        discovery_mode: discoveryMode,
         title: String(generated.title || "Information discovery"),
         preview: { summary: String(generated.summary || ""), overview: String(generated.overview || "") },
         recommendations,
@@ -112,7 +123,7 @@ Deno.serve(async (req) => {
         await supabase.from("discovery_runs").delete().eq("id", saved.id).eq("user_id", user.id);
         return json({ error: "The full document could not be stored securely: " + privateSaveError.message }, 500);
       }
-      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, price: record.price, currency: record.currency });
+      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, price: record.price, currency: record.currency, discovery_mode: discoveryMode });
     }
 
     if (input.action === "unlock") {
