@@ -25,13 +25,13 @@ Info Discovery and InfoService display a sign-in/create-account dialog before th
 
 ## InfoService
 
-InfoService remains a separate request-based professional service across Career and Education, Business Information, Contracts and Commitments, Travel and Relocation, and Info and Report Verification. Staff assess the request, discuss scope, quote, invoice and deliver.
+InfoService remains a separate request-based professional service across Career and Education, Business Information, Contracts and Commitments, Travel and Relocation, and Info and Report Verification. Staff assess the request, discuss scope, quote, invoice and deliver. Customers may attach up to five supporting PDF, Word or document-image files (15 MB each). InfoService uploads are stored in the private `infoservice-attachments` bucket; the request owner and authorized staff can access them through authenticated, time-limited links.
 
 ## Lovable Cloud setup
 
 1. Connect this project to Lovable Cloud.
 2. Enable Lovable AI for the project so the server-side `LOVABLE_API_KEY` is available to Edge Functions.
-3. Apply migrations in order, including `202611180004_private_discovery_reports.sql`.
+3. Apply migrations in order, including `202611180004_private_discovery_reports.sql` and `202611190001_infoservice_request_attachments.sql`.
 4. Deploy the `info-discovery` Edge Function.
 5. Set server-side secrets `SUPABASE_SERVICE_ROLE_KEY`, and optional `AMINEVA_SUITE_URL` and `AGROCLIMATE_URL`. Never expose private keys in browser variables.
 6. Connect Stripe/payment processing separately. The unlock endpoint must only return the private full document after a trusted server-side payment confirmation updates the discovery run to `payment_status = 'paid'`.
