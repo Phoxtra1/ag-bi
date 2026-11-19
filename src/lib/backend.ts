@@ -43,7 +43,7 @@ async function request(path:string,init:RequestInit={},useSession=true) {
   const headers=new Headers(init.headers || {});
   headers.set("apikey",KEY);
   headers.set("Authorization",`Bearer ${session?.access_token || KEY}`);
-  if (init.body && !(init.body instanceof FormData)) headers.set("Content-Type","application/json");
+  if (init.body && !(init.body instanceof FormData) && !(typeof Blob !== "undefined" && init.body instanceof Blob)) headers.set("Content-Type","application/json");
   const response=await fetch(BASE+path,{...init,headers});
   const body=response.status===204?null:await response.json().catch(()=>null);
   if(!response.ok) throw new Error(body?.msg||body?.message||body?.error_description||body?.error||`Request failed (${response.status})`);
@@ -91,6 +91,47 @@ export const backend = {
   },
   async insert<T=any>(table:string,values:Record<string,unknown>|Record<string,unknown>[],select="*"):Promise<T[]> {
     return request(`/rest/v1/${table}?select=${encodeURIComponent(select)}`,{method:"POST",headers:{"Prefer":"return=representation"},body:JSON.stringify(values)});
+  },
+  async uploadInfoServiceAttachment(requestId:string,file:File) {
+    const session=getSession();
+    const userId=session?.user?.id;
+    if(!userId) throw new Error("Sign in before uploading supporting documents.");
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+    const uniqueName=typeof crypto!=="undefined"&&"randomUUID" in crypto?crypto.randomUUID():String(Date.now())+"-"+Math.random().toString(36).slice(2);
+    const storagePath=`${userId}/${requestId}/${uniqueName}-${safeName}`;
+    const encodedPath=storagePath.split("/").map(encodeURIComponent).join("/");
+    await request(`/storage/v1/object/infoservice-attachments/${encodedPath}`,{
+      method:"POST",
+      headers:{"Content-Type":file.type||"application/octet-stream","x-upsert":"false"},
+      body:file,
+    });
+    try {
+      const [attachment]=await this.insert("infoservice_attachments",{
+        request_id:requestId,
+        user_id:userId,
+        storage_path:storagePath,
+        file_name:file.name,
+        mime_type:file.type||null,
+        size_bytes:file.size,
+      });
+      return attachment;
+    } catch(error) {
+      try {
+        await request(`/storage/v1/object/infoservice-attachments/${encodedPath}`,{method:"DELETE"});
+      } catch { /* best-effort cleanup if metadata could not be saved */ }
+      throw error;
+    }
+  },
+  async getInfoServiceAttachmentUrl(storagePath:string,expiresIn=3600):Promise<string> {
+    const encodedPath=storagePath.split("/").map(encodeURIComponent).join("/");
+    const data=await request(`/storage/v1/object/sign/infoservice-attachments/${encodedPath}`,{
+      method:"POST",
+      body:JSON.stringify({expiresIn}),
+    });
+    const signed=data?.signedURL||data?.signedUrl;
+    if(!signed) throw new Error("Could not create a secure link for this attachment.");
+    if(/^https?:\/\//i.test(signed)) return signed;
+    return `${BASE}/storage/v1${signed.startsWith("/")?signed:`/${signed}`}`;
   },
   async update<T=any>(table:string,filters:string,values:Record<string,unknown>):Promise<T[]> {
     return request(`/rest/v1/${table}?${filters}`,{method:"PATCH",headers:{"Prefer":"return=representation"},body:JSON.stringify(values)});
