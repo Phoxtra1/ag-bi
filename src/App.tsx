@@ -30,17 +30,18 @@ function Field({label,children,required=false,hint}:{label:string;children:React
 function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  const loc=useLocation();
  const [question,setQuestion]=useState("");
- const [discoveryMode,setDiscoveryMode]=useState<"general"|"sensitive">("general");
+ const [discoveryMode,setDiscoveryMode]=useState<"general"|"sensitive"|"classified"|"conspiracy">("general");
  const [busy,setBusy]=useState(false);
  const [result,setResult]=useState<any>(null);
  const [showFull,setShowFull]=useState(false); const [showPricing,setShowPricing]=useState(false);
  async function run(e:React.FormEvent){
   e.preventDefault();
   if(question.trim().length<2){setNotice({kind:"error",text:"Enter what you want to find out."});return;}
+  if(discoveryMode==="classified"||discoveryMode==="conspiracy"){setNotice({kind:"info",text:"Search for this section will be configured in a later update."});return;}
   if(!AUTH_ENABLED){setNotice({kind:"info",text:"Preview mode: AI discovery will activate when the backend is connected."});return;}
   if(!user){setNotice({kind:"info",text:"Sign in to start and save your discovery."});return;}
   setBusy(true);setResult(null);setShowFull(false);
-  try{const data=await backend.discover({question:question.trim(),mode:discoveryMode});setResult({...data,discovery_mode:discoveryMode});setShowPricing(true);setNotice({kind:"success",text:"Your information overview is ready."});}
+  try{const data=await backend.discover({question:question.trim(),mode:discoveryMode==="sensitive"?"sensitive":"general"});setResult({...data,discovery_mode:discoveryMode});setShowPricing(true);setNotice({kind:"success",text:"Your information overview is ready."});}
   catch(err:any){setNotice({kind:"error",text:err.message||"The discovery could not be completed. Please try again."});}
   finally{setBusy(false);}
  }
@@ -67,10 +68,12 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  },[user?.id,loc.search]);
  const recommendations=(result?.recommendations||[]).filter((p:any)=>["AgroClimate","Adesua","Inventra","SikaSem","DataLens"].includes(p.name));
  return <div className="page-wrap"><div className="container">
-  <section className="discovery-experience-shell"><PageIntro eyebrow="INFO DISCOVERY" title="A world of information. One search." desc="Explore subjects, places, people, history, culture, education and business. Follow useful information, connect ideas and understand the wider context behind what matters to you."/>
-  <div className="discovery-mode-grid" role="group" aria-label="Discovery mode">
-   <button type="button" className={discoveryMode==="general"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("general")}><span className="discovery-mode-icon"><Compass size={20}/></span><span><b>Info Discovery</b><small>Explore any question, topic or subject.</small></span></button>
-   <button type="button" className={discoveryMode==="sensitive"?"discovery-mode-card sensitive active":"discovery-mode-card sensitive"} onClick={()=>setDiscoveryMode("sensitive")}><span className="discovery-mode-icon"><ShieldCheck size={20}/></span><span><b>Sensitive Info</b><small>Investigate difficult-to-find public-interest information.</small></span></button>
+  <section className="discovery-experience-shell"><PageIntro eyebrow="INFO DISCOVERY" title="A world of information." desc=""/>
+  <div className="discovery-mode-grid" role="tablist" aria-label="Info Discovery sections">
+   <button type="button" role="tab" aria-selected={discoveryMode==="general"} className={discoveryMode==="general"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("general")}><b>Info Discovery</b></button>
+   <button type="button" role="tab" aria-selected={discoveryMode==="sensitive"} className={discoveryMode==="sensitive"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("sensitive")}><b>Sensitive Information</b></button>
+   <button type="button" role="tab" aria-selected={discoveryMode==="classified"} className={discoveryMode==="classified"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("classified")}><b>Classified Information</b></button>
+   <button type="button" role="tab" aria-selected={discoveryMode==="conspiracy"} className={discoveryMode==="conspiracy"?"discovery-mode-card active":"discovery-mode-card"} onClick={()=>setDiscoveryMode("conspiracy")}><b>Conspiracy</b></button>
   </div>
   <div className="discovery-search-hero">
    <form className="panel discovery-search" onSubmit={run}>
