@@ -25,9 +25,11 @@ function officialLocUrl(value: unknown): string | null {
   if (typeof value !== "string") return null;
   try {
     const url = new URL(value.startsWith("http") ? value : `https://www.loc.gov${value}`);
-    return url.protocol === "https:" && (url.hostname === "loc.gov" || url.hostname.endsWith(".loc.gov"))
-      ? url.toString()
-      : null;
+    const isLocHost = url.hostname === "loc.gov" || url.hostname.endsWith(".loc.gov");
+    if (!isLocHost || (url.protocol !== "https:" && url.protocol !== "http:")) return null;
+    // LOC API identifiers historically use http:// URLs; normalize only verified LOC hosts.
+    url.protocol = "https:";
+    return url.toString();
   } catch {
     return null;
   }
