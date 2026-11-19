@@ -75,3 +75,34 @@
 @media(max-width:950px){.discovery-price-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.discovery-mode-grid{grid-template-columns:1fr;gap:10px}.discovery-mode-card{padding:15px}.discovery-search{padding:19px}.discovery-form-bottom{align-items:stretch;flex-direction:column}.discovery-form-bottom .btn{width:100%}.discovery-price-grid{grid-template-columns:1fr}.discovery-price-card.featured{transform:none}.infoservice-pricing-row{align-items:flex-start;flex-direction:column}}
 \n/* Contextual report-price and authentication dialogs */\n.modal-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(19,10,34,.68);backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px;animation:fadeIn .2s ease}.pricing-modal,.auth-modal{position:relative;width:min(100%,480px);background:#fff;border:1px solid #e8def4;border-radius:24px;padding:32px;box-shadow:0 28px 90px rgba(20,8,40,.28);animation:riseIn .28s ease}.modal-close{position:absolute;right:18px;top:18px;border:0;background:#f4eff9;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;color:#4c286d}.pricing-modal h2,.auth-modal h2{font-size:1.8rem;margin:10px 0}.pricing-modal p,.auth-modal p{color:#6e6478;line-height:1.6}.modal-price{font-size:2rem;font-weight:800;color:#54277d;margin:24px 0}.modal-price small{display:block;font-size:.85rem;font-weight:500;color:#82788b}.modal-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-modal-head{margin-bottom:20px}.auth-modal-head .brand{margin-bottom:24px}.social-auth{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.social-auth button{padding:12px;border:1px solid #e3d9ed;border-radius:12px;background:#fff;color:#4e3863;font-weight:600}.auth-switch button{border:0;background:none;color:#6d35a0;font-weight:700;cursor:pointer}.auth-modal .field{margin:12px 0}.auth-modal .auth-form>.btn{width:100%;margin-top:8px}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes riseIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* InfoService customer document intake and staff review */
+.attachment-picker{border:1px dashed #b8a6d8;background:#faf8ff;border-radius:10px;padding:14px}
+.attachment-picker input{display:block;width:100%;max-width:100%;font-size:11px;color:#5f4b7c}
+.attachment-picker input::file-selector-button{border:0;border-radius:7px;background:#ece5f8;color:#4c2e75;padding:9px 12px;margin-right:12px;font-size:11px;font-weight:700;cursor:pointer}
+.attachment-picker p{margin:10px 0 0;color:#837796;font-size:10px;line-height:1.6}
+.selected-attachments,.request-attachments ul{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:8px}
+.selected-attachments li,.request-attachments li{display:flex;align-items:center;gap:10px;border:1px solid #e9e2f2;background:#fff;border-radius:9px;padding:10px 12px;min-width:0}
+.selected-attachment-icon{display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;border-radius:8px;background:#f0eafa;color:#6945a4}
+.selected-attachment-name,.request-attachments li>span{display:grid;gap:3px;min-width:0;flex:1}
+.selected-attachment-name b,.request-attachments li>span>a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#37244f;font-weight:700}
+.selected-attachment-name small,.request-attachments li>span small{font-size:10px;color:#8b8196}
+.selected-attachments li>button{display:grid;place-items:center;border:0;background:transparent;color:#8e829d;padding:6px;cursor:pointer}
+.selected-attachments li>button:hover{color:#9c3e5a}
+.request-attachments{margin:18px 0 22px;padding:16px;border:1px solid #e8e0f1;border-radius:11px;background:#fbf9fe}
+.request-attachments-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#392451;font-size:12px}
+.request-attachments-heading>span{display:grid;place-items:center;min-width:25px;height:25px;border-radius:20px;background:#eee7f8;color:#6945a4;font-size:10px;font-weight:800}
+.request-attachments li>svg{flex:0 0 auto;color:#6945a4}
+.request-attachments li>span>a{color:#4e3375;text-decoration:underline;text-underline-offset:2px}
+.request-attachments .attachment-open-link{font-size:10px;font-weight:800;color:#6945a4}
+
+/* Give the Info Discovery introduction a richer, more confident visual weight. */
+.discovery-experience-shell{position:relative;isolation:isolate;overflow:hidden;margin:0 0 42px;padding:clamp(22px,4vw,46px);border:1px solid rgba(205,183,245,.2);border-radius:24px;background:radial-gradient(circle at 14% 0%,rgba(160,111,222,.24),transparent 38%),linear-gradient(135deg,#211432 0%,#39205d 58%,#25143e 100%);box-shadow:0 22px 60px rgba(38,20,61,.18)}
+.discovery-experience-shell:after{content:"";position:absolute;z-index:-1;width:360px;height:360px;right:-150px;top:-190px;border:1px solid rgba(221,203,255,.12);border-radius:50%;box-shadow:0 0 0 35px rgba(221,203,255,.025),0 0 0 75px rgba(221,203,255,.02);pointer-events:none}
+.discovery-experience-shell .page-intro{position:relative;z-index:1;max-width:790px;margin:0 auto 30px;text-align:center}
+.discovery-experience-shell .page-intro .eyebrow{justify-content:center;color:#d0b7f5}
+.discovery-experience-shell .page-intro h1{color:#fff}
+.discovery-experience-shell .page-intro>p{max-width:760px;margin:0 auto;color:#ded4ed}
+.discovery-experience-shell .discovery-mode-grid{position:relative;z-index:1;margin-bottom:18px}
+.discovery-experience-shell .discovery-search-hero{margin-bottom:0}
+@media(max-width:720px){.discovery-experience-shell{padding:23px 16px;border-radius:18px;margin-bottom:30px}.discovery-experience-shell .page-intro{margin-bottom:24px}.selected-attachments li,.request-attachments li{padding:9px}.request-attachments{padding:12px}}
