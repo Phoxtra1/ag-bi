@@ -24,12 +24,14 @@ import {
 } from 'lucide-react';
 import { Models } from 'appwrite';
 
+type Doc = Models.Document & Record<string, any>;
+
 const InsightReviewPanel = () => {
   const { toast } = useToast();
-  const [pendingInsights, setPendingInsights] = useState<Models.Document[]>([]);
-  const [allReports, setAllReports] = useState<Models.Document[]>([]);
+  const [pendingInsights, setPendingInsights] = useState<Doc[]>([]);
+  const [allReports, setAllReports] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedInsight, setSelectedInsight] = useState<Models.Document | null>(null);
+  const [selectedInsight, setSelectedInsight] = useState<Doc | null>(null);
   const [reviewData, setReviewData] = useState({
     enhancedSummary: '',
     enhancedObservations: '',

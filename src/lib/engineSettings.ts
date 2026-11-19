@@ -52,7 +52,7 @@ export async function upsertEngineConfig(engineType: EngineType, data: Partial<E
       DATABASE_ID,
       ENGINE_COLLECTIONS.TOGGLES,
       existing.$id,
-      payload
+      payload as any
     );
     return updated as unknown as EngineExternalConfig;
   }
@@ -73,7 +73,7 @@ export async function upsertEngineConfig(engineType: EngineType, data: Partial<E
     DATABASE_ID,
     ENGINE_COLLECTIONS.TOGGLES,
     ID.unique(),
-    { ...defaultPayload, ...payload }
+    { ...defaultPayload, ...payload } as any
   );
   return created as unknown as EngineExternalConfig;
 }

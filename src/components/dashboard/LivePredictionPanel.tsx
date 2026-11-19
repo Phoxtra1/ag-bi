@@ -17,9 +17,11 @@ import { getCurrentUser } from '@/lib/auth';
 import { PredictionSubmissionModal } from './PredictionSubmissionModal';
 import { Models } from 'appwrite';
 
+type Doc = Models.Document & Record<string, any>;
+
 const LivePredictionPanel = () => {
-  const [userPredictions, setUserPredictions] = useState<Models.Document[]>([]);
-  const [allPredictions, setAllPredictions] = useState<Models.Document[]>([]);
+  const [userPredictions, setUserPredictions] = useState<Doc[]>([]);
+  const [allPredictions, setAllPredictions] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [metrics, setMetrics] = useState({

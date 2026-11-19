@@ -18,10 +18,12 @@ import {
 } from 'lucide-react';
 import { Models } from 'appwrite';
 
+type Doc = Models.Document & Record<string, any>;
+
 const UserInsightsDashboard = () => {
   const { toast } = useToast();
-  const [reports, setReports] = useState<Models.Document[]>([]);
-  const [insights, setInsights] = useState<Models.Document[]>([]);
+  const [reports, setReports] = useState<Doc[]>([]);
+  const [insights, setInsights] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState('');
 
