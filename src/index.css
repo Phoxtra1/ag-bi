@@ -30,15 +30,15 @@
 
 /* Premium discovery experience */
 .preview-mode-pill{display:inline-flex;align-items:center;border:1px solid #e4d8fa;background:#f4effd;color:#6c4ca8;border-radius:99px;padding:8px 13px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-.discovery-mode-grid{display:flex;flex-wrap:nowrap;align-items:stretch;gap:10px;max-width:850px;margin:0 auto 20px;overflow-x:auto;padding:3px 2px 9px;scrollbar-width:thin}
-.discovery-mode-card{position:relative;display:flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;text-align:center;padding:14px 12px;border:1px solid #e8e0f4;border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 8px 22px rgba(48,25,78,.045);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;white-space:nowrap;min-height:52px}
+.discovery-mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:10px;width:100%;max-width:850px;margin:0 auto 20px}
+.discovery-mode-card{position:relative;display:flex;width:100%;min-width:0;min-height:60px;align-items:center;justify-content:center;text-align:center;padding:12px 10px;border:1px solid #e8e0f4;border-radius:12px;background:rgba(255,255,255,.94);box-shadow:0 8px 22px rgba(48,25,78,.045);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;white-space:normal}
 .discovery-mode-card:before{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(225,210,255,.22),transparent 65%);opacity:0;transition:opacity .25s}
 .discovery-mode-card:hover{transform:translateY(-4px);border-color:#bca4e8;box-shadow:0 18px 38px rgba(72,42,120,.1)}
 .discovery-mode-card.active{border:1.5px solid #8c68ca;background:#fbf9ff;box-shadow:0 12px 32px rgba(91,60,145,.12)}
 .discovery-mode-card.active:before{opacity:1}
 .discovery-mode-card>*{position:relative;z-index:1}
-.discovery-mode-icon{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:13px;background:#eee7fb;color:#714bb1}
-.discovery-mode-card b{display:block;font:800 12px Manrope,sans-serif;color:#2c1c43;margin:0}
+.discovery-mode-card:focus-visible{outline:3px solid rgba(151,115,207,.55);outline-offset:3px}
+.discovery-mode-card b{display:block;max-width:100%;font-family:Manrope,sans-serif;font-size:clamp(10px,1.1vw,12px);font-weight:800;line-height:1.25;letter-spacing:-.015em;color:#2c1c43;margin:0}
 
 
 .discovery-search-hero{position:relative;max-width:850px;margin:0 auto 45px}
@@ -73,8 +73,10 @@
 @keyframes discoveryFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-17px) scale(1.08)}}
 @keyframes resultRise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:950px){.discovery-price-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:620px){.discovery-mode-grid{gap:8px}.discovery-mode-card{flex:0 0 auto;min-width:148px;padding:13px 12px;font-size:11px}.discovery-mode-card b{font-size:11px}.discovery-search{padding:19px}.discovery-form-bottom{align-items:stretch;flex-direction:column}.discovery-form-bottom .btn{width:100%}.discovery-price-grid{grid-template-columns:1fr}.discovery-price-card.featured{transform:none}.infoservice-pricing-row{align-items:flex-start;flex-direction:column}}
-\n/* Contextual report-price and authentication dialogs */\n.modal-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(19,10,34,.68);backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px;animation:fadeIn .2s ease}.pricing-modal,.auth-modal{position:relative;width:min(100%,480px);background:#fff;border:1px solid #e8def4;border-radius:24px;padding:32px;box-shadow:0 28px 90px rgba(20,8,40,.28);animation:riseIn .28s ease}.modal-close{position:absolute;right:18px;top:18px;border:0;background:#f4eff9;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;color:#4c286d}.pricing-modal h2,.auth-modal h2{font-size:1.8rem;margin:10px 0}.pricing-modal p,.auth-modal p{color:#6e6478;line-height:1.6}.modal-price{font-size:2rem;font-weight:800;color:#54277d;margin:24px 0}.modal-price small{display:block;font-size:.85rem;font-weight:500;color:#82788b}.modal-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-modal-head{margin-bottom:20px}.auth-modal-head .brand{margin-bottom:24px}.social-auth{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.social-auth button{padding:12px;border:1px solid #e3d9ed;border-radius:12px;background:#fff;color:#4e3863;font-weight:600}.auth-switch button{border:0;background:none;color:#6d35a0;font-weight:700;cursor:pointer}.auth-modal .field{margin:12px 0}.auth-modal .auth-form>.btn{width:100%;margin-top:8px}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes riseIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:620px){.discovery-mode-grid{gap:7px;margin-bottom:16px}.discovery-mode-card{min-height:56px;padding:10px 5px;border-radius:10px}.discovery-mode-card b{font-size:clamp(8px,2.8vw,10px);line-height:1.2;letter-spacing:-.025em}.discovery-search{padding:19px}.discovery-form-bottom{align-items:stretch;flex-direction:column}.discovery-form-bottom .btn{width:100%}.discovery-price-grid{grid-template-columns:1fr}.discovery-price-card.featured{transform:none}.infoservice-pricing-row{align-items:flex-start;flex-direction:column}}
+
+/* Contextual report-price and authentication dialogs */
+.modal-backdrop{position:fixed;inset:0;z-index:1000;background:rgba(19,10,34,.68);backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px;animation:fadeIn .2s ease}.pricing-modal,.auth-modal{position:relative;width:min(100%,480px);background:#fff;border:1px solid #e8def4;border-radius:24px;padding:32px;box-shadow:0 28px 90px rgba(20,8,40,.28);animation:riseIn .28s ease}.modal-close{position:absolute;right:18px;top:18px;border:0;background:#f4eff9;border-radius:50%;width:36px;height:36px;display:grid;place-items:center;color:#4c286d}.pricing-modal h2,.auth-modal h2{font-size:1.8rem;margin:10px 0}.pricing-modal p,.auth-modal p{color:#6e6478;line-height:1.6}.modal-price{font-size:2rem;font-weight:800;color:#54277d;margin:24px 0}.modal-price small{display:block;font-size:.85rem;font-weight:500;color:#82788b}.modal-actions{display:flex;gap:10px;flex-wrap:wrap}.auth-modal-head{margin-bottom:20px}.auth-modal-head .brand{margin-bottom:24px}.social-auth{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.social-auth button{padding:12px;border:1px solid #e3d9ed;border-radius:12px;background:#fff;color:#4e3863;font-weight:600}.auth-switch button{border:0;background:none;color:#6d35a0;font-weight:700;cursor:pointer}.auth-modal .field{margin:12px 0}.auth-modal .auth-form>.btn{width:100%;margin-top:8px}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes riseIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* InfoService customer document intake and staff review */
 .attachment-picker{border:1px dashed #b8a6d8;background:#faf8ff;border-radius:10px;padding:14px}
@@ -107,5 +109,3 @@
 .discovery-experience-shell .discovery-search-hero{margin-bottom:0}
 @media(max-width:720px){.discovery-experience-shell{padding:23px 16px;border-radius:18px;margin-bottom:30px}.discovery-experience-shell .page-intro{margin-bottom:24px}.selected-attachments li,.request-attachments li{padding:9px}.request-attachments{padding:12px}}
 
-/* Info Discovery keeps its world-of-information heading without the removed subtitle. */
-.discovery-experience-shell .page-intro>p{display:none}
