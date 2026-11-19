@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
       const sourceAppendix = [
         "## Approved-source acquisition log",
         "",
-        "These records were located during the automated source-discovery pass. A catalogue result is a research lead, not proof of the truth of a claim. Only catalogue metadata was acquired in this phase; full documents were not automatically downloaded or independently verified.",
+        "These records were located during the automated source-discovery pass. A catalogue result is a research lead, not proof of the truth of a claim. This acquisition log is not a verification certificate. Only catalogue metadata was acquired in this phase; full documents were not automatically downloaded or independently verified.",
         "",
         ...acquisition.source_status.map((item) => "- **" + item.source_id + " — " + item.status + ":** " + (item.detail || "No further detail")),
         "",
