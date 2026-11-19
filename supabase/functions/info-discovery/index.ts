@@ -29,10 +29,19 @@ Return valid JSON only with this shape:
    {"name":"AgroClimate | Adesua | Inventra | SikaSem | DataLens","reason":"...","url":""}
  ],
  "price":number,
- "currency":"GHS"
+ "currency":"USD"
 }
 Do NOT recommend Amineva Suite. It is the company's productivity workspace and is accessed separately from the Amineva Global homepage; it is not a recommendation within Info Discovery. You may recommend the following existing Amineva products only when the user's actual information need is materially related to what that product does: AgroClimate for agriculture, farming, crops, livestock, farm operations and agricultural climate/risk; Adesua for education, learning and career development/exploration; Inventra for inventory, stock and sales operations; SikaSem for mobile money, microfinance, savings, loans and financial operations; DataLens for IT support and web application maintenance. The AI must decide relevance from the complete meaning of the user's search, not from hardcoded keyword rules. Do not recommend a product just because a related word appears in an unrelated question. If none of these products genuinely addresses the need, return an empty recommendations array and simply complete the information report.
-Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Set a modest pay-as-you-go price appropriate to the scope and length; never require a subscription.
+Do not invent facts, citations, source URLs, or claim verification that was not performed. Clearly distinguish established information from uncertain or unavailable evidence. The full document should be useful across any industry, not limited to predefined categories. Classify the completed document into exactly one pricing_tier based on the actual research scope and depth: Quick Discovery for a straightforward, concise answer; Insight Report for structured multi-part analysis and verification; Deep Research for broad, multi-source, complex investigations. Sensitive Info mode must always use Sensitive Info. Never choose a tier based only on the question wording; assess the completed findings and work actually performed. Do not return a price. The server assigns the fixed one-time USD price: Quick Discovery 4.99, Insight Report 12.99, Deep Research 24.99, Sensitive Info 34.99. Never require a subscription.
+`;
+
+
+const SENSITIVE_INFO_PROMPT = `
+SPECIAL MODE: SENSITIVE INFO.
+Conduct a careful public-interest investigation of difficult-to-find information that is lawful to access and appropriate to disclose. Focus on corporate and institutional background; publicly disclosed ownership and leadership; public procurement, tenders, awards and expenditure; regulatory notices, sanctions, court judgments, litigation and official investigations; documented governance, compliance and conflicts of interest; underreported public reports and historical records; and evidence-supported connections among organizations, official acts, contracts and events.
+Prefer official registries, regulators, courts, procurement portals, audited filings, parliamentary records and reputable journalism. Never invent sources, links, quotations, allegations, ownership links or findings. Clearly separate confirmed facts, credible reporting, allegations, inference and unknowns. Identify source dates, jurisdictions, confidence and verification status. If live sources or records are not available, disclose the limitation and state what evidence is still needed.
+Do not expose or infer private addresses, private contact details, credentials, private financial or medical records, personal identifiers, confidential documents or protected non-public information. Do not profile private individuals or present unproven allegations as facts.
+Structure the outcome using Discover; Analyze and assess; Verify; Organize and connect; Present the outcome. Include findings, supported relationships, documented risk indicators, evidence gaps, sources, limitations and a balanced conclusion.
 `;
 
 Deno.serve(async (req) => {
@@ -61,6 +70,7 @@ Deno.serve(async (req) => {
     const input = await req.json();
     if (input.action === "discover") {
       const question = String(input.question || "").trim();
+      const discoveryMode = input.mode === "sensitive" ? "sensitive" : "general";
       if (question.length < 2) return json({ error: "Enter what you want to discover." }, 400);
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -70,7 +80,7 @@ Deno.serve(async (req) => {
           temperature: 0.2,
           response_format: { type: "json_object" },
           messages: [
-            { role: "system", content: SYSTEM_PROMPT },
+            { role: "system", content: discoveryMode === "sensitive" ? SYSTEM_PROMPT + "\n\n" + SENSITIVE_INFO_PROMPT : SYSTEM_PROMPT },
             { role: "user", content: question }
           ]
         }),
@@ -94,15 +104,19 @@ Deno.serve(async (req) => {
         .filter((p: any) => Object.prototype.hasOwnProperty.call(productUrls, p?.name))
         .map((p: any) => ({ name: p.name, reason: String(p.reason || ""), url: productUrls[p.name] }));
 
+      const pricingTier = discoveryMode === "sensitive" ? "Sensitive Info" : (["Quick Discovery","Insight Report","Deep Research"].includes(generated.pricing_tier) ? generated.pricing_tier : "Insight Report");
+      const tierPrices: Record<string, number> = { "Quick Discovery": 4.99, "Insight Report": 12.99, "Deep Research": 24.99, "Sensitive Info": 34.99 };
       const record = {
         user_id: user.id,
         question,
         context: null,
+        discovery_mode: discoveryMode,
         title: String(generated.title || "Information discovery"),
         preview: { summary: String(generated.summary || ""), overview: String(generated.overview || "") },
         recommendations,
-        price: Number.isFinite(Number(generated.price)) ? Number(generated.price) : null,
-        currency: String(generated.currency || "GHS"),
+        pricing_tier: pricingTier,
+        price: tierPrices[pricingTier],
+        currency: "USD",
         payment_status: "preview",
       };
       const { data: saved, error: saveError } = await supabase.from("discovery_runs").insert(record).select("id").single();
@@ -112,7 +126,7 @@ Deno.serve(async (req) => {
         await supabase.from("discovery_runs").delete().eq("id", saved.id).eq("user_id", user.id);
         return json({ error: "The full document could not be stored securely: " + privateSaveError.message }, 500);
       }
-      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, price: record.price, currency: record.currency });
+      return json({ run_id: saved.id, title: record.title, preview: record.preview, recommendations, pricing_tier: record.pricing_tier, price: record.price, currency: record.currency, discovery_mode: discoveryMode });
     }
 
     if (input.action === "unlock") {

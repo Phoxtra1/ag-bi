@@ -57,7 +57,7 @@ export const backend = {
     if(data?.access_token) saveSession({...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)});
     return data;
   },
-  async signIn(email:string,password:string) {
+  async oauth(provider:"google"|"facebook") {\n    configured();\n    const redirect=encodeURIComponent(location.origin+location.pathname+location.search);\n    location.assign(`${BASE}/auth/v1/authorize?provider=${provider}&redirect_to=${redirect}&apikey=${KEY}`);\n  },\n  async signIn(email:string,password:string) {
     const data=await request("/auth/v1/token?grant_type=password",{method:"POST",body:JSON.stringify({email,password})},false);
     saveSession({...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)}); return data;
   },
@@ -93,7 +93,7 @@ export const backend = {
   async rpc<T=any>(fn:string,args:Record<string,unknown>):Promise<T> {
     return request(`/rest/v1/rpc/${fn}`,{method:"POST",body:JSON.stringify(args)});
   },
-  async discover(input:{question:string;context:string|null}) {
+  async discover(input:{question:string;context?:string|null;mode?:"general"|"sensitive"}) {
     const session=getSession();
     if(!session) throw new Error("Sign in to run and save an information discovery.");
     return request("/functions/v1/info-discovery",{method:"POST",body:JSON.stringify({action:"discover",...input})});
