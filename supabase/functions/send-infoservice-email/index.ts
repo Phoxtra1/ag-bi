@@ -6,7 +6,7 @@ Deno.serve(async(req)=>{
   const auth=req.headers.get("Authorization")||"";
   const client=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_ANON_KEY")!,{global:{headers:{Authorization:auth}}});
   const {data:{user},error:userError}=await client.auth.getUser();if(userError||!user)throw new Error("Sign in required.");
-  const {data:role}=await client.from("user_roles").select("role").eq("user_id",user.id).in("role",["admin","reviewer","support"]).maybeSingle();
+  const {data:role}=await client.from("user_roles").select("role").eq("user_id",user.id).in("role",["admin","reviewer","support"]).limit(1).maybeSingle();
   if(!role)throw new Error("Staff access required.");
   const {request_id,subject,body}=await req.json();if(!request_id||!subject?.trim()||!body?.trim())throw new Error("Request, subject and message are required.");
   const admin=createClient(Deno.env.get("SUPABASE_URL")!,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
