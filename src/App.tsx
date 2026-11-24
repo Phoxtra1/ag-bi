@@ -212,9 +212,10 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
    </form>
   </div>
   <section className="booking-tab-section" aria-label="Booking">
-   <button type="button" className={bookingOpen?"booking-tab active":"booking-tab"} role="tab" aria-selected={bookingOpen} onClick={()=>setBookingOpen(open=>!open)}>Booking</button>
-   {bookingOpen&&<div className="booking-tab-panel" role="tabpanel"><h2>Booking</h2><p>Booking arrangements will be connected here after the booking platform is selected.</p></div>}
-  </section>
+    <p className="booking-intro">If you would like to submit your InfoService request in person, please book an appointment. If you would like to discuss your needs, receive explanations or obtain professional guidance without submitting a request, you can arrange a paid consultation.</p>
+    <button type="button" className={bookingOpen?"booking-tab active":"booking-tab"} role="tab" aria-selected={bookingOpen} aria-expanded={bookingOpen} onClick={()=>setBookingOpen(open=>!open)}>Booking</button>
+    {bookingOpen&&<div className="booking-tab-panel" role="tabpanel"><h2>In-person appointments</h2><div className="booking-choice"><b>Request submission · Free</b><p>Book a time to visit and submit your InfoService request in person. Our team will assess it and prepare a quotation where applicable.</p></div><div className="booking-choice"><b>Consultation · Paid</b><p>Book time to discuss your situation, receive explanations or obtain professional guidance. The consultation fee will be communicated before your booking is confirmed.</p></div><p className="booking-availability-note">Appointment scheduling will be enabled here once the booking system is connected.</p></div>}
+   </section>
  </div></div>;
 }
 function AuthPage({mode,setUser,setNotice}:{mode:"login"|"signup";setUser:(u:any)=>void;setNotice:(n:Notice)=>void}){
