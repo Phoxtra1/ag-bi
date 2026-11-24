@@ -19,22 +19,34 @@ Sensitive Info is a dedicated investigation mode inside Info Discovery for diffi
 
 Pricing is not presented as a standalone page or navigation tab. After the report is prepared, the research engine classifies the completed work into Quick Discovery ($4.99), Insight Report ($12.99), Deep Research ($24.99), or Sensitive Info ($34.99). The server maps that classification to a fixed one-time USD amount; the model does not set arbitrary prices. Sensitive Info mode always maps to $34.99. InfoService remains individually scoped and quoted in USD.
 
-## Preview and authentication staging
+## Authentication and public service intake
 
-Info Discovery and InfoService display a sign-in/create-account dialog before the service interface is rendered. The dialog supports email/password and Google/Facebook OAuth buttons; enable the Google and Facebook providers and configure their redirect URLs in Supabase Auth before using social sign-in. The service pages remain protected and require an authenticated session.
+Info Discovery requires a customer account so discovery runs and paid reports remain associated with the customer. InfoService requests and appointment bookings can be submitted without signing in. Staff tools require an authenticated account with an authorized staff role. The header does not display a generic Preview badge.
 
-## InfoService
+Info Discovery shows the generated title and short overview/summary before payment. The complete report remains locked until the payment provider confirms the transaction.
 
-InfoService remains a separate request-based professional service across Career and Education, Business Information, Traveling Abroad and Relocation, and Info and Report Verification. Career and travel requests use predefined request types, including Employment Opportunities for Traveling Abroad and Relocation, with an optional short custom detail (required when Other is selected). Business Information and Info and Report Verification require a short description of the specific subject, document, report or information being requested. The short field is limited to 50 characters; a separate required Describe the support you need field captures the fuller explanation. A Booking tab appears directly beneath and aligned to the right-hand request-form column. It distinguishes free in-person request submission from paid consultations; the consultation fee is communicated before confirmation. Appointment scheduling remains a presentation-only placeholder until the booking system is selected and connected. Staff assess the request, discuss scope, quote, invoice and deliver. Customers may attach up to five supporting PDF, Word or document-image files (15 MB each). InfoService uploads are stored in the private `infoservice-attachments` bucket; the request owner and authorized staff can access them through authenticated, time-limited links.
+## InfoService and appointments
+
+InfoService accepts requests in Career and Education, Business Information, Traveling Abroad and Relocation, and Info and Report Verification. Requests are written to `infoservice_requests` through a validated database RPC and appear in the Admin request queue. Staff can assess requests, generate invoices and send a direct email to the customer; outgoing messages are recorded in `infoservice_messages`.
+
+The separate `/booking` page provides a visual month calendar and time-slot selector. Staff publish individual date/time slots and capacity from Admin; weekdays can vary from week to week. The public calendar exposes only remaining availability, not customer records.
+
+Appointment types:
+- Request submission: free in-person visit to submit an InfoService request.
+- Professional consultation: US$50 per hour, prorated in 30-minute increments (30 minutes US$25; 60 minutes US$50; 90 minutes US$75; 120 minutes US$100). Payment is required before confirmation. Consultation is discussion, explanations and professional guidance only; research and document preparation are separate InfoService engagements.
+
+Bookings are inserted through an atomic database function that checks slot capacity. Consultation checkout is initialized server-side through Paystack and the appointment is confirmed only by a valid Paystack webhook. Admin includes appointment review, availability publishing/unpublishing and customer email communication.
+
+Supporting InfoService documents remain private and currently require the customer to sign in. The form accepts up to five supported files (15 MB each).
 
 ## Lovable Cloud setup
 
 1. Connect this project to Lovable Cloud.
 2. Enable Lovable AI for the project so the server-side `LOVABLE_API_KEY` is available to Edge Functions.
-3. Apply migrations in order, including `202611180004_private_discovery_reports.sql` and `202611190001_infoservice_request_attachments.sql`.
+3. Apply all migrations in order, including `202611180004_private_discovery_reports.sql`, `202611190001_infoservice_request_attachments.sql`, and `202611240001_infoservice_appointments.sql`.
 4. Deploy the `info-discovery` Edge Function.
-5. Set server-side secrets `SUPABASE_SERVICE_ROLE_KEY`, and optional `AMINEVA_SUITE_URL` and `AGROCLIMATE_URL`. Never expose private keys in browser variables.
-6. Connect Stripe/payment processing separately. The unlock endpoint must only return the private full document after a trusted server-side payment confirmation updates the discovery run to `payment_status = 'paid'`.
+5. Set server-side secrets `SUPABASE_SERVICE_ROLE_KEY`, `PAYSTACK_SECRET_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, and `SITE_URL`; configure the Paystack webhook to call `/functions/v1/paystack-webhook`. Never expose private keys in browser variables.
+6. Deploy `appointment-payment`, `paystack-webhook`, and `send-infoservice-email` Edge Functions. Add the Paystack webhook endpoint in the Paystack dashboard. Paystack appointment payments use USD; ensure USD is enabled for the merchant account.
 
 Lovable AI calls are made from the Edge Function, not the browser. If Lovable Cloud or Lovable AI is not connected, Info Discovery returns a clear configuration error rather than displaying sample or hardcoded information.
 
