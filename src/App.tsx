@@ -180,7 +180,8 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
     "Describe the support you need:",
     detail.trim()
    ].filter(Boolean).join("\n\n");
-   const createdId=await backend.rpc<string>("submit_infoservice_request",{p_full_name:name.trim(),p_email:email.trim(),p_category:category,p_request_details:requestDetails,p_request_type:requestType||null,p_request_summary:shortRequest||null,p_phone:null});\n    const created={id:createdId};
+   const createdId=await backend.rpc<string>("submit_infoservice_request",{p_full_name:name.trim(),p_email:email.trim(),p_category:category,p_request_details:requestDetails,p_request_type:requestType||null,p_request_summary:shortRequest||null,p_phone:null});
+    const created={id:createdId};
    if(!created?.id)throw new Error("The request was saved without a reference. Please contact support before submitting it again.");
    const failedFiles:string[]=[];
    for(const file of attachments){
@@ -211,11 +212,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
     </>}
    </form>
   </div>
-  <section className="booking-tab-section" aria-label="Booking">
-    <p className="booking-intro">If you would like to submit your InfoService request in person, please book an appointment. If you would like to discuss your needs, receive explanations or obtain professional guidance without submitting a request, you can arrange a paid consultation.</p>
-    <button type="button" className={bookingOpen?"booking-tab active":"booking-tab"} role="tab" aria-selected={bookingOpen} aria-expanded={bookingOpen} onClick={()=>setBookingOpen(open=>!open)}>Booking</button>
-    {bookingOpen&&<div className="booking-tab-panel" role="tabpanel"><h2>In-person appointments</h2><div className="booking-choice"><b>Request submission · Free</b><p>Book a time to visit and submit your InfoService request in person. Our team will assess it and prepare a quotation where applicable.</p></div><div className="booking-choice"><b>Consultation · Paid</b><p>Book time to discuss your situation, receive explanations or obtain professional guidance. The consultation fee will be communicated before your booking is confirmed.</p></div><p className="booking-availability-note">Appointment scheduling will be enabled here once the booking system is connected.</p></div>}
-   </section>
+  <section className="booking-tab-section"><p className="booking-intro">Prefer to meet us in person? Reserve a free request-submission visit or book a paid professional consultation.</p><Link className="btn btn-primary" to="/booking">Book an appointment <ArrowRight size={16}/></Link></section>
  </div></div>;
 }
 
