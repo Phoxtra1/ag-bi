@@ -124,7 +124,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  const [bookingOpen,setBookingOpen]=useState(false);
  const maxFiles=5,maxFileSize=15*1024*1024;
  const allowedMimeTypes=new Set(["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp","image/heic","image/heif"]);
- const allowedFileName=/\\.(pdf|doc|docx|jpe?g|png|webp|heic|heif)$/i;
+ const allowedFileName=/\.(pdf|doc|docx|jpe?g|png|webp|heic|heif)$/i;
  const categoryOptions=[
   {value:"career_education",title:"Career and Education"},
   {value:"business_information",title:"Business Information"},
@@ -179,7 +179,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
     shortRequest?"Request detail: "+shortRequest:"",
     "Describe the support you need:",
     detail.trim()
-   ].filter(Boolean).join("\\n\\n");
+   ].filter(Boolean).join("\n\n");
    const [created]=await backend.insert("infoservice_requests",{user_id:user.id,full_name:name.trim(),email:email.trim(),category,request_details:requestDetails,status:"submitted"});
    if(!created?.id)throw new Error("The request was saved without a reference. Please contact support before submitting it again.");
    const failedFiles:string[]=[];
