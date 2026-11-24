@@ -53,6 +53,9 @@ alter table public.infoservice_requests alter column user_id drop not null;
 alter table public.infoservice_requests add column if not exists phone text;
 alter table public.infoservice_requests add column if not exists request_type text;
 alter table public.infoservice_requests add column if not exists request_summary text;
+alter table public.invoices alter column user_id drop not null;
+alter table public.invoices add column if not exists customer_email text;
+alter table public.invoices add column if not exists customer_name text;
 
 alter table public.appointment_slots enable row level security;
 alter table public.appointments enable row level security;
@@ -107,6 +110,7 @@ begin
  if length(trim(coalesce(p_full_name,'')))<2 or length(trim(coalesce(p_email,'')))<5 or length(trim(coalesce(p_phone,'')))<5 or length(trim(coalesce(p_description,'')))<10 then raise exception 'Complete all required contact and appointment details.'; end if;
  select * into s from appointment_slots where id=p_slot_id and published and starts_at>now() for update;
  if not found then raise exception 'This appointment time is no longer available. Please choose another.'; end if;
+ if p_duration_minutes > extract(epoch from (s.ends_at-s.starts_at))/60 then raise exception 'The selected time slot is shorter than the consultation duration.'; end if;
  select count(*) into v_count from appointments where slot_id=p_slot_id and status not in ('cancelled','declined');
  if v_count>=s.capacity then raise exception 'This appointment time has just been booked. Please choose another.'; end if;
  v_amount:=case when p_booking_type='consultation' then (50.0*p_duration_minutes/60.0) else 0 end;
