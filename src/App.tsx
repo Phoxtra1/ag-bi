@@ -12,7 +12,7 @@ const areas=[
  {icon:FileCheck2,title:"Info and Report Verification",desc:"Evidence-led review of documents, reports, claims and supplied information."},
 ];
 const careerOptions=["Career Reports","Educational Pathway","Career Change","Career Opportunities","One-on-One Session","Other Career Requests"];
-const travelOptions=["Employment Opportunity","Educational Pathway","Business Pathway","Planning and Guidance","Document Preparation","Other Requests"];
+const travelOptions=["Employment Opportunities","Educational Pathway","Business Pathway","Planning and Guidance","Document Preparation","Other Requests"];
 function Button({children,onClick,type="button",variant="primary",disabled=false}:{children:React.ReactNode;onClick?:()=>void;type?:"button"|"submit";variant?:"primary"|"secondary"|"ghost";disabled?:boolean}){
  return <button type={type} disabled={disabled} onClick={onClick} className={`btn btn-${variant}`}>{children}</button>;
 }
