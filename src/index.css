@@ -128,10 +128,15 @@
 }
 
 
-/* InfoService request fields and unconnected booking tab */
-.booking-tab-section{margin:28px 0 54px;border-top:1px solid var(--line);padding-top:18px}
+/* InfoService booking prompt aligned beneath the request form column */
+.booking-tab-section{width:calc((100% - 28px)*.525);margin:22px 0 54px auto;padding-top:0;text-align:left}
+.booking-intro{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.75}
 .booking-tab{display:inline-flex;align-items:center;justify-content:center;min-width:132px;padding:12px 22px;border:1px solid var(--line);border-bottom:2px solid var(--teal);border-radius:9px 9px 0 0;background:#fff;color:var(--navy);font-size:13px;font-weight:800;cursor:pointer}
 .booking-tab.active{background:var(--soft);color:var(--teal-dark)}
 .booking-tab-panel{max-width:100%;padding:22px 24px;border:1px solid var(--line);border-radius:0 10px 10px 10px;background:#fff}
-.booking-tab-panel h2{margin:0 0 7px;color:var(--navy);font-size:20px}
-.booking-tab-panel p{margin:0;color:var(--muted);font-size:13px}
+.booking-tab-panel h2{margin:0 0 15px;color:var(--navy);font-size:20px}
+.booking-choice{padding:13px 0;border-bottom:1px solid var(--line)}
+.booking-choice>b{color:var(--navy);font-size:12px}
+.booking-choice p,.booking-tab-panel .booking-availability-note{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
+.booking-tab-panel .booking-availability-note{margin-top:14px;font-size:10px}
+@media(max-width:720px){.booking-tab-section{width:100%;margin:20px 0 40px}.booking-tab-panel{padding:18px}}
