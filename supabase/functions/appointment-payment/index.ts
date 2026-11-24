@@ -12,7 +12,7 @@ Deno.serve(async(req)=>{
   const secret=Deno.env.get("PAYSTACK_SECRET_KEY");if(!secret)throw new Error("Paystack is not configured. Please contact Amineva Global.");
   const reference="AGIS-"+a.id.replaceAll("-","").toUpperCase()+"-"+crypto.randomUUID().slice(0,8);
   const siteUrl=Deno.env.get("SITE_URL");
-  const callbackUrl=Deno.env.get("PAYSTACK_CALLBACK_URL")||(siteUrl?siteUrl.replace(/\\/$/,"")+"/booking?payment=return":undefined);
+  const callbackUrl=Deno.env.get("PAYSTACK_CALLBACK_URL")||(siteUrl?(siteUrl.endsWith("/")?siteUrl.slice(0,-1):siteUrl)+"/booking?payment=return":undefined);
   const response=await fetch("https://api.paystack.co/transaction/initialize",{method:"POST",headers:{"Authorization":"Bearer "+secret,"Content-Type":"application/json"},body:JSON.stringify({email:a.email,amount:Math.round(Number(a.amount)*100),currency:"USD",reference,callback_url:callbackUrl,metadata:{appointment_id:a.id,booking_type:a.booking_type,duration_minutes:a.duration_minutes}})});
   const payload=await response.json();if(!response.ok||!payload.status)throw new Error(payload.message||"Could not initialize Paystack payment.");
   const {error:updateError}=await supabase.from("appointments").update({payment_reference:reference,payment_status:"pending"}).eq("id",a.id);if(updateError)throw updateError;
