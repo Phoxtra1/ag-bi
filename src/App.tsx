@@ -6,13 +6,13 @@ import { backend } from "@/lib/backend";
 type Notice={kind:"success"|"error"|"info";text:string};
 const AUTH_ENABLED=false; // Keep authentication disabled during interface inspection; enable only after approval.
 const areas=[
- {icon:GraduationCap,title:"Career and Education",desc:"Career reports, education pathways, career change and opportunity research."},
+ {icon:GraduationCap,title:"Career and Education",desc:"Career reports, educational pathways, career change and opportunity research."},
  {icon:BriefcaseBusiness,title:"Business Information",desc:"Business profiles, market context, industry research and opportunity assessment."},
- {icon:FileText,title:"Contracts and Commitments",desc:"Information to help understand agreements, obligations and commitments."},
- {icon:Plane,title:"Travel and Relocation",desc:"Destination, relocation, travel requirements and planning information."},
+ {icon:Plane,title:"Traveling Abroad and Relocation",desc:"Employment opportunities abroad, educational and business pathways, planning and document preparation."},
  {icon:FileCheck2,title:"Info and Report Verification",desc:"Evidence-led review of documents, reports, claims and supplied information."},
 ];
 const careerOptions=["Career Reports","Educational Pathway","Career Change","Career Opportunities","One-on-One Session","Other Career Requests"];
+const travelOptions=["Employment Opportunities","Educational Pathway","Business Pathway","Planning and Guidance","Document Preparation","Other Requests"];
 function Button({children,onClick,type="button",variant="primary",disabled=false}:{children:React.ReactNode;onClick?:()=>void;type?:"button"|"submit";variant?:"primary"|"secondary"|"ghost";disabled?:boolean}){
  return <button type={type} disabled={disabled} onClick={onClick} className={`btn btn-${variant}`}>{children}</button>;
 }
@@ -113,15 +113,31 @@ function Discover({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
 function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  const nav=useNavigate();
  const [category,setCategory]=useState("career_education");
+ const [requestType,setRequestType]=useState("");
+ const [requestSummary,setRequestSummary]=useState("");
  const [detail,setDetail]=useState("");
  const [name,setName]=useState(user?.user_metadata?.full_name||"");
  const [email,setEmail]=useState(user?.email||"");
  const [attachments,setAttachments]=useState<File[]>([]);
  const [submitting,setSubmitting]=useState(false);
  const [done,setDone]=useState(false);
+ const [bookingOpen,setBookingOpen]=useState(false);
  const maxFiles=5,maxFileSize=15*1024*1024;
  const allowedMimeTypes=new Set(["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp","image/heic","image/heif"]);
  const allowedFileName=/\.(pdf|doc|docx|jpe?g|png|webp|heic|heif)$/i;
+ const categoryOptions=[
+  {value:"career_education",title:"Career and Education"},
+  {value:"business_information",title:"Business Information"},
+  {value:"travel_relocation",title:"Traveling Abroad and Relocation"},
+  {value:"info_report_verification",title:"Info and Report Verification"},
+ ];
+ const isCareer=category==="career_education";
+ const isTravel=category==="travel_relocation";
+ const isBusiness=category==="business_information";
+ const isVerification=category==="info_report_verification";
+ const hasPredefinedType=isCareer||isTravel;
+ const isOther=(isCareer&&requestType==="Other Career Requests")||(isTravel&&requestType==="Other Requests");
+ function changeCategory(value:string){setCategory(value);setRequestType("");setRequestSummary("");}
  function addAttachments(event:React.ChangeEvent<HTMLInputElement>){
   const incoming=Array.from(event.target.files||[]);
   event.target.value="";
@@ -141,33 +157,65 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
    }
    return next;
   });
-  if(rejected.length)setNotice({kind:"error",text:"Some files were not added: "+rejected.join(", ")+"."});
+  if(rejected.length)setNotice({kind:"error",text:"Some files were not added: "+rejected.join(", ")+ "."});
  }
  function formatFileSize(size:number){return size<1024*1024?Math.max(1,Math.round(size/1024))+" KB":(size/(1024*1024)).toFixed(1)+" MB";}
  function removeAttachment(index:number){setAttachments(current=>current.filter((_,i)=>i!==index));}
  async function submit(e:React.FormEvent){
   e.preventDefault();
   if(AUTH_ENABLED&&!user){nav("/login?next=/infoservice");return;}
-  if(detail.trim().length<20){setNotice({kind:"error",text:"Please describe your service request in more detail."});return;}
+  if(hasPredefinedType&&!requestType){setNotice({kind:"error",text:"Select a request type before continuing."});return;}
+  if((isBusiness||isVerification)&&!requestSummary.trim()){setNotice({kind:"error",text:"Complete the required field below Service Area before continuing."});return;}
+  if(isOther&&!requestSummary.trim()){setNotice({kind:"error",text:"Describe the other request in the field below Request Type."});return;}
+  if(requestSummary.trim().length>50){setNotice({kind:"error",text:"The short request field must be 50 characters or fewer."});return;}
+  if(detail.trim().length<20){setNotice({kind:"error",text:"Please describe the support you need in at least 20 characters."});return;}
   if(!name.trim()||!email.trim()){setNotice({kind:"error",text:"Enter your name and email address."});return;}
   if(!AUTH_ENABLED){setNotice({kind:"info",text:"Preview only: your request and selected files have not been sent. Submission activates when account access is enabled."});return;}
   setSubmitting(true);
   try{
-   const [created]=await backend.insert("infoservice_requests",{user_id:user.id,full_name:name.trim(),email:email.trim(),category,request_details:detail.trim(),status:"submitted"});
+   const shortRequest=requestSummary.trim();
+   const requestDetails=[
+    hasPredefinedType?"Request type: "+requestType:"",
+    shortRequest?"Request detail: "+shortRequest:"",
+    "Describe the support you need:",
+    detail.trim()
+   ].filter(Boolean).join("\n\n");
+   const [created]=await backend.insert("infoservice_requests",{user_id:user.id,full_name:name.trim(),email:email.trim(),category,request_details:requestDetails,status:"submitted"});
    if(!created?.id)throw new Error("The request was saved without a reference. Please contact support before submitting it again.");
    const failedFiles:string[]=[];
    for(const file of attachments){
     try{await backend.uploadInfoServiceAttachment(created.id,file);}
     catch(error:any){failedFiles.push(file.name);console.error("InfoService attachment upload failed",file.name,error);}
    }
-   setDone(true);
-   setAttachments([]);
+   setDone(true);setAttachments([]);
    if(failedFiles.length)setNotice({kind:"error",text:"Your request was received, but these files could not be uploaded: "+failedFiles.join(", ")+". Please contact support and quote request "+created.id+"."});
    else setNotice({kind:"success",text:"Your InfoService request"+(attachments.length?" and supporting document(s)":"")+" has been received for assessment."});
   }catch(err:any){setNotice({kind:"error",text:err.message||"Could not submit your request."});}
   finally{setSubmitting(false);}
  }
- return <div className="page-wrap"><div className="container"><PageIntro eyebrow="PROFESSIONAL INFORMATION SERVICES" title="InfoService" desc="Some requests need more than a self-service report. Tell us what you need, share any supporting documents or images, and we will assess the request, discuss the scope and provide a quotation."/><div className="info-service-layout"><div className="service-area-list"><h2>Service areas</h2>{areas.map(({icon:Icon,title,desc},i)=><div className="service-area-row" key={title}><span><Icon size={20}/></span><div><h3>{title}</h3><p>{i===0?"Career Reports · Educational Pathway · Career Change · Career Opportunities · One-on-One Session · Other Career Requests":desc}</p></div></div>)}<div className="process-box"><b>How engagements proceed</b><p>Request → Assessment → Discussion → Quotation → Invoice → Payment → Service delivery.</p><small>Every engagement is priced according to its agreed scope.</small></div></div><form className="panel form-panel" onSubmit={submit}>{done?<div className="success-state"><span><Check size={28}/></span><h2>Request received</h2><p>Our team will assess your request and follow up on the scope and next steps.</p><Link className="btn btn-primary" to="/workspace">View workspace</Link></div>:<><div className="form-title"><h2>Tell us about your request</h2><p>Sign in to submit and track your service request. Add any supporting files that will help us assess it.</p></div><Field label="Service area" required><select value={category} onChange={e=>setCategory(e.target.value)}>{areas.map((a,i)=><option value={["career_education","business_information","contracts_commitments","travel_relocation","info_report_verification"][i]} key={a.title}>{a.title}</option>)}</select></Field>{category==="career_education"&&<Field label="Career and education request type"><select value={detail.startsWith("Type:")?detail.split("\n")[0].slice(6):""} onChange={e=>setDetail("Type: "+e.target.value+"\n\n") }><option value="">Select a request type</option>{careerOptions.map(x=><option key={x}>{x}</option>)}</select></Field>}<Field label="Full name" required><input value={name} onChange={e=>setName(e.target.value)} required placeholder="Your name"/></Field><Field label="Email address" required><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="you@example.com"/></Field><Field label="Describe the support you need" required><textarea rows={6} minLength={20} maxLength={5000} value={detail} onChange={e=>setDetail(e.target.value)} placeholder="Explain your situation, what you need us to do and any important deadlines."/></Field><Field label="Supporting documents or images" hint="Optional · Up to 5 files · PDF, Word documents or clear document images · Maximum 15 MB per file"><div className="attachment-picker"><input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf" onChange={addAttachments}/><p>Attach contracts, certificates, reports, letters, screenshots or photographs of documents relevant to your request.</p></div>{attachments.length>0&&<ul className="selected-attachments">{attachments.map((file,index)=><li key={file.name+"-"+file.size+"-"+file.lastModified}><span className="selected-attachment-icon"><FileText size={16}/></span><span className="selected-attachment-name"><b>{file.name}</b><small>{formatFileSize(file.size)}</small></span><button type="button" onClick={()=>removeAttachment(index)} aria-label={"Remove "+file.name}><X size={16}/></button></li>)}</ul>}</Field><div className="form-foot"><span><LockKeyhole size={14}/> Private service request and documents</span><Button type="submit" disabled={submitting}>{submitting?<><LoaderCircle className="spin"/> Submitting</>:<>Submit request <ArrowRight size={16}/></>}</Button></div></>}</form></div></div></div>
+ return <div className="page-wrap"><div className="container">
+  <PageIntro eyebrow="PROFESSIONAL INFORMATION SERVICES" title="InfoService" desc="Some requests need more than a self-service report. Tell us what you need, share any supporting documents or images, and we will assess the request, discuss the scope and provide a quotation."/>
+  <div className="info-service-layout">
+   <div className="service-area-list"><h2>Service areas</h2>{areas.map(({icon:Icon,title,desc})=><div className="service-area-row" key={title}><span><Icon size={20}/></span><div><h3>{title}</h3><p>{title==="Career and Education"?careerOptions.join(" · "):title==="Traveling Abroad and Relocation"?travelOptions.join(" · "):desc}</p></div></div>)}<div className="process-box"><b>How engagements proceed</b><p>Request → Assessment → Discussion → Quotation → Invoice → Payment → Service delivery.</p><small>Every engagement is priced according to its agreed scope.</small></div></div>
+   <form className="panel form-panel" onSubmit={submit}>
+    {done?<div className="success-state"><span><Check size={28}/></span><h2>Request received</h2><p>Our team will assess your request and follow up on the scope and next steps.</p><Link className="btn btn-primary" to="/workspace">View workspace</Link></div>:<>
+     <div className="form-title"><h2>Tell us about your request</h2><p>Sign in to submit and track your service request. Add any supporting files that will help us assess it.</p></div>
+     <Field label="Service area" required><select value={category} onChange={e=>changeCategory(e.target.value)}>{categoryOptions.map(a=><option value={a.value} key={a.value}>{a.title}</option>)}</select></Field>
+     {hasPredefinedType&&<Field label="Request type" required><select value={requestType} onChange={e=>{setRequestType(e.target.value);if(e.target.value!=="Other Requests"&&e.target.value!=="Other Career Requests")setRequestSummary("");}} required><option value="">Select a request type</option>{(isCareer?careerOptions:travelOptions).map(x=><option key={x}>{x}</option>)}</select></Field>}
+     {(hasPredefinedType||isBusiness||isVerification)&&<Field label={isBusiness?"What business information are you looking for?":isVerification?"What information, document, report or project would you like us to verify?":isOther?"Briefly describe your other request":"Additional request detail (optional)"} required={isBusiness||isVerification||isOther} hint="Maximum 50 characters."><input value={requestSummary} onChange={e=>setRequestSummary(e.target.value.slice(0,50))} maxLength={50} required={isBusiness||isVerification||isOther} placeholder={isBusiness?"e.g. Market entry options in Ghana":isVerification?"e.g. Verify a project report":isOther?"Briefly state what you are looking for":"Add a short detail if needed"}/></Field>}
+     <Field label="Full name" required><input value={name} onChange={e=>setName(e.target.value)} required placeholder="Your name"/></Field>
+     <Field label="Email address" required><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="you@example.com"/></Field>
+     <Field label="Describe the support you need" required><textarea rows={6} minLength={20} maxLength={5000} value={detail} onChange={e=>setDetail(e.target.value)} required placeholder="Explain your situation, what you need us to do and any important deadlines."/></Field>
+     <Field label="Supporting documents or images" hint="Optional · Up to 5 files · PDF, Word documents or clear document images · Maximum 15 MB per file"><div className="attachment-picker"><input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf" onChange={addAttachments}/><p>Attach certificates, reports, letters, screenshots or photographs of documents relevant to your request.</p></div>{attachments.length>0&&<ul className="selected-attachments">{attachments.map((file,index)=><li key={file.name+"-"+file.size+"-"+file.lastModified}><span className="selected-attachment-icon"><FileText size={16}/></span><span className="selected-attachment-name"><b>{file.name}</b><small>{formatFileSize(file.size)}</small></span><button type="button" onClick={()=>removeAttachment(index)} aria-label={"Remove "+file.name}><X size={16}/></button></li>)}</ul>}</Field>
+     <div className="form-foot"><span><LockKeyhole size={14}/> Private service request and documents</span><Button type="submit" disabled={submitting}>{submitting?<><LoaderCircle className="spin"/> Submitting</>:<>Submit request <ArrowRight size={16}/></>}</Button></div>
+    </>}
+   </form>
+  </div>
+  <section className="booking-tab-section" aria-label="Booking">
+   <button type="button" className={bookingOpen?"booking-tab active":"booking-tab"} role="tab" aria-selected={bookingOpen} onClick={()=>setBookingOpen(open=>!open)}>Booking</button>
+   {bookingOpen&&<div className="booking-tab-panel" role="tabpanel"><h2>Booking</h2><p>Booking arrangements will be connected here after the booking platform is selected.</p></div>}
+  </section>
+ </div></div>;
 }
 function AuthPage({mode,setUser,setNotice}:{mode:"login"|"signup";setUser:(u:any)=>void;setNotice:(n:Notice)=>void}){
  const nav=useNavigate(),loc=useLocation();const [email,setEmail]=useState(""),[password,setPassword]=useState(""),[name,setName]=useState(""),[loading,setLoading]=useState(false);const [show,setShow]=useState(false);
