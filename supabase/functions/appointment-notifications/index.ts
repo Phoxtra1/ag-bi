@@ -27,7 +27,7 @@ Deno.serve(async(req)=>{
   if(input.action==="reminders"){
    if(!serviceKey||auth!=="Bearer "+serviceKey)return json({error:"Unauthorized scheduler request."},401);
    const now=new Date(),from=new Date(now.getTime()+23*60*60*1000).toISOString(),to=new Date(now.getTime()+25*60*60*1000).toISOString();
-   const {data:rows,error}=await admin.from("appointments").select("id,full_name,email,booking_type,appointment_slots(starts_at)").eq("status","confirmed").is("reminder_email_sent_at",null).gte("appointment_slots.starts_at",from).lt("appointment_slots.starts_at",to);
+   const {data:rows,error}=await admin.from("appointments").select("id,full_name,email,booking_type,appointment_slots!inner(starts_at)").eq("status","confirmed").is("reminder_email_sent_at",null).gte("appointment_slots.starts_at",from).lt("appointment_slots.starts_at",to);
    if(error)throw error;let sent=0;
    for(const a of rows||[]){const when=new Date(a.appointment_slots.starts_at).toLocaleString("en",{dateStyle:"full",timeStyle:"short",timeZone:"UTC"})+" UTC";await sendEmail(a.email,"Appointment reminder — Amineva Global",`<p>Hello ${esc(a.full_name)},</p><p>This is a reminder of your appointment scheduled for approximately 24 hours from now.</p><p><b>Date and time:</b> ${esc(when)}</p><p><b>Reference:</b> ${esc(a.id)}</p><p>Amineva Global · Info Solutions</p>`);await admin.from("appointments").update({reminder_email_sent_at:new Date().toISOString()}).eq("id",a.id);sent++;}
    return json({sent});
