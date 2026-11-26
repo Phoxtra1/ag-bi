@@ -185,7 +185,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
    ].filter(Boolean).join("\n\n");
    const createdId=await backend.rpc<string>("submit_infoservice_request",{p_full_name:name.trim(),p_email:email.trim(),p_category:category,p_request_details:requestDetails,p_request_type:requestType||null,p_request_summary:shortRequest||null,p_phone:null});
     const created={id:createdId};
-   await backend.update("infoservice_requests","id=eq."+created.id,{ai_brief:generatedBrief});
+   await backend.rpc("save_infoservice_brief",{p_request_id:created.id,p_brief:generatedBrief});
    const requestRows=await backend.table<any>("infoservice_requests","select=id,request_reference&id=eq."+created.id);
    if(!created?.id)throw new Error("The request was saved without a reference. Please contact support before submitting it again.");
    const failedFiles:string[]=[];
