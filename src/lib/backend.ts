@@ -1,7 +1,7 @@
 export type AppUser = { id: string; email?: string; user_metadata?: Record<string, unknown> };
 export type Session = { access_token: string; refresh_token: string; expires_in?: number; expires_at?: number; user: AppUser };
 const BASE = String(import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
-const KEY = String(import.meta.env.VITE_SUPABASE_ANON_KEY || "");
+const KEY = String(import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || "");
 const STORAGE_KEY = "amineva-info-solutions-session";
 
 function configured() {
