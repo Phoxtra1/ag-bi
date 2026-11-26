@@ -8,6 +8,27 @@
       "when": 1795517887901,
       "tag": "0000_information_solutions_full_setup",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795663156491,
+      "tag": "0001_infoservice_appointments",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795663184870,
+      "tag": "0002_consultation_duration_pricing",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795663197620,
+      "tag": "0003_grant_data_access",
+      "breakpoints": true
     }
   ]
 }

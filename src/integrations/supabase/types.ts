@@ -14,6 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointment_slots: {
+        Row: {
+          capacity: number
+          created_at: string
+          created_by: string | null
+          ends_at: string
+          id: string
+          published: boolean
+          starts_at: string
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          created_by?: string | null
+          ends_at: string
+          id?: string
+          published?: boolean
+          starts_at: string
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string
+          id?: string
+          published?: boolean
+          starts_at?: string
+        }
+        Relationships: []
+      }
+      appointments: {
+        Row: {
+          additional_information: string | null
+          amount: number
+          booking_type: string
+          created_at: string
+          currency: string
+          description: string
+          duration_minutes: number
+          email: string
+          full_name: string
+          id: string
+          payment_reference: string | null
+          payment_status: string
+          phone: string
+          request_type: string | null
+          service_category: string | null
+          slot_id: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          additional_information?: string | null
+          amount?: number
+          booking_type: string
+          created_at?: string
+          currency?: string
+          description: string
+          duration_minutes?: number
+          email: string
+          full_name: string
+          id?: string
+          payment_reference?: string | null
+          payment_status?: string
+          phone: string
+          request_type?: string | null
+          service_category?: string | null
+          slot_id: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          additional_information?: string | null
+          amount?: number
+          booking_type?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          duration_minutes?: number
+          email?: string
+          full_name?: string
+          id?: string
+          payment_reference?: string | null
+          payment_status?: string
+          phone?: string
+          request_type?: string | null
+          service_category?: string | null
+          slot_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "appointment_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       discovery_report_private: {
         Row: {
           created_at: string
@@ -192,6 +296,47 @@ export type Database = {
           },
         ]
       }
+      infoservice_messages: {
+        Row: {
+          body: string
+          id: string
+          provider_message_id: string | null
+          recipient_email: string
+          request_id: string
+          sent_at: string
+          sent_by: string
+          subject: string
+        }
+        Insert: {
+          body: string
+          id?: string
+          provider_message_id?: string | null
+          recipient_email: string
+          request_id: string
+          sent_at?: string
+          sent_by: string
+          subject: string
+        }
+        Update: {
+          body?: string
+          id?: string
+          provider_message_id?: string | null
+          recipient_email?: string
+          request_id?: string
+          sent_at?: string
+          sent_by?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "infoservice_messages_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "infoservice_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       infoservice_requests: {
         Row: {
           assessment_notes: string | null
@@ -201,13 +346,16 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          phone: string | null
           quoted_amount: number | null
           request_details: string
+          request_summary: string | null
+          request_type: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           assessment_notes?: string | null
@@ -217,13 +365,16 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          phone?: string | null
           quoted_amount?: number | null
           request_details: string
+          request_summary?: string | null
+          request_type?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           assessment_notes?: string | null
@@ -233,13 +384,16 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          phone?: string | null
           quoted_amount?: number | null
           request_details?: string
+          request_summary?: string | null
+          request_type?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -249,6 +403,8 @@ export type Database = {
           created_at: string
           created_by: string | null
           currency: string
+          customer_email: string | null
+          customer_name: string | null
           description: string
           discovery_request_id: string | null
           discovery_run_id: string | null
@@ -258,13 +414,15 @@ export type Database = {
           invoice_number: string
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           amount: number
           created_at?: string
           created_by?: string | null
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           description: string
           discovery_request_id?: string | null
           discovery_run_id?: string | null
@@ -274,13 +432,15 @@ export type Database = {
           invoice_number: string
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
           created_by?: string | null
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           description?: string
           discovery_request_id?: string | null
           discovery_run_id?: string | null
@@ -290,7 +450,7 @@ export type Database = {
           invoice_number?: string
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -560,8 +720,44 @@ export type Database = {
         Args: { p_invoice_id: string; p_provider_reference?: string }
         Returns: undefined
       }
+      create_appointment: {
+        Args: {
+          p_additional_information?: string
+          p_booking_type: string
+          p_description: string
+          p_duration_minutes: number
+          p_email: string
+          p_full_name: string
+          p_phone: string
+          p_request_type: string
+          p_service_category: string
+          p_slot_id: string
+        }
+        Returns: Json
+      }
+      get_public_appointment_slots: {
+        Args: { p_from?: string; p_to?: string }
+        Returns: {
+          ends_at: string
+          id: string
+          remaining: number
+          starts_at: string
+        }[]
+      }
       has_admin_role: { Args: never; Returns: boolean }
       has_staff_role: { Args: never; Returns: boolean }
+      submit_infoservice_request: {
+        Args: {
+          p_category: string
+          p_email: string
+          p_full_name: string
+          p_phone?: string
+          p_request_details: string
+          p_request_summary?: string
+          p_request_type?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
