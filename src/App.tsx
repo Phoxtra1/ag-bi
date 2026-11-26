@@ -119,6 +119,9 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
  const [attachments,setAttachments]=useState<File[]>([]);
  const [submitting,setSubmitting]=useState(false);
  const [done,setDone]=useState(false);
+ const [createdRequest,setCreatedRequest]=useState<any>(null);
+ const [brief,setBrief]=useState<any>(null);
+ const [briefBusy,setBriefBusy]=useState(false);
  
  const maxFiles=5,maxFileSize=15*1024*1024;
  const allowedMimeTypes=new Set(["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp","image/heic","image/heif"]);
@@ -171,6 +174,8 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
   
   setSubmitting(true);
   try{
+   let generatedBrief=brief;
+   if(!generatedBrief){setBriefBusy(true);generatedBrief=await backend.invoke("infoservice-brief",{category,request_type:requestType||null,request_summary:requestSummary.trim(),request_details:detail.trim()});setBrief(generatedBrief);setBriefBusy(false);}
    const shortRequest=requestSummary.trim();
    const requestDetails=[
     hasPredefinedType?"Request type: "+requestType:"",
@@ -180,13 +185,16 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
    ].filter(Boolean).join("\n\n");
    const createdId=await backend.rpc<string>("submit_infoservice_request",{p_full_name:name.trim(),p_email:email.trim(),p_category:category,p_request_details:requestDetails,p_request_type:requestType||null,p_request_summary:shortRequest||null,p_phone:null});
     const created={id:createdId};
+   await backend.update("infoservice_requests","id=eq."+created.id,{ai_brief:generatedBrief});
+   const requestRows=await backend.table<any>("infoservice_requests","select=id,request_reference&id=eq."+created.id);
    if(!created?.id)throw new Error("The request was saved without a reference. Please contact support before submitting it again.");
    const failedFiles:string[]=[];
    for(const file of attachments){
     try{await backend.uploadInfoServiceAttachment(created.id,file);}
     catch(error:any){failedFiles.push(file.name);console.error("InfoService attachment upload failed",file.name,error);}
    }
-   setDone(true);setAttachments([]);
+   setCreatedRequest({id:created.id,reference:requestRows?.[0]?.request_reference||created.id});
+   setDone(true);setAttachments([]);setBrief(null);
    if(failedFiles.length)setNotice({kind:"error",text:"Your request was received, but these files could not be uploaded: "+failedFiles.join(", ")+". Please contact support and quote request "+created.id+"."});
    else setNotice({kind:"success",text:"Your InfoService request"+(attachments.length?" and supporting document(s)":"")+" has been received for assessment."});
   }catch(err:any){setNotice({kind:"error",text:err.message||"Could not submit your request."});}
@@ -197,7 +205,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
   <div className="info-service-layout">
    <div className="service-area-list"><h2>Service areas</h2>{areas.map(({icon:Icon,title,desc})=><div className="service-area-row" key={title}><span><Icon size={20}/></span><div><h3>{title}</h3><p>{title==="Career and Education"?careerOptions.join(" · "):title==="Traveling Abroad and Relocation"?travelOptions.join(" · "):desc}</p></div></div>)}<div className="process-box"><b>How engagements proceed</b><p>Request → Assessment → Discussion → Quotation → Invoice → Payment → Service delivery.</p><small>Every engagement is priced according to its agreed scope.</small></div></div>
    <form className="panel form-panel" onSubmit={submit}>
-    {done?<div className="success-state"><span><Check size={28}/></span><h2>Request received</h2><p>Our team will assess your request and follow up on the scope and next steps.</p><Link className="btn btn-primary" to="/workspace">View workspace</Link></div>:<>
+    {done?<div className="success-state"><span><Check size={28}/></span><h2>Request received</h2><p>Your request has been saved successfully. Keep this reference for follow-up:</p><div className="note-box"><b>Request reference</b><p>{createdRequest?.reference||createdRequest?.id}</p></div><p>Our team will assess your request and email you about the scope and next steps.</p><Link className="btn btn-primary" to={"/workspace?request="+encodeURIComponent(createdRequest?.id||"")}>View request history <ArrowRight size={16}/></Link></div>:<>
      <div className="form-title"><h2>Tell us about your request</h2><p>Tell us what you need. Our team will receive your request and follow up by email.</p></div>
      <Field label="Service area" required><select value={category} onChange={e=>changeCategory(e.target.value)}>{categoryOptions.map(a=><option value={a.value} key={a.value}>{a.title}</option>)}</select></Field>
      {hasPredefinedType&&<Field label="Request type" required><select value={requestType} onChange={e=>{setRequestType(e.target.value);if(e.target.value!=="Other Requests"&&e.target.value!=="Other Career Requests")setRequestSummary("");}} required><option value="">Select a request type</option>{(isCareer?careerOptions:travelOptions).map(x=><option key={x}>{x}</option>)}</select></Field>}
@@ -205,6 +213,7 @@ function InfoService({user,setNotice}:{user:any;setNotice:(n:Notice)=>void}) {
      <Field label="Full name" required><input value={name} onChange={e=>setName(e.target.value)} required placeholder="Your name"/></Field>
      <Field label="Email address" required><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="you@example.com"/></Field>
      <Field label="Describe the support you need" required><textarea rows={6} minLength={20} maxLength={5000} value={detail} onChange={e=>setDetail(e.target.value)} required placeholder="Explain your situation, what you need us to do and any important deadlines."/></Field>
+     <div className="brief-panel panel"><div className="eyebrow">AI REQUEST BRIEF</div><p>Generate a structured brief from your description, including the objective, proposed scope, information needed and suggested next steps.</p>{brief&&<div className="note-box"><b>{brief.title||"Your request brief"}</b><p>{brief.objective}</p>{brief.scope&&<p><b>Proposed scope:</b> {brief.scope}</p>}{brief.information_needed&&<p><b>Information needed:</b> {brief.information_needed}</p>}{Array.isArray(brief.next_steps)&&<ol>{brief.next_steps.map((x:string,i:number)=><li key={i}>{x}</li>)}</ol>}</div>}<Button type="button" variant="secondary" disabled={briefBusy||!detail.trim()} onClick={async()=>{setBriefBusy(true);try{const b=await backend.invoke("infoservice-brief",{category,request_type:requestType||null,request_summary:requestSummary.trim(),request_details:detail.trim()});setBrief(b);setNotice({kind:"success",text:"Your structured request brief is ready. Review it before submitting."});}catch(e:any){setNotice({kind:"error",text:e.message||"Could not prepare the request brief."});}finally{setBriefBusy(false);}}}>{briefBusy?<><LoaderCircle className="spin"/> Preparing brief</>:<>Generate request brief <Sparkles size={15}/></>}</Button></div>
      <Field label="Supporting documents or images" hint="Optional · Sign in to attach up to 5 files · PDF, Word documents or clear document images · Maximum 15 MB per file"><div className="attachment-picker"><input type="file" multiple disabled={!user} accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.heic,.heif,image/jpeg,image/png,image/webp,image/heic,image/heif,application/pdf" onChange={addAttachments}/><p>Attach certificates, reports, letters, screenshots or photographs of documents relevant to your request.</p></div>{attachments.length>0&&<ul className="selected-attachments">{attachments.map((file,index)=><li key={file.name+"-"+file.size+"-"+file.lastModified}><span className="selected-attachment-icon"><FileText size={16}/></span><span className="selected-attachment-name"><b>{file.name}</b><small>{formatFileSize(file.size)}</small></span><button type="button" onClick={()=>removeAttachment(index)} aria-label={"Remove "+file.name}><X size={16}/></button></li>)}</ul>}</Field>
      <div className="form-foot"><span><LockKeyhole size={14}/> Private service request and documents</span><Button type="submit" disabled={submitting}>{submitting?<><LoaderCircle className="spin"/> Submitting</>:<>Submit request <ArrowRight size={16}/></>}</Button></div>
     </>}
@@ -232,12 +241,14 @@ function Booking({setNotice}:{setNotice:(n:Notice)=>void}){
   const result=await backend.rpc<any>("create_appointment",{p_slot_id:selectedSlot.id,p_booking_type:type,p_duration_minutes:type==="consultation"?duration:60,p_full_name:name,p_email:email,p_phone:phone,p_service_category:category,p_request_type:requestType||null,p_description:description,p_additional_information:extra||null});
   const appointment=Array.isArray(result)?result[0]:result;
   if(appointment?.payment_required){const pay=await backend.invoke("appointment-payment",{appointment_id:appointment.appointment_id});if(!pay?.checkout_url)throw new Error("Payment checkout could not be created.");location.assign(pay.checkout_url);return;}
-  setComplete(true);setNotice({kind:"success",text:"Your free request-submission appointment has been booked."});
+  if(!appointment?.appointment_id)throw new Error("The appointment was created but no confirmation reference was returned.");
+  if(!appointment.payment_required){try{await backend.invoke("appointment-notifications",{action:"confirmation",appointment_id:appointment.appointment_id,email});}catch(mailError){console.warn("Appointment confirmation email could not be sent",mailError);}}
+  setComplete(true);setNotice({kind:"success",text:"Your appointment has been booked. Check your email for confirmation details."});
  }catch(e:any){setNotice({kind:"error",text:e.message||"Your appointment could not be booked."});}finally{setBusy(false);}}
  return <div className="page-wrap booking-page"><div className="container">
   {paymentReturned&&<div className="notice notice-info">Paystack has returned you to Amineva Global. Your appointment will be confirmed once the secure payment notification is verified. You may contact our team if your confirmation does not arrive.</div>}
   <div className="booking-hero"><div className="booking-hero-copy"><span className="eyebrow eyebrow-light">AMINEVA GLOBAL · APPOINTMENT DESK</span><h1>Make time for a<br/><em>meaningful conversation.</em></h1><p>Book a meeting with an Amineva Global representative. Choose your appointment, select an available time and confirm your visit.</p><div className="booking-trust"><span><ShieldCheck/> Private appointment details</span><span><CalendarDays/> Published availability</span></div></div><div className="booking-hero-art"><div className="booking-orbit"/><div className="booking-art-card"><span><Compass/></span><b>AMINEVA GLOBAL</b><small>Appointments · Information · Guidance</small><div className="booking-art-line"/></div></div></div>
-  {complete?<div className="booking-complete panel"><span><Check size={30}/></span><h2>Appointment booked</h2><p>Your request-submission visit is reserved. We look forward to meeting you.</p><Link className="btn btn-primary" to="/infoservice">Return to InfoService</Link></div>:<div className="booking-layout">
+  {complete?<div className="booking-complete panel"><span><Check size={30}/></span><h2>Appointment booked</h2><p>Your appointment is reserved. Check your email for the booking confirmation and appointment details.</p><Link className="btn btn-primary" to="/infoservice">Return to InfoService</Link></div>:<div className="booking-layout">
    <section className="booking-calendar-card panel"><div className="booking-section-kicker">01 · SELECT A DATE</div><div className="calendar-head"><div><h2>Choose your day</h2><p>Only published appointment dates are selectable.</p></div><div className="calendar-nav"><button type="button" onClick={()=>setMonth(new Date(month.getFullYear(),month.getMonth()-1,1))} aria-label="Previous month">‹</button><button type="button" onClick={()=>setMonth(new Date(month.getFullYear(),month.getMonth()+1,1))} aria-label="Next month">›</button></div></div><div className="calendar-month">{month.toLocaleDateString(undefined,{month:"long",year:"numeric"})}</div><div className="calendar-grid">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d=><b key={d}>{d}</b>)}{Array.from({length:offset},(_,i)=><span className="calendar-empty" key={"e"+i}/>)}{Array.from({length:days},(_,i)=>{const date=new Date(month.getFullYear(),month.getMonth(),i+1),key=date.toLocaleDateString("en-CA"),available=availableDates.has(key),active=selectedDate===key;return <button type="button" key={key} disabled={!available||date<new Date(new Date().setHours(0,0,0,0))} className={(available?"calendar-day available":"calendar-day")+(active?" selected":"")} onClick={()=>{setSelectedDate(key);setSelectedSlot(null);}}>{i+1}{available&&<i/>}</button>;})}</div><div className="calendar-legend"><span><i/> Available</span><span><i/> Unavailable</span></div>
    <div className="booking-slots"><div className="booking-section-kicker">02 · SELECT A TIME</div><h3>{selectedDate?new Date(selectedDate+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}):"Available times"}</h3>{!selectedDate?<p>Select a highlighted date to see appointment times.</p>:monthSlots.length?<div className="slot-grid">{monthSlots.map(s=><button type="button" key={s.id} className={selectedSlot?.id===s.id?"slot-option active":"slot-option"} onClick={()=>setSelectedSlot(s)}><Clock3 size={15}/>{new Date(s.starts_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}<small>{s.remaining} spot{s.remaining===1?"":"s"}</small></button>)}</div>:<p>No times are currently available for this date.</p>}</div>
   </section>
