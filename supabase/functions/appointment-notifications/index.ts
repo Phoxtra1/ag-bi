@@ -15,8 +15,7 @@ Deno.serve(async(req)=>{
   const auth=req.headers.get("Authorization")||"";const input=await req.json();
   const admin=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
   if(input.action==="confirmation"){
-   const client=createClient(url,Deno.env.get("SUPABASE_ANON_KEY")!,{global:{headers:{Authorization:auth}}});
-   const {data:{user}}=await client.auth.getUser();if(!user)return json({error:"Sign in required."},401);
+   if(auth!=="Bearer "+serviceKey){const client=createClient(url,Deno.env.get("SUPABASE_ANON_KEY")!,{global:{headers:{Authorization:auth}}});const {data:{user}}=await client.auth.getUser();if(!user)return json({error:"Sign in required."},401);}
    const {data:a,error}=await admin.from("appointments").select("*,appointment_slots(starts_at,ends_at)").eq("id",input.appointment_id).eq("email",String(input.email||"").toLowerCase()).single();
    if(error||!a)return json({error:"Appointment not found."},404);
    if(a.status!=="confirmed"||a.payment_status==="pending")return json({error:"Appointment is not confirmed yet."},409);
