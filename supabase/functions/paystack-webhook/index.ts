@@ -12,5 +12,11 @@ Deno.serve(async(req)=>{
  if(error||!a)return new Response("Appointment not found",{status:404});
  const {error:updateError}=await supabase.from("appointments").update({payment_status:"paid",status:"confirmed",updated_at:new Date().toISOString()}).eq("id",a.id);
  if(updateError)return new Response("Could not confirm payment",{status:500});
+ const siteUrl=Deno.env.get("SUPABASE_URL")!;
+ const serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+ const {data:appointment}=await supabase.from("appointments").select("id,email").eq("id",a.id).single();
+ if(appointment){
+  try{await fetch(siteUrl+"/functions/v1/appointment-notifications",{method:"POST",headers:{"Authorization":"Bearer "+serviceKey,"Content-Type":"application/json"},body:JSON.stringify({action:"confirmation",appointment_id:appointment.id,email:appointment.email})});}catch(error){console.error("Paid appointment confirmation email failed",error);}
+ }
  return new Response("OK");
 });
