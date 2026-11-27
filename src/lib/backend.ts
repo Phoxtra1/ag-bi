@@ -51,13 +51,6 @@ async function request(path:string,init:RequestInit={},useSession=true) {
 }
 export const backend = {
   configured: () => Boolean(BASE && KEY),
-  async signInAnonymously():Promise<Session> {
-    const data=await request("/auth/v1/signup",{method:"POST",body:JSON.stringify({data:{}})},false);
-    if(!data?.access_token||!data?.user?.id) throw new Error("Supabase anonymous sign-in is not enabled. Enable Anonymous Sign-Ins under Authentication > Providers, then reload this platform.");
-    const session={...data,expires_at:Math.floor(Date.now()/1000)+(data.expires_in||3600)};
-    saveSession(session);
-    return session;
-  },
   async signUp(email:string,password:string,fullName:string) {
     const redirect = encodeURIComponent(location.origin + "/login");
     const data=await request(`/auth/v1/signup?redirect_to=${redirect}`,{method:"POST",body:JSON.stringify({email,password,data:{full_name:fullName}})},false);

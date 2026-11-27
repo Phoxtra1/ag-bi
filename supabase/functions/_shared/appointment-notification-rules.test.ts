@@ -1,0 +1,11 @@
+import { expect, test } from "bun:test";
+import { notificationDue, notificationKey } from "./appointment-notification-rules";
+const now = Date.parse("2026-11-27T06:58:00Z");
+const confirmed = { status: "confirmed", payment_status: "paid", confirmation_email_queued_at: "2026-11-26T12:00:00Z" };
+test("visitor consultations receive confirmation after verified payment", () => expect(notificationDue({ status: "confirmed", payment_status: "paid" }, "2026-11-28T09:00:00Z", now)).toBe("confirmation"));
+test("unpaid consultations receive no confirmation", () => expect(notificationDue({ status: "pending", payment_status: "pending" }, "2026-11-28T09:00:00Z", now)).toBeNull());
+test("reminders become due within 24 hours", () => expect(notificationDue(confirmed, "2026-11-28T06:58:00Z", now)).toBe("reminder"));
+test("reminders are not sent more than 24 hours early", () => expect(notificationDue(confirmed, "2026-11-28T06:58:01Z", now)).toBeNull());
+test("cancelled appointments receive no reminder", () => expect(notificationDue({ ...confirmed, status: "cancelled" }, "2026-11-27T09:00:00Z", now)).toBeNull());
+test("queued reminders are not repeated", () => expect(notificationDue({ ...confirmed, reminder_email_queued_at: "2026-11-27T06:00:00Z" }, "2026-11-27T09:00:00Z", now)).toBeNull());
+test("retry idempotency is tied to the same appointment event", () => expect(notificationKey("booking-123", "confirmation", "2026-11-28T09:00:00Z")).toBe("appointment-confirmation-booking-123-1795856400000"));

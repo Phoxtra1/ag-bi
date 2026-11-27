@@ -49,6 +49,7 @@ export type Database = {
           additional_information: string | null
           amount: number
           booking_type: string
+          confirmation_email_queued_at: string | null
           created_at: string
           currency: string
           description: string
@@ -56,9 +57,12 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          notification_last_error: string | null
+          notification_retry_at: string | null
           payment_reference: string | null
           payment_status: string
           phone: string
+          reminder_email_queued_at: string | null
           request_type: string | null
           service_category: string | null
           slot_id: string
@@ -70,6 +74,7 @@ export type Database = {
           additional_information?: string | null
           amount?: number
           booking_type: string
+          confirmation_email_queued_at?: string | null
           created_at?: string
           currency?: string
           description: string
@@ -77,9 +82,12 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          notification_last_error?: string | null
+          notification_retry_at?: string | null
           payment_reference?: string | null
           payment_status?: string
           phone: string
+          reminder_email_queued_at?: string | null
           request_type?: string | null
           service_category?: string | null
           slot_id: string
@@ -91,6 +99,7 @@ export type Database = {
           additional_information?: string | null
           amount?: number
           booking_type?: string
+          confirmation_email_queued_at?: string | null
           created_at?: string
           currency?: string
           description?: string
@@ -98,9 +107,12 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          notification_last_error?: string | null
+          notification_retry_at?: string | null
           payment_reference?: string | null
           payment_status?: string
           phone?: string
+          reminder_email_queued_at?: string | null
           request_type?: string | null
           service_category?: string | null
           slot_id?: string
@@ -744,6 +756,7 @@ export type Database = {
           starts_at: string
         }[]
       }
+      get_public_operations_totals: { Args: never; Returns: Json }
       has_admin_role: { Args: never; Returns: boolean }
       has_staff_role: { Args: never; Returns: boolean }
       submit_infoservice_request: {
