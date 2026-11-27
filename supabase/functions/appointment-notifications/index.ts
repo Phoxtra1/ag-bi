@@ -29,17 +29,43 @@ Deno.serve(async (req) => {
    const field = kind === "confirmation" ? "confirmation_email_queued_at" : "reminder_email_queued_at";
    if (a[field]) return { queued: true, already_queued: true };
    const dateTime = new Date(slot.starts_at).toLocaleString("en", { dateStyle: "full", timeStyle: "short", timeZone: "UTC" }) + " UTC";
-   const { data, error } = await admin.functions.invoke("send-transactional-email", { body: {
-    templateName: `appointment-${kind}`, recipientEmail: a.email,
-    idempotencyKey: notificationKey(a.id, kind, slot.starts_at),
-    templateData: { name: a.full_name, appointmentType: a.booking_type === "consultation" ? "professional consultation" : "request-submission visit", dateTime, durationMinutes: a.duration_minutes, reference: a.id },
-   } });
-   if (error || data?.error || data?.success === false || data?.suppressed) {
-    const message = "Appointment email could not be queued. Verify sender setup and the appointment template registry.";
+   const apiKey = Deno.env.get("RESEND_API_KEY"), from = Deno.env.get("RESEND_FROM_EMAIL");
+   if (!apiKey || !from) {
+    const message = "Appointment email sender is not configured. Set RESEND_API_KEY and RESEND_FROM_EMAIL.";
     const { error: saveError } = await admin.from("appointments").update({ notification_last_error: message, notification_retry_at: new Date(Date.now() + 3600_000).toISOString() }).eq("id", a.id);
     if (saveError) throw saveError;
     return { queued: false, pending_email_setup: true };
    }
+   const appointmentType = a.booking_type === "consultation" ? "professional consultation" : "free request-submission visit";
+   const isReminder = kind === "reminder";
+   const subject = isReminder ? "Reminder: your Amineva Global appointment" : "Appointment confirmed — Amineva Global";
+   const text = [
+    `Hello ${a.full_name},`,
+    "",
+    isReminder ? "This is a reminder of your upcoming appointment." : "Your appointment has been confirmed.",
+    `Type: ${appointmentType}`,
+    `Date and time: ${dateTime}`,
+    `Duration: ${a.duration_minutes} minutes`,
+    `Booking reference: ${a.id}`,
+    "",
+    "If you need to make a change, please contact Amineva Global and quote your booking reference.",
+    "",
+    "Amineva Global | Info Solutions",
+   ].join("\\n");
+   const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json", "Idempotency-Key": notificationKey(a.id, kind, slot.starts_at) },
+    body: JSON.stringify({ from, to: [a.email], subject, text, ...(Deno.env.get("RESEND_REPLY_TO") ? { reply_to: Deno.env.get("RESEND_REPLY_TO") } : {}) }),
+   });
+   const data = await response.json().catch(() => ({}));
+   if (!response.ok || !data?.id) {
+    const message = data?.message || "Resend did not accept the appointment email.";
+    const { error: saveError } = await admin.from("appointments").update({ notification_last_error: message, notification_retry_at: new Date(Date.now() + 3600_000).toISOString() }).eq("id", a.id);
+    if (saveError) throw saveError;
+    return { queued: false, pending_email_setup: true };
+   }
+   const { error: saveError } = await admin.from("appointments").update({ provider_message_id: data.id }).eq("id", a.id);
+   if (saveError) throw saveError;
    const { error: saveError } = await admin.from("appointments").update({ [field]: new Date().toISOString(), notification_last_error: null, notification_retry_at: null }).eq("id", a.id);
    if (saveError) throw saveError;
    return { queued: true };
